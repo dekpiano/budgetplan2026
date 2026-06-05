@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.vscode
+*.log
+docker-compose.yml
+Dockerfile
+vendor/
+writable/cache/
+writable/session/
+writable/debugbar/

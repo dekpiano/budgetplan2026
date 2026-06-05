@@ -1,0 +1,31 @@
+# Log files
+*.log
+
+# Env file (contains sensitive credentials)
+.env
+
+# Composer dependencies
+/vendor/
+
+# CodeIgniter 4 Writable Directory
+/writable/*
+!/writable/.gitkeep
+!/writable/index.html
+
+# User Uploads / Builds
+/uploads/*
+/builds/*
+/public/uploads/*
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db

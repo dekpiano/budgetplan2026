@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: budgetplan2026_app
+    build: .
+    ports:
+      - "8093:443"
+    volumes:
+      # Use 'cached' for better read performance on Windows
+      - .:/var/www/html:cached
+    environment:
+      # Database connection settings for CodeIgniter
+      DB_HOST: skj2025_db
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: rootpassword
+      # PHP Performance tuning
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: 0
+      PHP_REALPATH_CACHE_SIZE: 4096K
+      PHP_REALPATH_CACHE_TTL: 600
+    dns:
+      - 8.8.8.8
+    networks:
+      - skj2025_default
+    # Improve container performance
+    tmpfs:
+      - /tmp:size=256M
+      - /var/cache:size=128M
+
+networks:
+  skj2025_default:
+    external: true

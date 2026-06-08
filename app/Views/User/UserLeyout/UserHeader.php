@@ -35,7 +35,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@200;300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sarabun:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="<?=base_url()?>/assets/vendor/fonts/boxicons.css" />
@@ -66,62 +66,116 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="<?=base_url()?>/assets/js/config.js"></script>
     
-    <!-- Minimalist Custom CSS -->
+    <!-- ======================================== -->
+    <!-- Orange Luxury Minimalist Theme Override  -->
+    <!-- ======================================== -->
     <style>
-        /* Sidebar Minimalist Style */
+        :root {
+            --skj-orange: #FB8C00;
+            --skj-orange-hover: #f57c00;
+            --skj-orange-soft: rgba(251, 140, 0, 0.08);
+            --skj-orange-glow: rgba(251, 140, 0, 0.12);
+            --skj-dark: #1e1e24;
+            --skj-bg: #f7f6f3;
+            --skj-sidebar-bg: #fefefe;
+        }
+
+        /* ─── Body ─── */
+        body {
+            background-color: var(--skj-bg) !important;
+            font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif !important;
+        }
+
+        /* ─── Sidebar ─── */
         .layout-menu {
-            border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.04) !important;
             box-shadow: none !important;
-            background-color: #ffffff !important;
+            background-color: var(--skj-sidebar-bg) !important;
         }
         .app-brand {
             border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
         }
         .menu-inner .menu-item .menu-link {
-            border-radius: 8px;
-            margin: 2px 14px;
-            font-size: 0.92rem;
-            color: #5c6f84 !important;
-            transition: all 0.2s ease;
+            border-radius: 10px;
+            margin: 3px 12px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            color: #6b7c93 !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .menu-inner .menu-item .menu-link:hover {
-            background-color: rgba(47, 128, 237, 0.06) !important;
-            color: #2f80ed !important;
+            background-color: var(--skj-orange-soft) !important;
+            color: var(--skj-orange) !important;
         }
         .menu-inner .menu-item.active > .menu-link {
-            background-color: rgba(47, 128, 237, 0.1) !important;
-            color: #2f80ed !important;
+            background-color: var(--skj-orange-glow) !important;
+            color: var(--skj-orange) !important;
             font-weight: 600;
+        }
+        /* Override the vertical active bar to orange */
+        .layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active:before {
+            background: var(--skj-orange) !important;
+        }
+        .bg-menu-theme .menu-inner > .menu-item.active > .menu-link {
+            color: var(--skj-orange) !important;
+            background-color: var(--skj-orange-glow) !important;
         }
         .menu-header {
-            margin-top: 1.5rem !important;
-            padding-left: 1.8rem !important;
+            margin-top: 1.25rem !important;
+            padding-left: 1.6rem !important;
             font-weight: 600;
-            letter-spacing: 0.8px;
-            color: #a3b1c2 !important;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #b0b8c4 !important;
         }
-        
-        /* Navbar Minimalist Style */
+        .menu-inner-shadow {
+            display: none !important;
+        }
+
+        /* ─── Navbar ─── */
         .layout-navbar {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
-            border-radius: 12px !important;
-            margin-top: 12px !important;
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+            box-shadow: 0 1px 12px rgba(0, 0, 0, 0.02) !important;
+            border-radius: 14px !important;
+            margin-top: 10px !important;
             border: none !important;
         }
         .layout-navbar .navbar-nav-right {
-            padding: 0 10px;
+            padding: 0 8px;
         }
-        
-        /* General layout adjustments */
-        body {
-            background-color: #f8f9fa !important;
+
+        /* ─── Cards (Global) ─── */
+        .card {
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        /* ─── Links ─── */
+        a {
+            transition: color 0.2s ease;
+        }
+
+        /* ─── Scrollbar ─── */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
 
-<body style="font-family:'Sarabun'">
+<body style="font-family:'Sarabun'">

@@ -25,46 +25,28 @@
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "Home"?"active":"")?>">
                     <a href="<?=base_url('Admin/Home');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                        <div data-i18n="Analytics">หน้าแรก </div>
+                        <div data-i18n="Analytics">หน้าแรก (แดชบอร์ด)</div>
                     </a>
                 </li>
 
-                <!-- Layouts -->
-                <?php $SubRloes = explode(',',$_SESSION['rloes']); ?>
-
-
-                <?php if(in_array("งานทะเบียนครูและบุคลากร",$SubRloes)) :?>
-                      <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">จัดการข้อมูลพื้นฐาน</span>
-                </li>
-                <li class="menu-item <?php echo $uri->getSegment(2) == "WorkPerson"?"active open":""?>">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-layout"></i>
-                        <div data-i18n="Layouts">จัดการบุคคลกร</div>
-                    </a>
-
-                    <ul class="menu-sub">
-                        <li class="menu-item <?php echo $uri->getSegment(3) == "Personnel"?"active":""?>">
-                            <a href="<?=base_url('Admin/WorkPerson/Personnel')?>" class="menu-link">
-                                <div data-i18n="Without menu">ทะเบียนครูและบุคลากรทางการศึกษา</div>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">บันทึกงาน</span>
+                    <span class="menu-header-text">งบประมาณและแผน</span>
                 </li>
-                <li class="menu-item <?php echo $uri->getSegment(2) == "SaveAttendance"?"active":""?>">
-                    <a href="<?=base_url('Admin/SaveAttendance')?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-layout"></i>
-                        <div data-i18n="Layouts">บันทึกการมาทำงาน</div>
+                <li class="menu-item">
+                    <a href="<?=base_url('User/Procurement/Process')?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-cart"></i>
+                        <div data-i18n="Layouts">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
                     </a>
                 </li>
-                <?php endif; ?>
+                <li class="menu-item">
+                    <a href="<?=base_url('User/Procurement/MoneyReceipt')?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-file"></i>
+                        <div data-i18n="Layouts">ใบสำคัญรับเงินตอบแทน</div>
+                    </a>
+                </li>
             </ul>
 
-            <?php if($_SESSION['id'] == "pers_021") : ?>
+            <?php if(isset($_SESSION['id']) && $_SESSION['id'] == "pers_021") : ?>
             <div>
                 <ul class="menu-inner py-1">
                     <li class="menu-item <?php echo $uri->getSegment(2) == "Rloes"?"active":""?>">

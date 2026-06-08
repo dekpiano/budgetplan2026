@@ -32,13 +32,13 @@
                 </li>
                 <li class="menu-item <?php echo $UrlMenuSub == "Process"?"active":""?>">
                     <a href="<?=base_url('User/Procurement/Process');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                        <i class="menu-icon tf-icons bx bx-cart"></i>
                         <div data-i18n="Analytics">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
                     </a>
                 </li>
                 <li class="menu-item <?php echo $UrlMenuSub == "MoneyReceipt"?"active":""?>">
                     <a href="<?=base_url('User/Procurement/MoneyReceipt');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                        <i class="menu-icon tf-icons bx bx-file"></i>
                         <div data-i18n="Analytics">ใบสำคัญรับเงินตอบแทนค่าวิทยากร</div>
                     </a>
                 </li>

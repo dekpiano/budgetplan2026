@@ -54,7 +54,7 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="<?=base_url()?>/assets/js/config.js"></script>
   </head>
-
+  <style>
     /* ------------------ */
 .light-style .select2-container--default .select2-selection--single .select2-selection__rendered {
     line-height: 4.60rem;
@@ -100,12 +100,12 @@
     transition: all 0.2s ease;
 }
 .menu-inner .menu-item .menu-link:hover {
-    background-color: rgba(47, 128, 237, 0.06) !important;
-    color: #2f80ed !important;
+    background-color: rgba(251, 140, 0, 0.06) !important;
+    color: #fb8c00 !important;
 }
 .menu-inner .menu-item.active > .menu-link {
-    background-color: rgba(47, 128, 237, 0.1) !important;
-    color: #2f80ed !important;
+    background-color: rgba(251, 140, 0, 0.1) !important;
+    color: #fb8c00 !important;
     font-weight: 600;
 }
 .menu-header {

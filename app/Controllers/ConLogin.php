@@ -147,8 +147,9 @@ class ConLogin extends BaseController
                 log_message('info', '[GoogleLogin] Email: ' . $email . ' | Google ID: ' . $google_id);
 
                 // ใช้ Database connect ใหม่ทุกครั้ง เพื่อหลีกเลี่ยงปัญหา query builder state
-                $db = \Config\Database::connect();
-                
+                $db = \Config\Database::connect('personnel');
+                $dbBudget = \Config\Database::connect(); // skjacth_budgetplan
+
                 // ตรวจสอบว่า email มีในระบบหรือไม่
                 $userRow = $db->table('tb_personnel')->where('pers_username', $email)->get()->getRowArray();
                 log_message('info', '[GoogleLogin] DB lookup result: ' . ($userRow ? 'FOUND (pers_id=' . $userRow['pers_id'] . ')' : 'NOT FOUND'));
@@ -160,8 +161,8 @@ class ConLogin extends BaseController
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    // ดึงข้อมูล roles
-                    $User2 = $db->table('tb_admin_rloes')
+                    // ดึงข้อมูล roles จาก skjacth_budgetplan.tb_admin_rloes
+                    $User2 = $dbBudget->table('tb_admin_rloes')
                         ->select('admin_rloes_status, GROUP_CONCAT(admin_rloes_nanetype) AS rloesAll')
                         ->where('admin_rloes_userid', $userRow['pers_id'])
                         ->get()

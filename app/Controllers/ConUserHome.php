@@ -20,7 +20,7 @@ class ConUserHome extends BaseController
     public function index()
     {
         $session = session();
-        $database = \Config\Database::connect();
+        $database = \Config\Database::connect('personnel');
         $builder = $database->table('tb_personnel');
 
         $data = $this->DataMain();

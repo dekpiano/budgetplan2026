@@ -29,14 +29,37 @@
                     </a>
                 </li>
 
+                <!-- ระบบควบคุมงบประมาณ -->
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">งบประมาณและแผน</span>
+                    <span class="menu-header-text">ระบบควบคุมงบประมาณ</span>
+                </li>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "Registry" && $uri->getSegment(3) == "Purchase" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/Registry/Purchase');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-cart-alt"></i>
+                        <div data-i18n="Layouts">ทะเบียนคุมใบสั่งซื้อ</div>
+                    </a>
+                </li>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "Registry" && $uri->getSegment(3) == "Hire" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/Registry/Hire');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+                        <div data-i18n="Layouts">ทะเบียนคุมใบสั่งจ้าง</div>
+                    </a>
+                </li>
+
+                <!-- งานจัดซื้อจัดจ้าง -->
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">งานพัสดุและจัดซื้อจัดจ้าง</span>
                 </li>
                 <li class="menu-item">
                     <a href="<?=base_url('User/Procurement/Process')?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-cart"></i>
                         <div data-i18n="Layouts">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
                     </a>
+                </li>
+
+                <!-- งานการเงินและบัญชี -->
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">งานการเงินและบัญชี</span>
                 </li>
                 <li class="menu-item">
                     <a href="<?=base_url('User/Procurement/MoneyReceipt')?>" class="menu-link">
@@ -46,7 +69,7 @@
                 </li>
             </ul>
 
-            <?php if(isset($_SESSION['id']) && $_SESSION['id'] == "pers_021") : ?>
+            <?php if(auth_is_admin()) : ?>
             <div>
                 <ul class="menu-inner py-1">
                     <li class="menu-item <?php echo $uri->getSegment(2) == "Rloes"?"active":""?>">

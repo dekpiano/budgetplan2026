@@ -43,16 +43,27 @@ $routes->get('/Logout', 'ConLogin::LogoutOfficerPersonnel');
 
 //จัดซื้อจัดจ้าง
 $routes->get('User/Procurement/Process', 'ConUserProcurement::ProcurementProcess');
+$routes->get('User/Registry/Purchase', 'ConUserProcurement::registry/purchase');
+$routes->get('User/Registry/Hire', 'ConUserProcurement::registry/hire');
+$routes->get('User/Registry/PrintOrder/(:num)', 'ConUserProcurement::printOrder/$1');
 
 //ใบสำคัญรับเงินตอบแทนค่าวิทยากร
 $routes->get('User/Procurement/MoneyReceipt', 'ConUserMoneyReceipt::MoneyReceiptForm');
 
 //Admin
 $routes->get('Admin/Home', 'ConAdminHome::index');
+$routes->get('Admin/Registry/Purchase', 'ConAdminHome::registry/purchase');
+$routes->get('Admin/Registry/Hire', 'ConAdminHome::registry/hire');
+$routes->post('Admin/Registry/SaveOrder', 'ConAdminHome::saveOrder');
+$routes->post('Admin/Registry/DeleteOrder/(:num)', 'ConAdminHome::deleteOrder/$1');
+$routes->get('Admin/Registry/PrintOrder/(:num)', 'ConAdminHome::printOrder/$1');
 $routes->get('Admin/LocationRoom/LocationRoomMain', 'ConAdminLocationRoom::LocationRoomMain');
 
 $routes->get('Admin/Rloes/Setting', 'ConAdminRoles::index');
 $routes->match(['GET', 'POST'],'Admin/Rloes/RloesSettingManager', 'ConAdminRoles::RloesSettingManager');
+$routes->post('Admin/Rloes/addRole', 'ConAdminRoles::addRole');
+$routes->post('Admin/Rloes/updateRole/(:num)', 'ConAdminRoles::updateRole/$1');
+$routes->post('Admin/Rloes/deleteRole/(:num)', 'ConAdminRoles::deleteRole/$1');
 
 //Admin Person
 $routes->get('Admin/WorkPerson/BudgetPlan', 'ConAdminWorkPerson::index');

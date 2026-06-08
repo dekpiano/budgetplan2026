@@ -27,8 +27,26 @@
                         <div data-i18n="Analytics">หน้าแรก</div>
                     </a>
                 </li>
+                <!-- ระบบควบคุมงบประมาณ -->
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">งบประมาณ</span>
+                    <span class="menu-header-text">ระบบควบคุมงบประมาณ (ดูข้อมูล)</span>
+                </li>
+                <li class="menu-item <?php echo $UrlMenuSub == "Purchase"?"active":""?>">
+                    <a href="<?=base_url('User/Registry/Purchase');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-cart-alt"></i>
+                        <div data-i18n="Analytics">ทะเบียนสั่งซื้อ</div>
+                    </a>
+                </li>
+                <li class="menu-item <?php echo $UrlMenuSub == "Hire"?"active":""?>">
+                    <a href="<?=base_url('User/Registry/Hire');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+                        <div data-i18n="Analytics">ทะเบียนสั่งจ้าง</div>
+                    </a>
+                </li>
+
+                <!-- งานพัสดุและจัดซื้อจัดจ้าง -->
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">งานพัสดุและจัดซื้อจัดจ้าง</span>
                 </li>
                 <li class="menu-item <?php echo $UrlMenuSub == "Process"?"active":""?>">
                     <a href="<?=base_url('User/Procurement/Process');?>" class="menu-link">
@@ -36,16 +54,21 @@
                         <div data-i18n="Analytics">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
                     </a>
                 </li>
+
+                <!-- งานการเงินและบัญชี -->
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">งานการเงินและบัญชี</span>
+                </li>
                 <li class="menu-item <?php echo $UrlMenuSub == "MoneyReceipt"?"active":""?>">
                     <a href="<?=base_url('User/Procurement/MoneyReceipt');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-file"></i>
-                        <div data-i18n="Analytics">ใบสำคัญรับเงินตอบแทนค่าวิทยากร</div>
+                        <div data-i18n="Analytics">ใบสำคัญรับเงินตอบแทน</div>
                     </a>
                 </li>
                 
             </ul>
             <div>
-                <?php if(isset($_SESSION['username']) && @$_SESSION['status'] == "AdminPersonnel" || @$_SESSION['status'] == 'ManagerPersonnel'): ?>
+                <?php if(auth_is_admin()) : ?>
                 <ul class="menu-inner py-1">
                     <li class="menu-item">
                         <!-- data-bs-toggle="modal" data-bs-target="#modalToggle" -->

@@ -29,7 +29,7 @@ class Database extends Config
         'hostname' => 'skj2025_db',
         'username' => 'root',
         'password' => 'rootpassword',
-        'database' => 'skjacth_personnel',
+        'database' => 'skjacth_budgetplan',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,

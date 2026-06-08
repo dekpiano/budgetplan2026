@@ -7,8 +7,8 @@
         <!-- Content -->
         <div class="container-xxl flex-grow-1 container-p-y">
 
-            <!-- Hero Welcome Card for Admin Budget -->
-            <div class="row mb-5">
+            <!-- Hero Welcome Card -->
+            <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border-0 position-relative overflow-hidden luxury-admin-hero-card">
                         <div class="hero-glow-1"></div>
@@ -29,14 +29,12 @@
                                 <div class="col-lg-4 text-center d-none d-lg-block">
                                     <div class="hero-graphic-container">
                                         <div class="graphic-circle"></div>
-                                        <!-- Budget Plan illustration -->
                                         <svg viewBox="0 0 200 150" class="img-fluid d-block mx-auto" style="max-height: 120px; filter: drop-shadow(0 10px 20px rgba(255,255,255,0.15));">
                                             <circle cx="100" cy="75" r="45" fill="rgba(255,255,255,0.2)" />
                                             <rect x="65" y="45" width="70" height="60" rx="8" fill="#ffffff" />
                                             <rect x="75" y="55" width="50" height="8" rx="2" fill="#FB8C00" />
                                             <rect x="75" y="70" width="35" height="6" rx="2" fill="#E2E8F0" />
                                             <rect x="75" y="82" width="45" height="6" rx="2" fill="#E2E8F0" />
-                                            <!-- Chart bars -->
                                             <rect x="145" y="75" width="10" height="30" rx="2" fill="#ffffff" opacity="0.8" />
                                             <rect x="160" y="60" width="10" height="45" rx="2" fill="#ffffff" />
                                             <rect x="130" y="90" width="10" height="15" rx="2" fill="#ffffff" opacity="0.5" />
@@ -49,151 +47,210 @@
                 </div>
             </div>
 
-            <!-- Budget Overview Stats -->
-            <div class="row mb-5">
-                <div class="col-12 mb-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h4 class="section-title mb-1">ภาพรวมงบประมาณประจำปี 2026</h4>
-                            <p class="text-muted fs-7 mb-0">สรุปข้อมูลสถานะงบประมาณ การใช้งาน และแผนงานโครงการในภาพรวม</p>
-                        </div>
-                        <div class="section-line"></div>
-                    </div>
-                </div>
-
-                <!-- Total Approved Budget -->
-                <div class="col-lg-4 col-md-6 mb-4">
+            <!-- Stats Overview Cards -->
+            <div class="row mb-4">
+                <!-- Card 1: Total Registered Budget -->
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="card luxury-stat-card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="stat-icon-container">
                                     <i class="bx bx-wallet-alt"></i>
                                 </div>
-                                <span class="badge bg-success-soft text-success px-3 py-1 rounded-pill fs-8">งบประมาณอนุมัติ</span>
+                                <span class="badge bg-success-soft text-success px-3 py-1 rounded-pill fs-8">ยอดจดทะเบียน</span>
                             </div>
-                            <span class="stat-card-title text-muted">งบประมาณจัดสรรทั้งหมด</span>
-                            <h2 class="stat-card-number mt-1 mb-2">5,450,000.00 <span class="currency">บาท</span></h2>
-                            <p class="stat-card-footer mb-0 text-success"><i class="bx bx-up-arrow-alt me-1"></i> โครงการประจำปีงบประมาณ 2569</p>
+                            <span class="stat-card-title text-muted">ยอดรวมทะเบียนคุมสั่งจ้าง/สั่งซื้อ</span>
+                            <h2 class="stat-card-number mt-1 mb-2"><?= number_format($total_amount, 2); ?> <span class="currency">บาท</span></h2>
+                            <p class="stat-card-footer mb-0 text-success"><i class="bx bx-receipt me-1"></i> รวมจากทั้งหมด <?= $total_orders; ?> รายการ</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Spent Budget -->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <!-- Card 2: Processed rate -->
+                <div class="col-lg-4 col-md-6 mb-3">
                     <div class="card luxury-stat-card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="stat-icon-container warning">
-                                    <i class="bx bx-credit-card-front"></i>
+                                    <i class="bx bx-check-square"></i>
                                 </div>
-                                <span class="badge bg-warning-soft text-warning px-3 py-1 rounded-pill fs-8">ใช้ไปแล้ว 38.9%</span>
+                                <span class="badge bg-warning-soft text-warning px-3 py-1 rounded-pill fs-8">
+                                    <?= $total_orders > 0 ? round(($total_sent / $total_orders) * 100, 1) : 0; ?>% สำเร็จ
+                                </span>
                             </div>
-                            <span class="stat-card-title text-muted">งบประมาณที่เบิกจ่ายแล้ว</span>
-                            <h2 class="stat-card-number mt-1 mb-2">2,120,500.00 <span class="currency">บาท</span></h2>
+                            <span class="stat-card-title text-muted">จำนวนรายการทำฎีกาแล้ว</span>
+                            <h2 class="stat-card-number mt-1 mb-2"><?= $total_sent; ?> <span class="currency">รายการ</span></h2>
                             <div class="progress mb-1" style="height: 6px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 38.9%;" aria-valuenow="38.9" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: <?= $total_orders > 0 ? ($total_sent / $total_orders) * 100 : 0; ?>%;"></div>
                             </div>
-                            <p class="stat-card-footer mb-0 text-muted">ผูกพันงบประมาณแล้วตามใบเสนอขออนุมัติ</p>
+                            <p class="stat-card-footer mb-0 text-muted">ส่งลงระบบและทำฎีกาเรียบร้อยแล้ว</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Remaining Budget -->
-                <div class="col-lg-4 col-md-12 mb-4">
+                <!-- Card 3: Pending Action -->
+                <div class="col-lg-4 col-md-12 mb-3">
                     <div class="card luxury-stat-card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="stat-icon-container info">
-                                    <i class="bx bx-badge-check"></i>
+                                    <i class="bx bx-time-five"></i>
                                 </div>
-                                <span class="badge bg-info-soft text-info px-3 py-1 rounded-pill fs-8">คงเหลือใช้งาน</span>
+                                <span class="badge bg-info-soft text-info px-3 py-1 rounded-pill fs-8">รอดำเนินการ</span>
                             </div>
-                            <span class="stat-card-title text-muted">งบประมาณคงเหลือจริง</span>
-                            <h2 class="stat-card-number mt-1 mb-2">3,329,500.00 <span class="currency">บาท</span></h2>
-                            <p class="stat-card-footer mb-0 text-info"><i class="bx bx-check-circle me-1"></i> พร้อมจัดสรรสำหรับโครงการส่วนที่เหลือ</p>
+                            <span class="stat-card-title text-muted">รายการอยู่ระหว่างรอดำเนินการ</span>
+                            <h2 class="stat-card-number mt-1 mb-2"><?= ($total_orders - $total_sent); ?> <span class="currency">รายการ</span></h2>
+                            <p class="stat-card-footer mb-0 text-info"><i class="bx bx-refresh me-1"></i> รอประสานงานทำฎีกาต่อ</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Access / Action Menu for Budget -->
-            <div class="row">
-                <div class="col-12 mb-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h4 class="section-title mb-1">เมนูการจัดการงบประมาณ</h4>
-                            <p class="text-muted fs-7 mb-0">เริ่มต้นเข้าทำงานเกี่ยวกับงานจัดซื้อ/จัดจ้าง และเอกสารตอบแทนวิทยากร</p>
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <!-- Utilisation Chart -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 20px;">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="mb-1" style="font-weight: 700; color: var(--luxury-dark);"><i class="bx bx-chart text-warning me-2"></i>วิเคราะห์งบประมาณรายเดือน</h5>
+                            <p class="text-muted fs-8 mb-0">แสดงมูลค่าการจดทะเบียนใบสั่งจ้าง/สั่งซื้อแยกตามเดือน ประจำปีงบประมาณนี้</p>
                         </div>
-                        <div class="section-line"></div>
+                        <div class="card-body px-4">
+                            <div id="utilizationChart" style="min-height: 280px;"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- จัดซื้อจัดจ้าง -->
-                <div class="col-md-6 mb-4">
-                    <a href="<?=base_url('User/Procurement/Process');?>" class="text-decoration-none">
-                        <div class="card luxury-admin-card h-100">
-                            <div class="card-body p-4 d-flex flex-column justify-content-between">
-                                <div class="row align-items-center">
-                                    <div class="col-8">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="luxury-icon-wrapper">
-                                                <i class="bx bx-cart"></i>
-                                            </div>
-                                            <span class="badge bg-orange-soft text-orange ms-3 px-3 py-2 rounded-pill fs-8">Procurement</span>
-                                        </div>
-                                        <h4 class="card-heading">ขั้นตอนจัดซื้อ / จัดจ้าง</h4>
-                                        <p class="card-desc mb-0">คู่มือขั้นตอนงานพัสดุ การตรวจสอบเอกสาร และกระบวนการอนุมัติใบเสนอราคา</p>
-                                    </div>
-                                    <div class="col-4 text-center">
-                                        <svg viewBox="0 0 200 150" class="img-fluid d-block mx-auto" style="max-height: 90px; width: 100%;">
-                                            <circle cx="100" cy="75" r="45" fill="#fff4e6" />
-                                            <rect x="60" y="60" width="80" height="50" rx="8" fill="#FB8C00" />
-                                            <rect x="75" y="45" width="50" height="15" rx="3" fill="#FFA534" />
-                                            <circle cx="150" cy="50" r="10" fill="#38d9a9" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="mt-4 pt-3 border-top border-light d-flex align-items-center justify-content-between">
-                                    <span class="action-text">เข้าสู่ขั้นตอนจัดซื้อ / จัดจ้าง <i class="bx bx-right-arrow-alt align-middle ms-1"></i></span>
-                                    <span class="text-muted fs-8">24 รายการล่าสุด</span>
-                                </div>
+                <!-- Circular Gauge -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 20px;">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="mb-1" style="font-weight: 700; color: var(--luxury-dark);"><i class="bx bx-pie-chart-alt-2 text-warning me-2"></i>สัดส่วนฎีกาสำเร็จ</h5>
+                            <p class="text-muted fs-8 mb-0">อัตราการทำฎีกาเมื่อเทียบกับใบสั่งจ้างทั้งหมด</p>
+                        </div>
+                        <div class="card-body px-4 d-flex flex-column align-items-center justify-content-center">
+                            <div id="sentStatusChart"></div>
+                            <div class="text-center mt-3">
+                                <span class="badge bg-success-soft text-success px-3 py-1 rounded-pill fw-semibold">
+                                    ตรวจรับแล้ว: <?= $total_sent; ?> จาก <?= $total_orders; ?>
+                                </span>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Quick Navigation -->
+            <div class="row mb-5">
+                <!-- Recent orders summary -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 20px;">
+                        <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="mb-1" style="font-weight: 700; color: var(--luxury-dark);"><i class="bx bx-time me-2 text-warning"></i>รายการทะเบียนคุมล่าสุด</h5>
+                                <p class="text-muted fs-8 mb-0">แสดง 5 รายการที่ลงทะเบียนเข้าสู่ระบบล่าสุด</p>
+                            </div>
+                            <a href="<?= base_url('Admin/Registry'); ?>" class="btn btn-sm btn-outline-warning rounded-pill px-3">ดูทั้งหมด</a>
+                        </div>
+                        <div class="card-body px-4 pb-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr class="table-light text-secondary fs-8">
+                                            <th class="text-center">เลขที่</th>
+                                            <th class="text-center">วันที่</th>
+                                            <th>รายการ</th>
+                                            <th class="text-end">จำนวนเงิน</th>
+                                            <th>ผู้รับจ้าง</th>
+                                            <th class="text-center">สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fs-8">
+                                        <?php if (!empty($recent_orders)): ?>
+                                            <?php foreach ($recent_orders as $order): ?>
+                                                <tr>
+                                                    <td class="text-center fw-bold text-dark"><?= esc($order->order_number); ?></td>
+                                                    <td class="text-center">
+                                                        <?php 
+                                                            $d = date_create($order->order_date);
+                                                            echo date_format($d, "d/m/") . (intval(date_format($d, "Y")) + 543);
+                                                        ?>
+                                                    </td>
+                                                    <td class="text-truncate" style="max-width: 180px;"><?= esc($order->description); ?></td>
+                                                    <td class="text-end fw-bold text-orange"><?= number_format($order->amount, 2); ?></td>
+                                                    <td><?= esc($order->contractor); ?></td>
+                                                    <td class="text-center">
+                                                        <?php if ($order->system_sent_status == 'ส่งลงระบบ/ทำฎีกาแล้ว'): ?>
+                                                            <span class="badge bg-success-soft text-success px-2 py-1 rounded-pill">ทำฎีกาแล้ว</span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-secondary-soft text-secondary px-2 py-1 rounded-pill">รอส่ง</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted py-4">ไม่มีข้อมูลทะเบียนคุมบันทึกในระบบขณะนี้</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- ใบสำคัญรับเงินตอบแทน -->
-                <div class="col-md-6 mb-4">
-                    <a href="<?=base_url('User/Procurement/MoneyReceipt');?>" class="text-decoration-none">
-                        <div class="card luxury-admin-card h-100">
-                            <div class="card-body p-4 d-flex flex-column justify-content-between">
-                                <div class="row align-items-center">
-                                    <div class="col-8">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="luxury-icon-wrapper theme-alt">
-                                                <i class="bx bx-file"></i>
-                                            </div>
-                                            <span class="badge bg-orange-soft text-orange ms-3 px-3 py-2 rounded-pill fs-8">Money Receipt</span>
+                <!-- Quick Actions / Quick Menu -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 20px;">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+                            <h5 class="mb-1" style="font-weight: 700; color: var(--luxury-dark);"><i class="bx bx-rocket text-warning me-2"></i>เมนูจัดการระบบ</h5>
+                            <p class="text-muted fs-8 mb-0">เข้าทำงานและจัดการข้อมูลส่วนต่าง ๆ อย่างรวดเร็ว</p>
+                        </div>
+                        <div class="card-body px-4 pb-4">
+                            <div class="d-flex flex-column gap-3">
+                                <!-- Action 1 -->
+                                <a href="<?= base_url('Admin/Registry'); ?>" class="text-decoration-none d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light-hover transition-all">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar bg-warning-soft text-warning rounded p-2">
+                                            <i class="bx bx-spreadsheet fs-4"></i>
                                         </div>
-                                        <h4 class="card-heading">ใบสำคัญรับเงินตอบแทนวิทยากร</h4>
-                                        <p class="card-desc mb-0">ระบบออกเอกสารสำคัญรับเงินสำหรับวิทยากรแบบอัตโนมัติ ถูกต้อง โปร่งใส ตามหลักงบประมาณ</p>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark fs-8">ทะเบียนคุมใบสั่งจ้าง/สั่งซื้อ</h6>
+                                            <span class="text-muted fs-9">บันทึก อัปโหลดรูป ลบข้อมูลคุมสั่งจ้าง</span>
+                                        </div>
                                     </div>
-                                    <div class="col-4 text-center">
-                                        <svg viewBox="0 0 200 150" class="img-fluid d-block mx-auto" style="max-height: 90px; width: 100%;">
-                                            <circle cx="100" cy="75" r="45" fill="#fff4e6" />
-                                            <path d="M70 40 L115 40 L130 55 L130 110 L70 110 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
-                                            <circle cx="130" cy="95" r="14" fill="#FB8C00" />
-                                            <text x="125" y="100" fill="#ffffff" font-family="Plus Jakarta Sans" font-weight="bold" font-size="12">฿</text>
-                                        </svg>
+                                    <i class="bx bx-chevron-right text-muted"></i>
+                                </a>
+                                <!-- Action 2 -->
+                                <a href="<?= base_url('User/Procurement/Process'); ?>" class="text-decoration-none d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light-hover transition-all">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar bg-orange-soft text-orange rounded p-2">
+                                            <i class="bx bx-cart fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark fs-8">ขั้นตอนการจัดซื้อ/จัดจ้าง</h6>
+                                            <span class="text-muted fs-9">ดูแผนผังงานพัสดุและกระบวนการอนุมัติ</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="mt-4 pt-3 border-top border-light d-flex align-items-center justify-content-between">
-                                    <span class="action-text">จัดการใบสำคัญรับเงิน <i class="bx bx-right-arrow-alt align-middle ms-1"></i></span>
-                                    <span class="text-muted fs-8">ตรวจสอบความถูกต้อง</span>
-                                </div>
+                                    <i class="bx bx-chevron-right text-muted"></i>
+                                </a>
+                                <!-- Action 3 -->
+                                <a href="<?= base_url('User/Procurement/MoneyReceipt'); ?>" class="text-decoration-none d-flex align-items-center justify-content-between p-3 border rounded-3 bg-light-hover transition-all">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar bg-info-soft text-info rounded p-2">
+                                            <i class="bx bx-file fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark fs-8">ใบสำคัญรับเงินตอบแทน</h6>
+                                            <span class="text-muted fs-9">ออกใบสำคัญรับเงินสำหรับวิทยากร</span>
+                                        </div>
+                                    </div>
+                                    <i class="bx bx-chevron-right text-muted"></i>
+                                </a>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
 
@@ -311,20 +368,6 @@
         to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    /* Section Styling */
-    .section-title {
-        font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
-        font-weight: 700;
-        color: var(--luxury-dark);
-        font-size: 1.35rem;
-    }
-    .section-line {
-        flex-grow: 1;
-        height: 1px;
-        background: linear-gradient(90deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%);
-        margin-left: 20px;
-    }
-
     /* Stat Card Styling */
     .luxury-stat-card {
         background: #ffffff;
@@ -383,62 +426,145 @@
     .bg-warning-soft { background-color: #fff9db !important; }
     .bg-info-soft { background-color: #e7f5ff !important; }
 
-    /* Luxury Admin Cards */
-    .luxury-action-card, .luxury-admin-card {
-        background: #ffffff;
-        border: 1px solid rgba(0,0,0,0.03) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 4px 25px rgba(0,0,0,0.02) !important;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    .bg-light-hover:hover {
+        background-color: rgba(251, 140, 0, 0.05) !important;
+        border-color: rgba(251, 140, 0, 0.2) !important;
     }
-    .luxury-admin-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 45px rgba(251, 140, 0, 0.07) !important;
-        border-color: rgba(251, 140, 0, 0.15) !important;
-    }
-
-    .luxury-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        background: #fff4e6;
-        color: var(--primary-orange);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        transition: all 0.3s ease;
-    }
-    .luxury-admin-card:hover .luxury-icon-wrapper {
-        background: var(--primary-orange);
-        color: #ffffff;
-        transform: scale(1.05);
-    }
-    .luxury-icon-wrapper.theme-alt {
-        background: #fff4e6;
-        color: var(--primary-orange);
-    }
-
-    .card-heading {
-        font-family: 'Sarabun', sans-serif;
-        font-weight: 600;
-        color: var(--luxury-dark);
-        font-size: 1.15rem;
-        margin-bottom: 8px;
-    }
-    .card-desc {
-        font-family: 'Sarabun', sans-serif;
-        font-size: 0.88rem;
-        color: #718096;
-        line-height: 1.5;
-    }
-    .action-text {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--luxury-dark);
-        transition: all 0.3s ease;
-    }
-    .luxury-admin-card:hover .action-text {
-        color: var(--primary-orange);
+    .transition-all {
+        transition: all 0.2s ease-in-out;
     }
 </style>
+
+<!-- ApexCharts scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Line/Area utilization chart
+        const utilizationOptions = {
+            series: [{
+                name: 'ยอดทะเบียนงบรวม (บาท)',
+                data: <?= json_encode($monthly_totals); ?>
+            }],
+            chart: {
+                type: 'area',
+                height: 280,
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                }
+            },
+            colors: ['#FB8C00'],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [0, 90, 100]
+                }
+            },
+            xaxis: {
+                categories: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                labels: {
+                    style: {
+                        colors: '#718096',
+                        fontSize: '11px',
+                        fontFamily: 'Sarabun'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        return (val / 1000).toFixed(0) + 'k';
+                    },
+                    style: {
+                        colors: '#718096',
+                        fontSize: '11px',
+                        fontFamily: 'Sarabun'
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toLocaleString('th-TH') + ' บาท';
+                    }
+                }
+            }
+        };
+
+        const utilizationChart = new ApexCharts(document.querySelector("#utilizationChart"), utilizationOptions);
+        utilizationChart.render();
+
+        // Circular Gauge
+        const percentageSent = <?= $total_orders > 0 ? round(($total_sent / $total_orders) * 100, 0) : 0; ?>;
+        const sentOptions = {
+            series: [percentageSent],
+            chart: {
+                type: 'radialBar',
+                height: 250,
+                sparkline: {
+                    enabled: true
+                }
+            },
+            plotOptions: {
+                radialBar: {
+                    startAngle: -90,
+                    endAngle: 90,
+                    track: {
+                        background: "#f3f3f3",
+                        strokeWidth: '97%',
+                        margin: 5, // margin is in pixels
+                        dropShadow: {
+                            enabled: false
+                        }
+                    },
+                    dataLabels: {
+                        name: {
+                            show: false
+                        },
+                        value: {
+                            offsetY: -2,
+                            fontSize: '22px',
+                            fontWeight: 'bold',
+                            fontFamily: 'Plus Jakarta Sans',
+                            formatter: function (val) {
+                                return val + "%";
+                            }
+                        }
+                    }
+                }
+            },
+            grid: {
+                padding: {
+                    top: -10
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'light',
+                    shadeIntensity: 0.4,
+                    inverseColors: false,
+                    opacityFrom: 1,
+                    opacityTo: 1,
+                    stops: [0, 50, 53, 91]
+                },
+            },
+            labels: ['ทำฎีกาสำเร็จ'],
+            colors: ['#FB8C00']
+        };
+
+        const sentStatusChart = new ApexCharts(document.querySelector("#sentStatusChart"), sentOptions);
+        sentStatusChart.render();
+    });
+</script>

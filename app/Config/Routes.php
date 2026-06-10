@@ -46,6 +46,11 @@ $routes->get('User/Procurement/Process', 'ConUserProcurement::ProcurementProcess
 $routes->get('User/Registry/Purchase', 'ConUserProcurement::registry/purchase');
 $routes->get('User/Registry/Hire', 'ConUserProcurement::registry/hire');
 $routes->get('User/Registry/PrintOrder/(:num)', 'ConUserProcurement::printOrder/$1');
+$routes->post('User/Registry/UploadImage/(:num)', 'ConUserProcurement::uploadImage/$1');
+$routes->post('User/Registry/ReplaceImages/(:num)', 'ConUserProcurement::replaceImages/$1');
+
+// Inspector (ผู้ตรวจรับ) Login — แยกจาก admin login
+$routes->get('Inspector/Login', 'ConLogin::inspectorLoginUrl');
 
 //ใบสำคัญรับเงินตอบแทนค่าวิทยากร
 $routes->get('User/Procurement/MoneyReceipt', 'ConUserMoneyReceipt::MoneyReceiptForm');

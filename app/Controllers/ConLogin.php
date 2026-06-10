@@ -174,25 +174,45 @@ class ConLogin extends BaseController
                         ? $User2['admin_rloes_status'] 
                         : "Member";
 
+                    // อ่าน login_type และ return_to จาก state parameter (Google OAuth ส่งกลับมา)
+                    // ถ้าไม่มี state ให้ fallback เป็น session หรือค่า default
+                    $stateParam = $this->request->getVar('state');
+                    $stateData = [];
+                    if ($stateParam) {
+                        $decoded = base64_decode($stateParam);
+                        $stateData = json_decode($decoded, true) ?: [];
+                    }
+                    $loginType = $stateData['login_type'] ?? $session->get('login_type') ?: 'admin';
+                    $returnUrl = $stateData['return_to'] ?? $session->get('Return');
+
                     $newdata = [
-                        'username'  => $userRow['pers_prefix'].$userRow['pers_firstname'].' '.$userRow['pers_lastname'],
-                        'id'        => $userRow['pers_id'],
-                        'logged_in' => true,
-                        'rloes'     => $User2['rloesAll'] ?? '',
-                        'status'    => $status
+                        'username'   => $userRow['pers_prefix'].$userRow['pers_firstname'].' '.$userRow['pers_lastname'],
+                        'id'         => $userRow['pers_id'],
+                        'logged_in'  => true,
+                        'rloes'      => $User2['rloesAll'] ?? '',
+                        'status'     => $status,
+                        'login_type' => $loginType,
                     ];
                     $session->set($newdata);
-                    log_message('info', '[GoogleLogin] Session set: ' . json_encode($newdata));
-                    
-                    if (in_array($status, ['admin', 'manager', 'superadmin'])) {
+                    log_message('info', '[GoogleLogin] Session set: ' . json_encode($newdata) . ' | login_type=' . $loginType . ' | return_to=' . ($returnUrl ?: 'NONE'));
+
+                    // ถ้า login จาก admin login page และเป็น admin/manager/superadmin → ไป Admin/Home
+                    if ($loginType === 'admin' && in_array($status, ['admin', 'manager', 'superadmin'])) {
                         log_message('info', '[GoogleLogin] Redirecting to Admin/Home');
                         return redirect()->to(base_url('Admin/Home'));
                     }
 
-                    // ถ้าไม่ใช่ admin/manager ให้ redirect ตาม Return หรือ หน้าหลัก
-                    $returnUrl = $session->get('Return');
+                    // ถ้า login จาก inspector login → เซ็ต flag เปิด modal อัปโหลดอัตโนมัติ
+                    if ($loginType === 'inspector') {
+                        $session->set('auto_open_upload', true);
+                    }
+
+                    // ถ้า login จาก inspector login หรือไม่ใช่ admin → redirect ตาม return_to หรือ หน้าหลัก
                     if ($returnUrl) {
-                        return redirect()->to("https://".$returnUrl);
+                        if (filter_var($returnUrl, FILTER_VALIDATE_URL)) {
+                            return redirect()->to($returnUrl);
+                        }
+                        return redirect()->to(base_url($returnUrl));
                     }
                     return redirect()->to(base_url());
 
@@ -218,5 +238,36 @@ class ConLogin extends BaseController
         $session = session();
         $session->destroy();
         return redirect()->to(base_url());
+    }
+
+    /**
+     * สร้าง Google OAuth URL สำหรับ inspector (ผู้ตรวจรับ) login
+     * ใช้แยกจาก admin login เพราะต้อง redirect กลับมาหน้าเดิม
+     */
+    public function inspectorLoginUrl()
+    {
+        $config = config('Google');
+        $returnTo = $this->request->getGet('return_to') ?: base_url('User/Registry/Purchase');
+
+        // เก็บ return URL และ login_type ใน state parameter (Google OAuth จะส่งกลับมา)
+        // ไม่พึ่ง session เพราะอาจหายตอน Google redirect
+        $stateData = [
+            'return_to'  => $returnTo,
+            'login_type' => 'inspector',
+        ];
+
+        $params = [
+            'client_id'     => $config->clientId,
+            'redirect_uri'  => base_url('Auth/googleLogin'),
+            'response_type' => 'code',
+            'scope'         => 'email profile openid',
+            'access_type'   => 'online',
+            'prompt'        => 'select_account',
+            'state'         => base64_encode(json_encode($stateData)),
+        ];
+
+        $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($params);
+
+        return redirect()->to($authUrl);
     }
 }

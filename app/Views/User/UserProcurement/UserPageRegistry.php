@@ -36,6 +36,12 @@
                                 <p class="text-muted fs-8 mb-0">ค้นหาและดูข้อมูลรายการใบสั่งจ้างและสั่งซื้อทั้งหมด</p>
                             </div>
                             <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <button type="button" class="btn btn-outline-primary btn-md rounded-pill shadow-sm" id="btnUserGuide" data-bs-toggle="modal" data-bs-target="#userGuideModal">
+                                    <i class="bx bx-book-reader me-1"></i> คู่มือการใช้งาน
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-md rounded-pill shadow-sm" id="btnStartTour">
+                                    <i class="bx bx-compass me-1"></i> แนะนำการใช้งาน (Tour)
+                                </button>
                                 <button type="button" class="btn btn-outline-success btn-md rounded-pill shadow-sm" id="btnExportExcel">
                                     <i class="bx bxs-file-export me-1"></i> ดาวน์โหลด Excel
                                 </button>
@@ -230,6 +236,114 @@
             </div>
         </div>
 
+        <!-- User Guide Modal -->
+        <div class="modal fade" id="userGuideModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow" style="border-radius: 20px; overflow: hidden;">
+                    <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="bx bx-book-reader text-warning" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold mb-0" style="font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;">คู่มือการใช้งานระบบทะเบียนคุม</h5>
+                                <small class="text-muted">คำแนะนำการใช้งานและขั้นตอนการทำงาน</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 py-3">
+                        <!-- Navigation Tabs -->
+                        <ul class="nav nav-tabs nav-fill border-bottom mb-3" id="guideTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold text-secondary" id="general-tab" data-bs-toggle="tab" data-bs-target="#general-content" type="button" role="tab" aria-controls="general-content" aria-selected="true">
+                                    <i class="bx bx-group me-1"></i> บุคคลทั่วไป / ผู้ดูข้อมูล
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold text-secondary" id="inspector-tab" data-bs-toggle="tab" data-bs-target="#inspector-content" type="button" role="tab" aria-controls="inspector-content" aria-selected="false">
+                                    <i class="bx bx-badge-check me-1"></i> ผู้ตรวจรับพัสดุ (Inspector)
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tab Contents -->
+                        <div class="tab-content border-0 p-0" id="guideTabContent">
+                            <!-- General User Content -->
+                            <div class="tab-pane fade show active" id="general-content" role="tabpanel" aria-labelledby="general-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border border-light shadow-none p-3" style="border-radius: 12px; background: #faf9f6;">
+                                            <div class="text-warning mb-2"><i class="bx bx-search-alt" style="font-size: 2rem;"></i></div>
+                                            <h6 class="fw-bold mb-1">1. ค้นหาข้อมูลรวดเร็ว</h6>
+                                            <p class="text-muted fs-8 mb-0">ใช้ช่องค้นหาขวาบนของตาราง เพื่อค้นหาตามเลขที่สั่งซื้อ, รายการ, ผู้ลงนาม, ผู้ตรวจรับ หรือวันที่ ได้ทันที</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border border-light shadow-none p-3" style="border-radius: 12px; background: #faf9f6;">
+                                            <div class="text-success mb-2"><i class="bx bxs-file-export" style="font-size: 2rem;"></i></div>
+                                            <h6 class="fw-bold mb-1">2. ดาวน์โหลด Excel</h6>
+                                            <p class="text-muted fs-8 mb-0">คลิกปุ่ม "ดาวน์โหลด Excel" เพื่อนำข้อมูลทะเบียนคุมทั้งหมดส่งออกเป็นไฟล์สเปรดชีตอย่างง่ายดาย</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border border-light shadow-none p-3" style="border-radius: 12px; background: #faf9f6;">
+                                            <div class="text-info mb-2"><i class="bx bx-images" style="font-size: 2rem;"></i></div>
+                                            <h6 class="fw-bold mb-1">3. ดูภาพตรวจรับ</h6>
+                                            <p class="text-muted fs-8 mb-0">หากมีรูปภาพในรายการ คลิกปุ่มภาพสีเหลือง <i class="bx bx-image-alt text-warning"></i> เพื่อเปิดดูสไลด์แกลเลอรีภาพถ่ายตรวจรับ</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Inspector Content -->
+                            <div class="tab-pane fade" id="inspector-content" role="tabpanel" aria-labelledby="inspector-tab">
+                                <div class="timeline-steps">
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="badge bg-warning text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: bold;">1</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0">เข้าสู่ระบบด้วย Google</h6>
+                                            <p class="text-muted fs-8 mb-0">หากยังไม่ได้เข้าระบบ ให้คลิกปุ่ม <span class="badge bg-outline-primary text-primary border border-primary px-2"><i class="bx bx-log-in me-1"></i>Login</span> ในช่องคำสั่งแถวที่ตนเองเป็นผู้ตรวจรับ</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="badge bg-warning text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: bold;">2</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0">คลิกอัปโหลดรูปภาพ (กล้องสีเขียว)</h6>
+                                            <p class="text-muted fs-8 mb-0">คลิกปุ่มไอคอนกล้อง <i class="bx bx-camera text-success"></i> ในช่องรูปภาพของแถวรายการที่เป็นของคุณ</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="badge bg-warning text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: bold;">3</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0">เลือกและอัปโหลดรูปภาพ</h6>
+                                            <p class="text-muted fs-8 mb-1">ลากไฟล์รูปภาพมาวางหรือคลิกเลือกรูปภาพ (รองรับหลายรูป) ระบบจะย่อขนาดให้อัตโนมัติเพื่อความรวดเร็วในการโหลด</p>
+                                            <div class="alert alert-warning py-2 px-3 fs-9 mb-0" role="alert" style="border-radius: 8px;">
+                                                <i class="bx bx-error-circle me-1"></i> <strong>ข้อควรระวัง:</strong> การอัปโหลดใหม่จะเป็นการเขียนทับรูปภาพเดิมทั้งหมด ดังนั้นต้องเลือกรูปภาพที่จะอัปโหลดใหม่ให้ครบถ้วนในครั้งเดียว
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="badge bg-warning text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: bold;">4</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0">พิมพ์รายงานใบสั่งซื้อ/สั่งจ้าง</h6>
+                                            <p class="text-muted fs-8 mb-0">หลังจากเข้าระบบแล้ว คลิกปุ่มเครื่องพิมพ์ <i class="bx bx-printer text-info"></i> ในช่องคำสั่งเพื่อดูและพิมพ์รายงานทันที</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 justify-content-center">
+                        <button type="button" class="btn btn-warning rounded-pill px-4 text-white" id="btnStartTourFromGuide" data-bs-dismiss="modal">
+                            <i class="bx bx-compass me-1"></i> เริ่มทัวร์แนะนำหน้าจอจริง
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดคู่มือ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="content-backdrop fade"></div>
     </div>
     <!-- Content wrapper -->
@@ -326,10 +440,47 @@
     .container-xxl > .row.mb-4 p { font-size: 0.75rem; }
     .card-body { padding: 0.75rem !important; }
     .card-header { padding: 0.75rem !important; }
+
+    /* Custom CSS for guide modal tabs */
+    #guideTabs .nav-link {
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
+        transition: all 0.25s ease;
+        color: #6c757d;
+    }
+    #guideTabs .nav-link.active {
+        color: var(--primary-orange) !important;
+        border-bottom: 2px solid var(--primary-orange) !important;
+        background: transparent !important;
+    }
+    #guideTabs .nav-link:hover {
+        color: var(--primary-orange) !important;
+    }
+    
+    /* Intro.js Orange customization */
+    .introjs-donebutton {
+        background: var(--primary-orange) !important;
+        text-shadow: none !important;
+        border: none !important;
+    }
+    .introjs-nextbutton {
+        background: var(--primary-orange) !important;
+        text-shadow: none !important;
+        border: none !important;
+    }
+    .introjs-bullets ul li a.active {
+        background: var(--primary-orange) !important;
+    }
 </style>
+
+<!-- Intro.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/introjs.min.css">
 
 <!-- DataTables Buttons CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+
+<!-- Intro.js JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/intro.min.js"></script>
 
 <!-- Add necessary scripts for this page -->
 <script>
@@ -706,4 +857,86 @@
         const modal = new bootstrap.Modal(document.getElementById("galleryModal"));
         modal.show();
     }
+
+    // ===== Interactive Tour (Intro.js) =====
+    function startInteractiveTour() {
+        const tour = introJs();
+        
+        tour.setOptions({
+            nextLabel: 'ถัดไป &rarr;',
+            prevLabel: '&larr; ย้อนกลับ',
+            skipLabel: 'ข้าม',
+            doneLabel: 'เสร็จสิ้น',
+            hidePrev: true,
+            steps: [
+                {
+                    title: 'ยินดีต้อนรับ 👋',
+                    intro: 'ยินดีต้อนรับสู่หน้าระเบียบทะเบียนคุมใบสั่งซื้อ / สั่งจ้าง! มาแนะนำการใช้งานหน้าจอนี้กันครับ'
+                },
+                {
+                    element: '#btnUserGuide',
+                    title: 'คู่มือสรุปขั้นตอน 📖',
+                    intro: 'หากต้องการอ่านขั้นตอนการทำอย่างละเอียด (เช่น การอัปโหลดรูปภาพสำหรับผู้ตรวจรับ) สามารถคลิกอ่านคู่มือสรุปได้จากปุ่มนี้ครับ',
+                    position: 'bottom'
+                },
+                {
+                    element: '#btnStartTour',
+                    title: 'แนะนำการใช้งาน (Tour) 🧭',
+                    intro: 'คุณสามารถคลิกปุ่มนี้เมื่อใดก็ได้ เพื่อเล่นทัวร์แนะนำหน้าจอนี้อีกครั้งครับ',
+                    position: 'bottom'
+                },
+                {
+                    element: '#btnExportExcel',
+                    title: 'ดาวน์โหลดข้อมูล Excel 📊',
+                    intro: 'คุณสามารถดาวน์โหลดข้อมูลทะเบียนคุมทั้งหมดในตารางออกเป็นไฟล์ Excel เพื่อนำไปใช้งานต่อได้จากปุ่มนี้ครับ',
+                    position: 'bottom'
+                },
+                {
+                    element: '#orderTable_filter input',
+                    title: 'ค้นหาข้อมูลด่วน 🔍',
+                    intro: 'พิมพ์ค้นหาข้อมูลทุกอย่างในตารางได้จากตรงนี้ทันที เช่น เลขที่ใบสั่งซื้อ ชื่อรายการ หรือชื่อผู้ตรวจรับ',
+                    position: 'bottom'
+                },
+                {
+                    element: '#orderTable th:nth-child(10)',
+                    title: 'สถานะการตรวจรับ 👥',
+                    intro: 'คอลัมน์นี้จะแสดงสถานะการตรวจรับพัสดุและชื่อผู้ตรวจรับพัสดุของแต่ละรายการ',
+                    position: 'top'
+                },
+                {
+                    element: '#orderTable th:nth-child(12)',
+                    title: 'รูปภาพและปุ่มอัปโหลด 📸',
+                    intro: 'หากมีรูปภาพแล้วคุณสามารถคลิกเพื่อดูแกลเลอรีภาพถ่ายได้ที่นี่ และหากคุณเข้าระบบในฐานะผู้ตรวจรับพัสดุของแถวนั้นแล้ว จะมีปุ่มรูปกล้องถ่ายรูปปรากฏขึ้นเพื่อให้คุณกดอัปโหลดภาพถ่ายครับ',
+                    position: 'top'
+                },
+                {
+                    element: '#orderTable th:nth-child(13)',
+                    title: 'เมนูคำสั่ง ⚙️',
+                    intro: 'ผู้ตรวจรับพัสดุสามารถใช้ปุ่มในช่องนี้เพื่อเข้าสู่ระบบ (Login) หรือพิมพ์รายงานใบสั่งซื้อได้หลังจากเข้าสู่ระบบแล้ว',
+                    position: 'left'
+                }
+            ]
+        });
+
+        tour.start();
+    }
+
+    // Bind event listeners
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnStartTour = document.getElementById('btnStartTour');
+        if (btnStartTour) {
+            btnStartTour.addEventListener('click', function() {
+                startInteractiveTour();
+            });
+        }
+
+        const btnStartTourFromGuide = document.getElementById('btnStartTourFromGuide');
+        if (btnStartTourFromGuide) {
+            btnStartTourFromGuide.addEventListener('click', function() {
+                setTimeout(function() {
+                    startInteractiveTour();
+                }, 350); // wait for bootstrap modal to hide fully
+            });
+        }
+    });
 </script>

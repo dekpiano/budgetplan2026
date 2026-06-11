@@ -22,6 +22,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'adminauth'     => \App\Filters\AdminAuthFilter::class,
+        'htmlminify'    => \App\Filters\HtmlMinifyFilter::class,
     ];
 
     /**
@@ -36,6 +37,7 @@ class Filters extends BaseConfig
         ],
         'after' => [
             'toolbar',
+            'htmlminify',
             // 'honeypot',
             // 'secureheaders',
         ],

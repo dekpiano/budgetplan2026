@@ -21,7 +21,6 @@
     </footer>
     <!-- / Footer -->
 
-
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
     <!-- <script src="<?=base_url()?>/assets/vendor/libs/jquery/jquery.js"></script> -->
@@ -63,6 +62,17 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- Global Preloader Logic -->
+    <script>
+        window.addEventListener('load', function() {
+            document.body.classList.add('page-loaded');
+            setTimeout(() => {
+                const preloader = document.getElementById('skj-preloader');
+                if (preloader) preloader.remove();
+            }, 600); // Wait for CSS transition to finish
+        });
+    </script>
     </body>
 
     </html>

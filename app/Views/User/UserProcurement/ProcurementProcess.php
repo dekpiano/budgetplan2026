@@ -4,7 +4,7 @@
 
     <div class="content-wrapper">
         <div class="container-xxl flex-grow-1 container-p-y demo ">
-            <div class="row justify-content-center">
+            <div class="row justify-content-center animate-fade-in-up">
                 <div class="col-lg-8 col-md-12 col-12 mb-4">
                     <div class="card">
                            <img src="<?=base_url();?>uploads/Procurement/S__51494958.jpg"

@@ -29,6 +29,18 @@ class ConUserHome extends BaseController
         $data['UrlMenuMain'] = 'Main';
         $data['UrlMenuSub'] = '';
 
+        $planDir = ROOTPATH . 'uploads/plan';
+        $planFiles = [];
+        if (is_dir($planDir)) {
+            $files = scandir($planDir);
+            foreach ($files as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    $planFiles[] = $file;
+                }
+            }
+        }
+        $data['plan_files'] = $planFiles;
+
         //$data['DictationAll'] = $builder->countAll();
        
        

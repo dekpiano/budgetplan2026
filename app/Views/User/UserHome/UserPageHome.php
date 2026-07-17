@@ -7,7 +7,7 @@
 
             
             <!-- Hero / Welcome Banner (Luxury Minimalist) -->
-            <div class="row mb-5">
+            <div class="row mb-5 animate-fade-in-up">
                 <div class="col-12">
                     <div class="card border-0 position-relative overflow-hidden luxury-hero-card">
                         <!-- Background glow effect -->
@@ -56,7 +56,7 @@
                 </div>
                 
                 <!-- จัดซื้อจัดจ้าง -->
-                <div class="col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4 animate-fade-in-up" style="animation-delay: 0.1s;">
                     <a href="<?=base_url('User/Procurement/Process');?>" class="text-decoration-none">
                         <div class="card luxury-action-card h-100">
                             <div class="card-body p-4 d-flex flex-column justify-content-between">
@@ -96,7 +96,7 @@
                 </div>
 
                 <!-- ใบสำคัญรับเงิน -->
-                <div class="col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4 animate-fade-in-up" style="animation-delay: 0.2s;">
                     <a href="<?=base_url('User/Procurement/MoneyReceipt');?>" class="text-decoration-none">
                         <div class="card luxury-action-card h-100">
                             <div class="card-body p-4 d-flex flex-column justify-content-between">
@@ -136,16 +136,53 @@
                         </div>
                     </a>
                 </div>
+
+                <!-- แผนดำเนินงานและแผนปฏิบัติการ -->
+                <div class="col-lg-4 col-md-12 mb-4 animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <a href="<?=base_url('User/Plan');?>" class="text-decoration-none">
+                        <div class="card luxury-action-card h-100">
+                            <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <div class="d-flex justify-content-between align-items-start mb-4">
+                                            <div class="luxury-icon-wrapper theme-alt" style="background: #fff4e6; color: #FB8C00;">
+                                                <i class="bx bx-bar-chart-alt-2"></i>
+                                            </div>
+                                        </div>
+                                        <h4 class="card-heading">แผนดำเนินงานและแผนปฏิบัติการ</h4>
+                                        <p class="card-desc mb-0">เอกสารรายละเอียดแผนดำเนินงานและแผนปฏิบัติการประจำปี</p>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <!-- Document Plan Illustration -->
+                                        <svg viewBox="0 0 200 150" class="img-fluid d-block mx-auto" style="max-height: 100px; width: 100%; filter: drop-shadow(0 8px 16px rgba(251, 140, 0, 0.1));">
+                                            <circle cx="100" cy="75" r="50" fill="#fff4e6" />
+                                            <rect x="70" y="30" width="60" height="90" rx="5" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+                                            <line x1="85" y1="50" x2="115" y2="50" stroke="#FB8C00" stroke-width="3" stroke-linecap="round" />
+                                            <line x1="85" y1="70" x2="115" y2="70" stroke="#718096" stroke-width="2" stroke-linecap="round" />
+                                            <line x1="85" y1="85" x2="115" y2="85" stroke="#718096" stroke-width="2" stroke-linecap="round" />
+                                            <circle cx="130" cy="110" r="15" fill="#FFA534" />
+                                            <path d="M125 110 L128 113 L135 106" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-3 border-top border-light d-flex align-items-center justify-content-between">
+                                    <span class="action-text">เปิดดูแผน <i class="bx bx-right-arrow-alt align-middle ms-1"></i></span>
+                                    <span class="badge px-3 py-2 rounded-pill fs-8" style="background-color: #fff4e6; color: #FB8C00;">Action Plan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </div>
 
             <!-- School Budget Steps Overview -->
-            <div class="row">
+            <div class="row animate-fade-in-up" style="animation-delay: 0.4s;">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm budget-steps-card" style="border-radius: 20px;">
                         <div class="card-body p-4 p-md-5">
                             <div class="text-center mb-5">
                                 <span class="badge bg-orange-soft text-orange px-3 py-2 rounded-pill mb-2 fw-semibold">WORKFLOW</span>
-                                <h3 class="fw-bold text-dark" style="font-family: 'Sarabun', sans-serif;">ขั้นตอนการดำเนินงานงบประมาณ</h3>
+                                <h3 class="fw-bold text-dark" style="font-family: 'K2D', sans-serif;">ขั้นตอนการดำเนินงานงบประมาณ</h3>
                                 <p class="text-muted col-lg-6 mx-auto fs-7">ภาพรวมกระบวนการบริหารงบประมาณและแผน ตั้งแต่เริ่มต้นเสนอโครงการจนสิ้นสุดการเบิกจ่าย</p>
                             </div>
                             
@@ -238,7 +275,7 @@
         pointer-events: none;
     }
     .hero-title {
-        font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+        font-family: 'Plus Jakarta Sans', 'K2D', sans-serif;
         font-weight: 700;
         color: #ffffff;
         font-size: 2.25rem;
@@ -246,7 +283,7 @@
         text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .hero-subtitle {
-        font-family: 'Sarabun', sans-serif;
+        font-family: 'K2D', sans-serif;
         font-weight: 300;
         color: rgba(255,255,255,0.9);
         font-size: 1.15rem;
@@ -314,7 +351,7 @@
 
     /* Section styling */
     .section-title {
-        font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+        font-family: 'Plus Jakarta Sans', 'K2D', sans-serif;
         font-weight: 700;
         color: var(--luxury-dark);
         font-size: 1.35rem;
@@ -370,14 +407,14 @@
         display: inline-block;
     }
     .card-heading {
-        font-family: 'Sarabun', sans-serif;
+        font-family: 'K2D', sans-serif;
         font-weight: 600;
         color: var(--luxury-dark);
         font-size: 1.15rem;
         margin-bottom: 8px;
     }
     .card-desc {
-        font-family: 'Sarabun', sans-serif;
+        font-family: 'K2D', sans-serif;
         font-size: 0.88rem;
         color: #718096;
         line-height: 1.5;

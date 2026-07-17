@@ -118,14 +118,14 @@
                                                             echo date_format($d, "d/m/") . (intval(date_format($d, "Y")) + 543);
                                                         ?>
                                                     </td>
-                                                    <td style="max-width: 200px; white-space: normal; word-wrap: break-word;">
+                                                    <td class="text-truncate" style="max-width: 160px;" title="<?= esc($order->description); ?>">
                                                         <?= esc($order->description); ?>
                                                     </td>
                                                     <td class="text-end fw-bold text-orange">
                                                         <?= number_format($order->amount, 2); ?>
                                                     </td>
-                                                    <td><?= esc($order->signatory); ?></td>
-                                                    <td><?= esc($order->contractor); ?></td>
+                                                    <td class="text-truncate" style="max-width: 110px;" title="<?= esc($order->signatory); ?>"><?= esc($order->signatory); ?></td>
+                                                    <td class="text-truncate" style="max-width: 110px;" title="<?= esc($order->contractor); ?>"><?= esc($order->contractor); ?></td>
                                                     <td class="text-center">
                                                         <?php if ($order->delivery_date): ?>
                                                             <?php 
@@ -136,7 +136,7 @@
                                                             <span class="text-muted">-</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td style="max-width: 150px; white-space: normal; word-wrap: break-word;">
+                                                    <td class="text-truncate" style="max-width: 100px;" title="<?= esc($order->remarks); ?>">
                                                         <?= esc($order->remarks) ?: '<span class="text-muted">-</span>'; ?>
                                                     </td>
                                                     <td class="text-center">
@@ -452,11 +452,31 @@
         box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.15) !important;
         z-index: 106000 !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #FB8C00 !important;
-        color: #fff !important;
-    }
-</style>
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #FB8C00 !important;
+            color: #fff !important;
+        }
+
+        /* ===== บีบตารางให้อยู่ในหน้าจอเดียว ไม่ต้องมี scrollbar แนวนอน ===== */
+        #orderTable {
+            font-size: 0.75rem !important;
+            width: 100% !important;
+        }
+        #orderTable > :not(caption) > * > * {
+            padding: 0.4rem 0.3rem !important;
+        }
+        #orderTable thead th {
+            font-size: 0.75rem !important;
+            white-space: nowrap;
+            padding: 0.5rem 0.3rem !important;
+        }
+        #orderTable td {
+            vertical-align: middle;
+        }
+        .table-responsive {
+            overflow-x: hidden !important;
+        }
+    </style>
 
 <!-- DataTables Buttons CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">

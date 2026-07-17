@@ -35,7 +35,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sarabun:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=K2D:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="<?=base_url()?>/assets/vendor/fonts/boxicons.css" />
@@ -83,7 +83,7 @@
         /* ─── Body ─── */
         body {
             background-color: var(--skj-bg) !important;
-            font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif !important;
+            font-family: 'K2D', 'Plus Jakarta Sans', sans-serif !important;
         }
 
         /* ─── Sidebar ─── */
@@ -175,7 +175,58 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 0, 0, 0.15);
         }
+
+        /* ─── Global Minimalist Animations ─── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        /* ─── Global Preloader ─── */
+        #skj-preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--skj-bg);
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+        }
+        .skj-loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--skj-orange-glow);
+            border-top-color: var(--skj-orange);
+            border-radius: 50%;
+            animation: skjSpin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        @keyframes skjSpin {
+            to { transform: rotate(360deg); }
+        }
+        body.page-loaded #skj-preloader {
+            opacity: 0;
+            visibility: hidden;
+        }
     </style>
 </head>
 
-<body style="font-family:'Sarabun'">
+<body style="font-family:'K2D', sans-serif">
+    <!-- Global Preloader -->
+    <div id="skj-preloader">
+        <div class="skj-loader-spinner"></div>
+    </div>

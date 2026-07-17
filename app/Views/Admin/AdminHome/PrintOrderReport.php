@@ -307,6 +307,28 @@
         .back-btn:hover {
             color: #fff;
         }
+        .editable-name {
+            display: inline-block;
+            min-width: 200px;
+            border-bottom: 1px dashed #bbb;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: all 0.2s;
+        }
+        .editable-name:hover {
+            background-color: #f0f4f8;
+        }
+        .editable-name:focus {
+            outline: none;
+            border-bottom: 1px solid #ff9f43 !important;
+            background-color: #fffde7;
+        }
+        @media print {
+            .editable-name {
+                border-bottom: none !important;
+                background-color: transparent !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -416,11 +438,17 @@
         <div class="signature-section">
             <div class="sig-block">
                 <div class="sig-line">ลงชื่อ............................................................<br>(ผู้รับของ)</div>
-                <div class="sig-name">(............................................................)</div>
+                <?php 
+                    $receiverName = '............................................................';
+                    if (!empty($order->inspection_status) && $order->inspection_status !== 'ยังไม่ตรวจรับ' && $order->inspection_status !== 'ตรวจรับแล้ว') {
+                        $receiverName = esc($order->inspection_status);
+                    }
+                ?>
+                <div class="sig-name">(<span contenteditable="true" class="editable-name" title="คลิกเพื่อแก้ไขชื่อผู้รับของ"><?= $receiverName; ?></span>)</div>
             </div>
             <div class="sig-block">
                 <div class="sig-line">ลงชื่อ............................................................<br>(เจ้าหน้าที่)</div>
-                <div class="sig-name">(<?= session()->get('username') ?: '............................................................'; ?>)</div>
+                <div class="sig-name">(<span contenteditable="true" class="editable-name" title="คลิกเพื่อแก้ไขชื่อเจ้าหน้าที่"><?= session()->get('username') ?: '............................................................'; ?></span>)</div>
             </div>
         </div>
 
@@ -537,6 +565,27 @@
                         if (loadedCount === imgs.length) applyAdaptiveLayout();
                     });
                 }
+            });
+
+            // Editable name interactive behavior (clear default dots on click/focus)
+            document.querySelectorAll('.editable-name').forEach(el => {
+                el.addEventListener('focus', function() {
+                    if (this.textContent.trim() === '............................................................') {
+                        this.textContent = '';
+                    }
+                });
+                el.addEventListener('blur', function() {
+                    if (this.textContent.trim() === '') {
+                        this.textContent = '............................................................';
+                    }
+                });
+                // Prevent Enter key from inserting line breaks
+                el.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
             });
         });
     </script>

@@ -27,6 +27,8 @@
                         <div data-i18n="Analytics">หน้าแรก</div>
                     </a>
                 </li>
+
+
                 <!-- ระบบควบคุมงบประมาณ -->
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">ระบบควบคุมงบประมาณ (ดูข้อมูล)</span>
@@ -66,6 +68,18 @@
                     </a>
                 </li>
                 
+                
+                <!-- หมวดหมู่แผนงาน -->
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">งานนโยบายและแผน</span>
+                </li>
+                <!-- แผนดำเนินงานและแผนปฏิบัติการ -->
+                <li class="menu-item <?php echo (isset($UrlMenuSub) && $UrlMenuSub == "Plan") ? "active" : ""?>">
+                    <a href="<?=base_url('User/Plan');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+                        <div data-i18n="Analytics">แผนดำเนินงานและแผนปฏิบัติการ</div>
+                    </a>
+                </li>
             </ul>
             <div>
                 <?php if(auth_is_admin()) : ?>

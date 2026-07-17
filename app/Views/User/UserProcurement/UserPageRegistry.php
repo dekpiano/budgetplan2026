@@ -8,11 +8,11 @@
         <div class="container-xxl flex-grow-1 container-p-y">
 
             <!-- Title Header -->
-            <div class="row mb-4">
+            <div class="row mb-4 animate-fade-in-up">
                 <div class="col-12">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
-                            <h4 class="fw-bold mb-1" style="font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;"><i class="bx <?= $type_slug === 'hire' ? 'bx-spreadsheet' : 'bx-cart-alt' ?> text-warning me-2"></i> ทะเบียนคุมใบ<?= esc($order_type); ?></h4>
+                            <h4 class="fw-bold mb-1" style="font-family: 'Plus Jakarta Sans', 'K2D', sans-serif;"><i class="bx <?= $type_slug === 'hire' ? 'bx-spreadsheet' : 'bx-cart-alt' ?> text-warning me-2"></i> ทะเบียนคุมใบ<?= esc($order_type); ?></h4>
                             <p class="text-muted fs-7 mb-0">ข้อมูลทะเบียนคุมใบ<?= esc($order_type); ?>ของระบบงบประมาณและแผนงาน</p>
                         </div>
                         <nav aria-label="breadcrumb">
@@ -27,7 +27,7 @@
 
 
             <!-- Registry Datatable Card -->
-            <div class="row">
+            <div class="row animate-fade-in-up" style="animation-delay: 0.2s;">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm" style="border-radius: 20px;">
                         <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -214,7 +214,7 @@
                                 <i class="bx bx-camera text-warning" style="font-size: 1.8rem;"></i>
                             </div>
                         </div>
-                        <h5 class="modal-title fw-bold" style="font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;">เข้าสู่ระบบผู้ตรวจรับ</h5>
+                        <h5 class="modal-title fw-bold" style="font-family: 'Plus Jakarta Sans', 'K2D', sans-serif;">เข้าสู่ระบบผู้ตรวจรับ</h5>
                         <p class="text-muted fs-7 mb-0">เพื่ออัปโหลดรูปภาพงานตรวจรับ</p>
                     </div>
                     <div class="modal-body px-4 py-3 text-center">
@@ -246,7 +246,7 @@
                                 <i class="bx bx-book-reader text-warning" style="font-size: 1.5rem;"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title fw-bold mb-0" style="font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;">คู่มือการใช้งานระบบทะเบียนคุม</h5>
+                                <h5 class="modal-title fw-bold mb-0" style="font-family: 'Plus Jakarta Sans', 'K2D', sans-serif;">คู่มือการใช้งานระบบทะเบียนคุม</h5>
                                 <small class="text-muted">คำแนะนำการใช้งานและขั้นตอนการทำงาน</small>
                             </div>
                         </div>

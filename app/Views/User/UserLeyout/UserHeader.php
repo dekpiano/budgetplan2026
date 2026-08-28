@@ -1,3 +1,9 @@
+<?php
+$title       = $title ?? 'ระบบบริหารงานงบประมาณและแผน';
+$description = $description ?? 'โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์';
+$full_url    = $full_url ?? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$uri         = $uri ?? service('uri');
+?>
 <!DOCTYPE html>
 <html lang="th" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default"
     data-assets-path="<?=base_url()?>/assets/" data-template="vertical-menu-template-free">
@@ -72,28 +78,104 @@
     <style>
         :root {
             --skj-orange: #FB8C00;
+            --skj-orange-dark: #e65100;
             --skj-orange-hover: #f57c00;
+            --skj-orange-light: #ffe0b2;
             --skj-orange-soft: rgba(251, 140, 0, 0.08);
-            --skj-orange-glow: rgba(251, 140, 0, 0.12);
+            --skj-orange-glow: rgba(251, 140, 0, 0.15);
             --skj-dark: #1e1e24;
-            --skj-bg: #f7f6f3;
-            --skj-sidebar-bg: #fefefe;
+            --skj-bg: #faf9f6;
+            --skj-sidebar-bg: #ffffff;
         }
 
-        /* ─── Body ─── */
-        body {
-            background-color: var(--skj-bg) !important;
+        /* ─── Warm Orange Ambient Background ─── */
+        body, .layout-wrapper, .layout-container, .content-wrapper {
+            background-color: #fbf9f5 !important;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(251, 140, 0, 0.05) 0px, transparent 45%),
+                radial-gradient(at 90% 15%, rgba(255, 171, 0, 0.05) 0px, transparent 40%),
+                radial-gradient(at 85% 85%, rgba(251, 140, 0, 0.04) 0px, transparent 50%),
+                radial-gradient(at 15% 90%, rgba(255, 152, 0, 0.04) 0px, transparent 45%) !important;
+            background-attachment: fixed !important;
+            background-size: 100% 100% !important;
             font-family: 'K2D', 'Plus Jakarta Sans', sans-serif !important;
+            color: #4a5568;
+        }
+
+        /* ─── Buttons (Orange Theme) ─── */
+        .btn-primary {
+            background: linear-gradient(135deg, #FB8C00 0%, #F57C00 100%) !important;
+            border-color: #FB8C00 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(251, 140, 0, 0.25) !important;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%) !important;
+            border-color: #E65100 !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 16px rgba(251, 140, 0, 0.35) !important;
+            transform: translateY(-1px);
+        }
+        .btn-outline-primary {
+            color: #FB8C00 !important;
+            border-color: #FB8C00 !important;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+            background-color: #FB8C00 !important;
+            border-color: #FB8C00 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(251, 140, 0, 0.25) !important;
+            transform: translateY(-1px);
+        }
+
+        /* ─── Text & Badge Overrides ─── */
+        .text-primary {
+            color: #FB8C00 !important;
+        }
+        .bg-primary {
+            background-color: #FB8C00 !important;
+        }
+        .bg-label-primary {
+            background-color: rgba(251, 140, 0, 0.12) !important;
+            color: #e65100 !important;
+        }
+        .bg-primary-soft {
+            background-color: rgba(251, 140, 0, 0.1) !important;
+            color: #FB8C00 !important;
+        }
+
+        /* ─── Form Inputs ─── */
+        .form-control:focus, .form-select:focus {
+            border-color: #FB8C00 !important;
+            box-shadow: 0 0 0 0.25rem rgba(251, 140, 0, 0.18) !important;
+        }
+        .form-check-input:checked {
+            background-color: #FB8C00 !important;
+            border-color: #FB8C00 !important;
+        }
+
+        /* ─── DataTables & Pagination ─── */
+        .pagination .page-item.active .page-link,
+        .page-item.active .page-link {
+            background-color: #FB8C00 !important;
+            border-color: #FB8C00 !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 6px rgba(251, 140, 0, 0.3) !important;
+        }
+        .pagination .page-link:hover {
+            color: #FB8C00 !important;
         }
 
         /* ─── Sidebar ─── */
         .layout-menu {
-            border-right: 1px solid rgba(0, 0, 0, 0.04) !important;
-            box-shadow: none !important;
+            border-right: 1px solid rgba(251, 140, 0, 0.08) !important;
+            box-shadow: 2px 0 16px rgba(251, 140, 0, 0.02) !important;
             background-color: var(--skj-sidebar-bg) !important;
         }
         .app-brand {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(251, 140, 0, 0.06);
             margin-bottom: 8px;
             padding-bottom: 4px;
         }
@@ -111,25 +193,24 @@
         }
         .menu-inner .menu-item.active > .menu-link {
             background-color: var(--skj-orange-glow) !important;
-            color: var(--skj-orange) !important;
-            font-weight: 600;
+            color: var(--skj-orange-dark) !important;
+            font-weight: 700;
         }
-        /* Override the vertical active bar to orange */
         .layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active:before {
             background: var(--skj-orange) !important;
         }
         .bg-menu-theme .menu-inner > .menu-item.active > .menu-link {
-            color: var(--skj-orange) !important;
+            color: var(--skj-orange-dark) !important;
             background-color: var(--skj-orange-glow) !important;
         }
         .menu-header {
             margin-top: 1.25rem !important;
             padding-left: 1.6rem !important;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.7rem;
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: #b0b8c4 !important;
+            color: #a0aec0 !important;
         }
         .menu-inner-shadow {
             display: none !important;
@@ -137,14 +218,13 @@
 
         /* ─── Navbar ─── */
         .layout-navbar {
-            background: rgba(255, 255, 255, 0.85) !important;
+            background: rgba(255, 255, 255, 0.92) !important;
             backdrop-filter: blur(16px) saturate(180%) !important;
             -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
-            box-shadow: 0 1px 12px rgba(0, 0, 0, 0.02) !important;
-            border-radius: 14px !important;
+            border: 1px solid rgba(251, 140, 0, 0.1) !important;
+            box-shadow: 0 4px 20px rgba(251, 140, 0, 0.04) !important;
+            border-radius: 16px !important;
             margin-top: 10px !important;
-            border: none !important;
         }
         .layout-navbar .navbar-nav-right {
             padding: 0 8px;
@@ -152,35 +232,42 @@
 
         /* ─── Cards (Global) ─── */
         .card {
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 18px !important;
+            border: 1px solid rgba(251, 140, 0, 0.08) !important;
+            background-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(251, 140, 0, 0.03) !important;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .card:hover {
+            border-color: rgba(251, 140, 0, 0.2) !important;
         }
 
-        /* ─── Links ─── */
-        a {
-            transition: color 0.2s ease;
+        /* ─── Select2 Orange Highlight ─── */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #FB8C00 !important;
+            color: #ffffff !important;
         }
 
         /* ─── Scrollbar ─── */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.08);
+            background: rgba(251, 140, 0, 0.2);
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(251, 140, 0, 0.4);
         }
 
         /* ─── Global Minimalist Animations ─── */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(16px);
             }
             to {
                 opacity: 1;
@@ -189,8 +276,7 @@
         }
 
         .animate-fade-in-up {
-            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         /* ─── Global Preloader ─── */
@@ -205,15 +291,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
         }
         .skj-loader-spinner {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border: 3px solid var(--skj-orange-glow);
             border-top-color: var(--skj-orange);
             border-radius: 50%;
-            animation: skjSpin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            animation: skjSpin 0.9s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
         @keyframes skjSpin {
             to { transform: rotate(360deg); }

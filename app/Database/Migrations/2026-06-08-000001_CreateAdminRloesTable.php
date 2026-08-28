@@ -56,7 +56,7 @@ class CreateAdminRloesTable extends Migration
         $this->forge->addKey('admin_rloes_userid');
         $this->forge->addKey('admin_rloes_status');
 
-        $this->forge->createTable('tb_admin_rloes');
+        $this->forge->createTable('tb_admin_rloes', true);
     }
 
     public function down()

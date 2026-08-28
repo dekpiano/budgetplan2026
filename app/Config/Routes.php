@@ -30,6 +30,9 @@ $routes->setAutoRoute(false);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'ConUserHome::index');
+$routes->get('User/BudgetSummary', 'ConUserHome::BudgetSummary');
+$routes->get('User/Projects', 'ConUserHome::BudgetSummary');
+$routes->get('User/getProjectLedger/(:num)', 'ConUserHome::getProjectLedger/$1');
 $routes->get('User/Plan', 'ConUserPlan::index');
 //User งานจองห้อง
 
@@ -56,6 +59,23 @@ $routes->get('Inspector/Login', 'ConLogin::inspectorLoginUrl');
 //ใบสำคัญรับเงินตอบแทนค่าวิทยากร
 $routes->get('User/Procurement/MoneyReceipt', 'ConUserMoneyReceipt::MoneyReceiptForm');
 
+// ทะเบียนคุมเงินงบประมาณรายจ่าย (Budget Ledger)
+$routes->get('Admin/BudgetLedger', 'ConAdminBudgetLedger::index');
+$routes->get('Admin/BudgetLedger/Structure', 'ConAdminBudgetLedger::structure');
+$routes->post('Admin/BudgetLedger/saveStrategy', 'ConAdminBudgetLedger::saveStrategy');
+$routes->post('Admin/BudgetLedger/deleteStrategy/(:num)', 'ConAdminBudgetLedger::deleteStrategy/$1');
+$routes->post('Admin/BudgetLedger/saveTactic', 'ConAdminBudgetLedger::saveTactic');
+$routes->post('Admin/BudgetLedger/deleteTactic/(:num)', 'ConAdminBudgetLedger::deleteTactic/$1');
+$routes->get('Admin/BudgetLedger/getTacticsByStrategy/(:num)', 'ConAdminBudgetLedger::getTacticsByStrategy/$1');
+$routes->post('Admin/BudgetLedger/saveProject', 'ConAdminBudgetLedger::saveProject');
+$routes->post('Admin/BudgetLedger/deleteProject/(:num)', 'ConAdminBudgetLedger::deleteProject/$1');
+$routes->get('Admin/BudgetLedger/view/(:num)', 'ConAdminBudgetLedger::viewLedger/$1');
+$routes->get('Admin/BudgetLedger/getLedgerData/(:num)', 'ConAdminBudgetLedger::getLedgerData/$1');
+$routes->get('Admin/BudgetLedger/getUnclearedBorrows/(:num)', 'ConAdminBudgetLedger::getUnclearedBorrows/$1');
+$routes->post('Admin/BudgetLedger/saveLedgerItem', 'ConAdminBudgetLedger::saveLedgerItem');
+$routes->post('Admin/BudgetLedger/deleteLedgerItem/(:num)', 'ConAdminBudgetLedger::deleteLedgerItem/$1');
+$routes->get('Admin/BudgetLedger/print/(:num)', 'ConAdminBudgetLedger::printLedger/$1');
+
 //Admin
 $routes->get('Admin/Home', 'ConAdminHome::index');
 $routes->get('Admin/Registry/Purchase', 'ConAdminHome::registry/purchase');
@@ -66,10 +86,13 @@ $routes->get('Admin/Registry/PrintOrder/(:num)', 'ConAdminHome::printOrder/$1');
 $routes->get('Admin/LocationRoom/LocationRoomMain', 'ConAdminLocationRoom::LocationRoomMain');
 
 $routes->get('Admin/Rloes/Setting', 'ConAdminRoles::index');
+$routes->post('Admin/Rloes/saveRoleAssignments', 'ConAdminRoles::saveRoleAssignments');
+$routes->post('Admin/Rloes/savePersonnelRoles', 'ConAdminRoles::savePersonnelRoles');
+$routes->post('Admin/Rloes/deletePersonnelRoles/(:segment)', 'ConAdminRoles::deletePersonnelRoles/$1');
 $routes->match(['GET', 'POST'],'Admin/Rloes/RloesSettingManager', 'ConAdminRoles::RloesSettingManager');
 $routes->post('Admin/Rloes/addRole', 'ConAdminRoles::addRole');
-$routes->post('Admin/Rloes/updateRole/(:num)', 'ConAdminRoles::updateRole/$1');
-$routes->post('Admin/Rloes/deleteRole/(:num)', 'ConAdminRoles::deleteRole/$1');
+$routes->post('Admin/Rloes/updateRole/(:segment)', 'ConAdminRoles::updateRole/$1');
+$routes->post('Admin/Rloes/deleteRole/(:segment)', 'ConAdminRoles::deleteRole/$1');
 
 //Admin Person
 $routes->get('Admin/WorkPerson/BudgetPlan', 'ConAdminWorkPerson::index');

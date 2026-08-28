@@ -22,22 +22,24 @@ RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd intl z
 
 # Configure Opcache with JIT for high performance
 RUN { \
+    echo 'opcache.enable=1'; \
     echo 'opcache.memory_consumption=256'; \
     echo 'opcache.interned_strings_buffer=32'; \
-    echo 'opcache.max_accelerated_files=60000'; \
-    echo 'opcache.revalidate_freq=0'; \
+    echo 'opcache.max_accelerated_files=100000'; \
+    echo 'opcache.revalidate_freq=2'; \
     echo 'opcache.validate_timestamps=1'; \
     echo 'opcache.fast_shutdown=1'; \
     echo 'opcache.enable_cli=1'; \
+    echo 'opcache.file_cache=/tmp/opcache'; \
     echo 'opcache.jit_buffer_size=128M'; \
     echo 'opcache.jit=1255'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Increase memory limit and configure realpath cache
 RUN { \
-    echo "memory_limit=256M"; \
-    echo "realpath_cache_size=4096k"; \
-    echo "realpath_cache_ttl=600"; \
+    echo "memory_limit=512M"; \
+    echo "realpath_cache_size=16M"; \
+    echo "realpath_cache_ttl=1200"; \
     } > /usr/local/etc/php/conf.d/php-limits.ini
 
 # Enable Apache mod_rewrite and mod_ssl

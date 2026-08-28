@@ -161,18 +161,38 @@ class ConLogin extends BaseController
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
 
-                    // ดึงข้อมูล roles จาก skjacth_budgetplan.tb_admin_rloes
-                    $User2 = $dbBudget->table('tb_admin_rloes')
-                        ->select('admin_rloes_status, GROUP_CONCAT(admin_rloes_nanetype) AS rloesAll')
+                    // ดึงข้อมูล roles ทั้งหมดของผู้ใช้จาก skjacth_budgetplan.tb_admin_rloes
+                    $userRoles = $dbBudget->table('tb_admin_rloes')
                         ->where('admin_rloes_userid', $userRow['pers_id'])
                         ->get()
-                        ->getRowArray();
+                        ->getResultArray();
                     
-                    log_message('info', '[GoogleLogin] Roles: ' . json_encode($User2));
+                    log_message('info', '[GoogleLogin] User Roles: ' . json_encode($userRoles));
 
-                    $status = (isset($User2['admin_rloes_status']) && $User2['admin_rloes_status'] != "") 
-                        ? $User2['admin_rloes_status'] 
-                        : "Member";
+                    $rolesList = [];
+                    $roleNames = [];
+                    $status = "Member";
+
+                    if (!empty($userRoles)) {
+                        foreach ($userRoles as $r) {
+                            if (!empty($r['admin_rloes_status'])) {
+                                $rolesList[] = $r['admin_rloes_status'];
+                                $roleNames[] = $r['admin_rloes_nanetype'];
+                            }
+                        }
+
+                        // จัดลำดับความสำคัญของ role สูงสุด
+                        $rolePriority = ['superadmin', 'director', 'admin', 'planner', 'finance', 'procurement', 'project_manager'];
+                        foreach ($rolePriority as $p) {
+                            if (in_array($p, $rolesList, true)) {
+                                $status = $p;
+                                break;
+                            }
+                        }
+                        if ($status === 'Member' && !empty($rolesList)) {
+                            $status = $rolesList[0];
+                        }
+                    }
 
                     // อ่าน login_type และ return_to จาก state parameter (Google OAuth ส่งกลับมา)
                     // ถ้าไม่มี state ให้ fallback เป็น session หรือค่า default
@@ -188,16 +208,30 @@ class ConLogin extends BaseController
                     $newdata = [
                         'username'   => $userRow['pers_prefix'].$userRow['pers_firstname'].' '.$userRow['pers_lastname'],
                         'id'         => $userRow['pers_id'],
+                        'pers_id'    => $userRow['pers_id'],
                         'logged_in'  => true,
-                        'rloes'      => $User2['rloesAll'] ?? '',
+                        'roles'      => $rolesList,
+                        'rloes'      => implode(', ', array_unique($roleNames)),
                         'status'     => $status,
                         'login_type' => $loginType,
                     ];
                     $session->set($newdata);
                     log_message('info', '[GoogleLogin] Session set: ' . json_encode($newdata) . ' | login_type=' . $loginType . ' | return_to=' . ($returnUrl ?: 'NONE'));
 
-                    // ถ้า login จาก admin login page และเป็น admin/manager/superadmin → ไป Admin/Home
-                    if ($loginType === 'admin' && in_array($status, ['admin', 'manager', 'superadmin'])) {
+                    // ถ้า login จาก admin login page และมีสิทธิ์เจ้าหน้าที่ → ไป Admin/Home
+                    $adminRoles = ['superadmin', 'admin', 'director', 'planner', 'finance', 'procurement', 'manager'];
+                    $hasAdminAccess = !empty(array_intersect($rolesList, $adminRoles)) || in_array($status, $adminRoles);
+                    try {
+                        $hasSystemAccess = (int)$dbBudget->table('tb_admin_system_access')
+                            ->where('admin_access_userid', $userRow['pers_id'])
+                            ->where('admin_access_view', 1)
+                            ->countAllResults() > 0;
+                        $hasAdminAccess = $hasAdminAccess || $hasSystemAccess;
+                    } catch (\Throwable $e) {
+                        // Legacy role-based login remains available until the migration is applied.
+                    }
+
+                    if ($loginType === 'admin' && $hasAdminAccess) {
                         log_message('info', '[GoogleLogin] Redirecting to Admin/Home');
                         return redirect()->to(base_url('Admin/Home'));
                     }

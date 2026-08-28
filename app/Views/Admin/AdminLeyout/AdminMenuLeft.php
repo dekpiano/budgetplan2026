@@ -22,64 +22,104 @@
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
+                <?php if (auth_is_superadmin() || auth_can_access_system('budget_ledger')) : ?>
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "Home"?"active":"")?>">
                     <a href="<?=base_url('Admin/Home');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-home-circle"></i>
                         <div data-i18n="Analytics">หน้าแรก (แดชบอร์ด)</div>
                     </a>
                 </li>
+                <?php endif; ?>
 
-                <!-- ระบบควบคุมงบประมาณ -->
+                <!-- ระบบงบประมาณ -->
+                <?php if (auth_can_access_system('budget_ledger') || auth_can_manage_plan() || auth_is_superadmin()) : ?>
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">ระบบควบคุมงบประมาณ</span>
+                    <span class="menu-header-text">ระบบงบประมาณ</span>
                 </li>
+                <?php if (auth_can_access_system('budget_ledger')) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetLedger" && $uri->getSegment(3) != "Structure" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/BudgetLedger');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-book-content"></i>
+                        <div data-i18n="Layouts">ทะเบียนคุมเงินงบประมาณ</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php if (auth_can_manage_plan() || auth_is_superadmin()) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetLedger" && $uri->getSegment(3) == "Structure" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/BudgetLedger/Structure');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-sitemap text-info"></i>
+                        <div data-i18n="Layouts">ตั้งค่ายุทธศาสตร์และโครงการ</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php endif; ?>
+
+                <!-- ระบบจัดซื้อจัดจ้าง -->
+                <?php if (auth_can_access_system('procurement') || auth_can_access_system('registry_purchase') || auth_can_access_system('registry_hire')) : ?>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">ระบบจัดซื้อจัดจ้าง</span>
+                </li>
+                <?php if (auth_can_access_system('procurement')) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "Procurement" && $uri->getSegment(3) == "Process" ? "active" : "")?>">
+                    <a href="<?=base_url('User/Procurement/Process')?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-cart"></i>
+                        <div data-i18n="Layouts">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php if (auth_can_access_system('registry_purchase')) : ?>
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "Registry" && $uri->getSegment(3) == "Purchase" ? "active" : "")?>">
                     <a href="<?=base_url('Admin/Registry/Purchase');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-cart-alt"></i>
                         <div data-i18n="Layouts">ทะเบียนคุมใบสั่งซื้อ</div>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (auth_can_access_system('registry_hire')) : ?>
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "Registry" && $uri->getSegment(3) == "Hire" ? "active" : "")?>">
                     <a href="<?=base_url('Admin/Registry/Hire');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
                         <div data-i18n="Layouts">ทะเบียนคุมใบสั่งจ้าง</div>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php endif; ?>
 
-                <!-- งานจัดซื้อจัดจ้าง -->
+                <!-- ระบบการเงิน -->
+                <?php if (auth_can_access_system('money_receipt')) : ?>
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">งานพัสดุและจัดซื้อจัดจ้าง</span>
+                    <span class="menu-header-text">ระบบการเงิน</span>
                 </li>
-                <li class="menu-item">
-                    <a href="<?=base_url('User/Procurement/Process')?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-cart"></i>
-                        <div data-i18n="Layouts">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
-                    </a>
-                </li>
-
-                <!-- งานการเงินและบัญชี -->
-                <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">งานการเงินและบัญชี</span>
-                </li>
-                <li class="menu-item">
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "Procurement" && $uri->getSegment(3) == "MoneyReceipt" ? "active" : "")?>">
                     <a href="<?=base_url('User/Procurement/MoneyReceipt')?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-file"></i>
                         <div data-i18n="Layouts">ใบสำคัญรับเงินตอบแทน</div>
                     </a>
                 </li>
-            </ul>
+                <?php endif; ?>
 
-            <?php if(auth_is_admin()) : ?>
-            <div>
-                <ul class="menu-inner py-1">
-                    <li class="menu-item <?php echo $uri->getSegment(2) == "Rloes"?"active":""?>">
-                        <a href="<?=base_url('Admin/Rloes/Setting');?>" class="menu-link">
-                            <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
-                            <div data-i18n="Analytics">กำหนดสิทธิ์ใช้งาน </div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <?php endif; ?>
+                <!-- ตั้งค่าระบบ -->
+                <?php if (auth_can_manage_plan() || auth_is_superadmin()) : ?>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">ตั้งค่าระบบ</span>
+                </li>
+                <?php if (auth_can_manage_plan()) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetLedger" && $uri->getSegment(3) == "Structure" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/BudgetLedger/Structure');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-sitemap text-info"></i>
+                        <div data-i18n="Layouts">ตั้งค่ายุทธศาสตร์และโครงการ</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php if (auth_is_superadmin()) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "Rloes" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/Rloes/Setting');?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-shield-quarter text-warning"></i>
+                        <div data-i18n="Analytics">กำหนดสิทธิ์การใช้งาน</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+                <?php endif; ?>
+            </ul>
         </aside>
         <!-- / Menu -->

@@ -81,6 +81,14 @@
     <?php endif;?>
 
     <script>
+    window.appBaseUrl = '<?= base_url(); ?>/';
+    </script>
+
+    <?php if($uri->getSegment(2) == 'BudgetLedger') : ?>
+    <script src="<?=base_url()?>/assets/js/Admin/AdminBudgetLedger/AdminBudgetLedger.js?v=<?= time(); ?>"></script>
+    <?php endif;?>
+
+    <script>
 $('#pers_id_card').inputmask('9-9999-99999-99-9');
 $('.pers_phone').inputmask('99-9999-9999');
 

@@ -27,7 +27,8 @@ class AdminAuthFilter implements FilterInterface
         $session = session();
 
         // Must be logged in AND have an admin role
-        if (!$session->get('logged_in') || !in_array($session->get('status'), ['admin', 'manager', 'superadmin'], true)) {
+        helper('auth');
+        if (!$session->get('logged_in') || !auth_is_admin()) {
             $session->setFlashdata('Error', 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้ กรุณาติดต่อผู้ดูแลระบบ');
             return redirect()->to(base_url());
         }

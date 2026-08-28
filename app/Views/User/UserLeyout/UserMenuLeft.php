@@ -1,3 +1,7 @@
+<?php
+$UrlMenuMain = $UrlMenuMain ?? '';
+$UrlMenuSub  = $UrlMenuSub ?? '';
+?>
 <!-- Layout wrapper -->
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
@@ -21,28 +25,33 @@
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
-                <li class="menu-item <?php echo $UrlMenuMain == "Main"?"active":""?>">
-                    <a href="<?=base_url();?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                        <div data-i18n="Analytics">หน้าแรก</div>
+                <li class="menu-item <?php echo ($UrlMenuMain == "Main" && empty($UrlMenuSub)) ? "active" : "" ?>">
+                    <a href="<?= base_url(); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-home-circle text-primary"></i>
+                        <div data-i18n="Analytics">หน้าแรก (ภาพรวม)</div>
                     </a>
                 </li>
-
 
                 <!-- ระบบควบคุมงบประมาณ -->
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">ระบบควบคุมงบประมาณ (ดูข้อมูล)</span>
+                    <span class="menu-header-text">ระบบควบคุมงบประมาณ</span>
                 </li>
-                <li class="menu-item <?php echo $UrlMenuSub == "Purchase"?"active":""?>">
-                    <a href="<?=base_url('User/Registry/Purchase');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-cart-alt"></i>
-                        <div data-i18n="Analytics">ทะเบียนสั่งซื้อ</div>
+                <li class="menu-item <?php echo ($UrlMenuSub == "BudgetSummary") ? "active" : "" ?>">
+                    <a href="<?= base_url('User/BudgetSummary'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-book-content text-info"></i>
+                        <div data-i18n="Analytics">สรุปโครงการและงบประมาณ</div>
                     </a>
                 </li>
-                <li class="menu-item <?php echo $UrlMenuSub == "Hire"?"active":""?>">
-                    <a href="<?=base_url('User/Registry/Hire');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
-                        <div data-i18n="Analytics">ทะเบียนสั่งจ้าง</div>
+                <li class="menu-item <?php echo $UrlMenuSub == "Purchase" ? "active" : "" ?>">
+                    <a href="<?= base_url('User/Registry/Purchase'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-cart-alt text-warning"></i>
+                        <div data-i18n="Analytics">ทะเบียนคุมใบสั่งซื้อ</div>
+                    </a>
+                </li>
+                <li class="menu-item <?php echo $UrlMenuSub == "Hire" ? "active" : "" ?>">
+                    <a href="<?= base_url('User/Registry/Hire'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-spreadsheet text-success"></i>
+                        <div data-i18n="Analytics">ทะเบียนคุมใบสั่งจ้าง</div>
                     </a>
                 </li>
 
@@ -50,9 +59,9 @@
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">งานพัสดุและจัดซื้อจัดจ้าง</span>
                 </li>
-                <li class="menu-item <?php echo $UrlMenuSub == "Process"?"active":""?>">
-                    <a href="<?=base_url('User/Procurement/Process');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-cart"></i>
+                <li class="menu-item <?php echo $UrlMenuSub == "Process" ? "active" : "" ?>">
+                    <a href="<?= base_url('User/Procurement/Process'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-shopping-bag text-danger"></i>
                         <div data-i18n="Analytics">ขั้นตอนจัดซื้อ / จัดจ้าง</div>
                     </a>
                 </li>
@@ -61,50 +70,53 @@
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">งานการเงินและบัญชี</span>
                 </li>
-                <li class="menu-item <?php echo $UrlMenuSub == "MoneyReceipt"?"active":""?>">
-                    <a href="<?=base_url('User/Procurement/MoneyReceipt');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-file"></i>
+                <li class="menu-item <?php echo $UrlMenuSub == "MoneyReceipt" ? "active" : "" ?>">
+                    <a href="<?= base_url('User/Procurement/MoneyReceipt'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-receipt text-primary"></i>
                         <div data-i18n="Analytics">ใบสำคัญรับเงินตอบแทน</div>
                     </a>
                 </li>
-                
                 
                 <!-- หมวดหมู่แผนงาน -->
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">งานนโยบายและแผน</span>
                 </li>
-                <!-- แผนดำเนินงานและแผนปฏิบัติการ -->
-                <li class="menu-item <?php echo (isset($UrlMenuSub) && $UrlMenuSub == "Plan") ? "active" : ""?>">
-                    <a href="<?=base_url('User/Plan');?>" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+                <li class="menu-item <?php echo (isset($UrlMenuSub) && $UrlMenuSub == "Plan") ? "active" : "" ?>">
+                    <a href="<?= base_url('User/Plan'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-bar-chart-alt-2 text-info"></i>
                         <div data-i18n="Analytics">แผนดำเนินงานและแผนปฏิบัติการ</div>
                     </a>
                 </li>
-            </ul>
-            <div>
-                <?php if(auth_is_admin()) : ?>
-                <ul class="menu-inner py-1">
-                    <li class="menu-item">
-                        <!-- data-bs-toggle="modal" data-bs-target="#modalToggle" -->
-                        <a href="<?=base_url('Admin/Home');?>" class="menu-link">
-                            <i class="menu-icon tf-icons bx bxs-key"></i>
-                            <div data-i18n="Analytics">จัดการข้อมูลระบบ</div>
-                        </a>
-                    </li>
-                </ul>
-                <?php else: ?>
-                <ul class="menu-inner py-1">
-                    <li class="menu-item <?php echo $UrlMenuMain == "LoginOfficerPersonnel"?"active":""?>">
-                        <!-- data-bs-toggle="modal" data-bs-target="#modalToggle" -->
-                        <a href="<?=base_url('LoginOfficerPersonnel?return_to='.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);?>"
-                            class="menu-link">
-                            <i class="menu-icon tf-icons bx bxs-key"></i>
-                            <div data-i18n="Analytics">เข้าสู่ระบบ </div>
-                        </a>
-                    </li>
-                </ul>
+
+                <!-- สำหรับเจ้าหน้าที่ / ผู้ดูแลระบบ -->
+                <?php if (auth_is_admin()) : ?>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">สำหรับเจ้าหน้าที่</span>
+                </li>
+                <li class="menu-item">
+                    <a href="<?= base_url('Admin/Home'); ?>" class="menu-link bg-label-warning text-dark fw-semibold">
+                        <i class="menu-icon tf-icons bx bxs-dashboard text-warning"></i>
+                        <div data-i18n="Analytics">แดชบอร์ดเจ้าหน้าที่</div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="<?= base_url('Admin/BudgetLedger'); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-edit-alt text-primary"></i>
+                        <div data-i18n="Analytics">จัดการทะเบียนคุมงบประมาณ</div>
+                    </a>
+                </li>
+                <?php else : ?>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">ระบบเจ้าหน้าที่</span>
+                </li>
+                <li class="menu-item <?php echo $UrlMenuMain == "LoginOfficerPersonnel" ? "active" : "" ?>">
+                    <a href="<?= base_url('LoginOfficerPersonnel?return_to=' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); ?>" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-log-in-circle text-primary"></i>
+                        <div data-i18n="Analytics">เข้าสู่ระบบเจ้าหน้าที่</div>
+                    </a>
+                </li>
                 <?php endif; ?>
-            </div>
+            </ul>
         </aside>
         <!-- / Menu -->
 

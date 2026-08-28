@@ -13,37 +13,148 @@ class ConAdminHome extends BaseController
 
     public function index()
     {
+        if (!auth_can_access_system('budget_home')) {
+            return redirect()->to(base_url('User/Procurement/Process'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้าหลักระบบงบประมาณ');
+        }
         $session = session();
         $data = $this->DataMain();
-        $data['title'] = "หน้าแรก (แดชบอร์ดงบประมาณ)";
+        $data['title'] = "หน้าแรก (แดชบอร์ดงบประมาณและทะเบียนคุม)";
         
         $db = \Config\Database::connect();
-        $builder = $db->table('tb_purchase_hire_orders');
         
-        // Fetch 5 recent orders
+        $selectedYear = $this->request->getGet('year') ?? '2569';
+        $data['selected_year'] = $selectedYear;
+
+        // รายชื่อปีงบประมาณทั้งหมด
+        $yearsQuery = $db->query("SELECT DISTINCT budget_year FROM tb_budget_projects UNION SELECT DISTINCT budget_year FROM tb_budget_strategies ORDER BY budget_year DESC")->getResult();
+        $data['years'] = !empty($yearsQuery) ? $yearsQuery : [(object)['budget_year' => '2569']];
+
+        // =============================================
+        // 1. ระบบทะเบียนคุมเงินงบประมาณ (Budget Ledger)
+        // =============================================
+        $projects = $db->table('tb_budget_projects')
+            ->where('budget_year', $selectedYear)
+            ->orderBy('project_code', 'ASC')
+            ->get()
+            ->getResult();
+
+        $totalAllocated = 0;
+        $totalBalance   = 0;
+        $totalSpent     = 0;
+        $totalBorrow    = 0;
+        $totalReturnCash = 0;
+        $totalReturnReceipt = 0;
+
+        foreach ($projects as &$p) {
+            $lastItem = $db->table('tb_budget_ledger')
+                ->where('project_id', $p->id)
+                ->orderBy('doc_date', 'DESC')
+                ->orderBy('id', 'DESC')
+                ->get()
+                ->getRow();
+
+            $p->current_balance = $lastItem ? (float)$lastItem->balance : (float)$p->allocated_budget;
+
+            $stats = $db->query("
+                SELECT 
+                    SUM(amount_budget_adjust) AS total_adjust,
+                    SUM(amount_borrow) AS total_borrow,
+                    SUM(amount_return_cash) AS total_return_cash,
+                    SUM(amount_return_receipt) AS total_return_receipt,
+                    SUM(amount_direct_withdraw) AS total_direct
+                FROM tb_budget_ledger 
+                WHERE project_id = ?
+            ", [$p->id])->getRow();
+
+            $spent = $stats ? ((float)$stats->total_return_receipt + (float)$stats->total_direct) : 0;
+            $p->total_spent = $spent;
+            $p->total_borrow = $stats ? (float)$stats->total_borrow : 0;
+            $p->used_percent = $p->allocated_budget > 0 ? min(100, round(($p->total_spent / $p->allocated_budget) * 100, 1)) : 0;
+            $p->item_count = $db->table('tb_budget_ledger')->where('project_id', $p->id)->countAllResults();
+
+            $totalAllocated += (float)$p->allocated_budget;
+            $totalBalance   += (float)$p->current_balance;
+            $totalSpent     += (float)$p->total_spent;
+            $totalBorrow    += (float)$p->total_borrow;
+            $totalReturnCash += (float)($stats->total_return_cash ?? 0);
+            $totalReturnReceipt += (float)($stats->total_return_receipt ?? 0);
+        }
+
+        $data['projects']         = $projects;
+        $data['total_projects']   = count($projects);
+        $data['total_allocated']  = $totalAllocated;
+        $data['total_balance']    = $totalBalance;
+        $data['total_spent']      = $totalSpent;
+        $data['total_borrow']     = $totalBorrow;
+        $data['active_borrow']    = max(0, $totalBorrow - $totalReturnCash - $totalReturnReceipt);
+        $data['spent_percent']    = $totalAllocated > 0 ? min(100, round(($totalSpent / $totalAllocated) * 100, 1)) : 0;
+
+        // 8 รายการล่าสุดในทะเบียนคุมเงินงบประมาณ
+        $recentLedgers = $db->table('tb_budget_ledger')
+            ->select('tb_budget_ledger.*, tb_budget_projects.project_code, tb_budget_projects.project_name')
+            ->join('tb_budget_projects', 'tb_budget_projects.id = tb_budget_ledger.project_id', 'left')
+            ->orderBy('tb_budget_ledger.doc_date', 'DESC')
+            ->orderBy('tb_budget_ledger.id', 'DESC')
+            ->limit(8)
+            ->get()
+            ->getResult();
+        $data['recent_ledgers'] = $recentLedgers;
+
+        // ข้อมูลกราฟการเบิกจ่ายรายเดือนจากทะเบียนคุม (Budget Ledger Monthly Trend)
+        $monthlyLedgerTotals = array_fill(1, 12, 0);
+        $chartLedgerQuery = $db->query("
+            SELECT MONTH(doc_date) as month, SUM(amount_return_receipt + amount_direct_withdraw) as total 
+            FROM tb_budget_ledger 
+            WHERE doc_date IS NOT NULL AND doc_date != '0000-00-00'
+            GROUP BY MONTH(doc_date) 
+            ORDER BY MONTH(doc_date) ASC
+        ")->getResult();
+        foreach ($chartLedgerQuery as $row) {
+            if ($row->month >= 1 && $row->month <= 12) {
+                $monthlyLedgerTotals[intval($row->month)] = floatval($row->total);
+            }
+        }
+        $data['monthly_ledger_totals'] = array_values($monthlyLedgerTotals);
+
+        // สรุปยอดตามยุทธศาสตร์ (Strategy Summary)
+        $strategies = $db->table('tb_budget_strategies')
+            ->where('budget_year', $selectedYear)
+            ->orderBy('strategy_no', 'ASC')
+            ->get()
+            ->getResult();
+        
+        foreach ($strategies as &$st) {
+            $stAllocated = 0;
+            $stSpent = 0;
+            foreach ($projects as $pr) {
+                if ($pr->strategy_id == $st->id || (empty($pr->strategy_id) && strpos($pr->strategy_name, "{$st->strategy_no}") !== false)) {
+                    $stAllocated += (float)$pr->allocated_budget;
+                    $stSpent += (float)$pr->total_spent;
+                }
+            }
+            $st->allocated = $stAllocated;
+            $st->spent = $stSpent;
+            $st->percent = $stAllocated > 0 ? min(100, round(($stSpent / $stAllocated) * 100, 1)) : 0;
+        }
+        $data['strategies_summary'] = $strategies;
+
+        // =============================================
+        // 2. ทะเบียนสั่งซื้อ / สั่งจ้าง (Orders)
+        // =============================================
+        $builder = $db->table('tb_purchase_hire_orders');
         $data['recent_orders'] = $builder->orderBy('order_date', 'DESC')->orderBy('id', 'DESC')->limit(5)->get()->getResult();
         
-        // Calculate stats
         $totalAmountResult = $db->query("SELECT SUM(amount) AS total FROM tb_purchase_hire_orders")->getRow();
-        $data['total_amount'] = $totalAmountResult ? ($totalAmountResult->total ?: 0) : 0;
-        
+        $data['total_orders_amount'] = $totalAmountResult ? ($totalAmountResult->total ?: 0) : 0;
         $data['total_orders'] = $builder->countAllResults(false);
         
         $sentResult = $db->query("SELECT COUNT(*) AS total FROM tb_purchase_hire_orders WHERE system_sent_status = 'ส่งลงระบบ/ทำฎีกาแล้ว'")->getRow();
         $data['total_sent'] = $sentResult ? $sentResult->total : 0;
-        
-        // Monthly chart data (budget utilization)
-        $chartQuery = $db->query("SELECT MONTH(order_date) as month, SUM(amount) as total FROM tb_purchase_hire_orders GROUP BY MONTH(order_date) ORDER BY MONTH(order_date) ASC")->getResult();
-        $monthlyTotals = array_fill(1, 12, 0);
-        foreach ($chartQuery as $row) {
-            $monthlyTotals[intval($row->month)] = floatval($row->total);
-        }
-        $data['monthly_totals'] = array_values($monthlyTotals);
       
-        return view('Admin/AdminLeyout/AdminHeader',$data)
-                .view('Admin/AdminLeyout/AdminMenuLeft')
-                .view('Admin/AdminHome/AdminPageHome')
-                .view('Admin/AdminLeyout/AdminFooter');
+        return view('Admin/AdminLeyout/AdminHeader', $data)
+            . view('Admin/AdminLeyout/AdminMenuLeft', $data)
+            . view('Admin/AdminHome/AdminPageHome', $data)
+            . view('Admin/AdminLeyout/AdminFooter', $data);
     }
 
     public function registry($type = 'purchase')
@@ -80,9 +191,9 @@ class ConAdminHome extends BaseController
             ->get()->getResult();
         
         return view('Admin/AdminLeyout/AdminHeader',$data)
-                .view('Admin/AdminLeyout/AdminMenuLeft')
-                .view('Admin/AdminHome/AdminPageRegistry')
-                .view('Admin/AdminLeyout/AdminFooter');
+                .view('Admin/AdminLeyout/AdminMenuLeft', $data)
+                .view('Admin/AdminHome/AdminPageRegistry', $data)
+                .view('Admin/AdminLeyout/AdminFooter', $data);
     }
 
     public function saveOrder()

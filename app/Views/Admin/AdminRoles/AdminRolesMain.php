@@ -136,11 +136,12 @@
                                                 <td class="text-center text-muted fs-8"><?= $idx + 1 ?></td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <div class="avatar avatar-sm me-2">
+                                                        <div class="avatar avatar-sm me-2" style="width:42px;height:42px;flex:0 0 42px;">
                                                             <?php if (!empty($t['img'])): ?>
-                                                                <img src="https://skj.ac.th/uploads/personnel/<?= esc($t['img']) ?>" alt="Avatar" class="rounded-circle" style="object-fit: cover;">
+                                                                <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= esc($t['img']) ?>" alt="<?= esc($t['fullname']) ?>" class="rounded-circle w-100 h-100" style="object-fit: cover;" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                                <span class="avatar-initial rounded-circle bg-label-primary font-weight-bold" style="display:none;align-items:center;justify-content:center;width:100%;height:100%;"><?= mb_substr($t['fullname'], 0, 1, 'UTF-8') ?></span>
                                                             <?php else: ?>
-                                                                <span class="avatar-initial rounded-circle bg-label-primary font-weight-bold">
+                                                                <span class="avatar-initial rounded-circle bg-label-primary font-weight-bold" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
                                                                     <?= mb_substr($t['fullname'], 0, 1, 'UTF-8') ?>
                                                                 </span>
                                                             <?php endif; ?>

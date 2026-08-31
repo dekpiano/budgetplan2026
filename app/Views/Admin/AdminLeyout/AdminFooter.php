@@ -87,6 +87,14 @@
     <?php if($uri->getSegment(2) == 'BudgetLedger') : ?>
     <script src="<?=base_url()?>/assets/js/Admin/AdminBudgetLedger/AdminBudgetLedger.js?v=<?= time(); ?>"></script>
     <?php endif;?>
+    <?php if($uri->getSegment(2) == 'BudgetOrdinance') : ?>
+        <?php if($uri->getSegment(3) == 'Oil' || empty($uri->getSegment(3))) : ?>
+        <script src="<?=base_url()?>/assets/js/Admin/AdminBudgetOrdinance/Oil.js?v=<?= time(); ?>"></script>
+        <?php endif;?>
+        <?php if($uri->getSegment(3) == 'Travel') : ?>
+        <script src="<?=base_url()?>/assets/js/Admin/AdminBudgetOrdinance/Travel.js?v=<?= time(); ?>"></script>
+        <?php endif;?>
+    <?php endif;?>
 
     <script>
 $('#pers_id_card').inputmask('9-9999-99999-99-9');

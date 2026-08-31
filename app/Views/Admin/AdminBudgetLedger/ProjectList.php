@@ -135,18 +135,18 @@
                     </a>
                 </div>
 
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover align-middle mb-0">
+                <div class="table-responsive p-1 p-md-2">
+                    <table class="table table-hover align-middle mb-0 table-fit-screen">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 80px;" class="text-center">รหัส</th>
-                                <th>ชื่อโครงการ / กิจกรรม</th>
-                                <th>แหล่งเงินงบประมาณ</th>
-                                <th class="text-end">งบตั้งต้น</th>
-                                <th class="text-end">จ่ายจริงแล้ว</th>
-                                <th class="text-end">คงเหลือสุทธิ</th>
-                                <th class="text-center">รายการ</th>
-                                <th class="text-center" style="width: 140px;">การจัดการ</th>
+                                <th style="width: 7%;" class="text-center">รหัส</th>
+                                <th style="width: 28%;">ชื่อโครงการ / กิจกรรม</th>
+                                <th style="width: 17%;">แหล่งเงินงบประมาณ</th>
+                                <th class="text-end" style="width: 12%;">งบตั้งต้น</th>
+                                <th class="text-end" style="width: 12%;">จ่ายจริงแล้ว</th>
+                                <th class="text-end" style="width: 12%;">คงเหลือสุทธิ</th>
+                                <th class="text-center" style="width: 6%;">รายการ</th>
+                                <th class="text-center" style="width: 6%;">การจัดการ</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -117,16 +117,16 @@
                                     <?php endif; ?>
                                 </div>
                             <?php else: ?>
-                                <div class="table-responsive">
-                                    <table id="assignedPersonnelTable" class="table table-hover align-middle" style="width:100%">
+                                <div class="table-responsive p-1 p-md-2">
+                                    <table id="assignedPersonnelTable" class="table table-hover align-middle mb-0 table-fit-screen">
                                         <thead>
                                             <tr class="table-light text-secondary">
-                                                <th style="width: 50px;" class="text-center">#</th>
-                                                <th style="width: 280px;">ชื่อ - สกุล บุคลากร</th>
-                                                <th style="width: 200px;">ตำแหน่ง / กลุ่มสาระฯ</th>
-                                                <th>ระบบที่บุคลากรสามารถทำงานได้</th>
+                                                <th style="width: 5%;" class="text-center">#</th>
+                                                <th style="width: 25%;">ชื่อ - สกุล บุคลากร</th>
+                                                <th style="width: 20%;">ตำแหน่ง / กลุ่มสาระฯ</th>
+                                                <th style="width: 38%;">ระบบที่บุคลากรสามารถทำงานได้</th>
                                                 <?php if (auth_is_superadmin()): ?>
-                                                <th style="width: 140px;" class="text-center">จัดการ</th>
+                                                <th style="width: 12%;" class="text-center">จัดการ</th>
                                                 <?php endif; ?>
                                             </tr>
                                         </thead>

@@ -696,7 +696,10 @@ $(document).ready(function () {
             var d = selectedDates[0];
             var day = d.getDate();
             var m = thaiMonths[d.getMonth()];
-            var y = d.getFullYear() + 543;
+            var y = d.getFullYear();
+            if (y < 2400) {
+                y += 543;
+            }
             instance.altInput.value = day + ' ' + m + ' ' + y;
         }
     }
@@ -708,7 +711,7 @@ $(document).ready(function () {
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "Y-m-d",
-            altInputClass: "form-control selector-date",
+            altInputClass: "form-control selector-date bg-white",
             onChange: function(selectedDates, dateStr, instance) {
                 formatThaiBuddhistAlt(selectedDates, instance);
             },
@@ -725,6 +728,9 @@ $(document).ready(function () {
             onOpen: function(selectedDates, dateStr, instance) {
                 formatThaiBuddhistAlt(selectedDates, instance);
                 updateBuddhistYearInCalendar(instance);
+            },
+            onClose: function(selectedDates, dateStr, instance) {
+                formatThaiBuddhistAlt(selectedDates, instance);
             }
         });
     }

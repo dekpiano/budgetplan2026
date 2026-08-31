@@ -201,6 +201,56 @@
         color: #a0aec0 !important;
     }
 
+    /* ─── Sidebar Sub-menu Tree Hierarchy & Fix Overlapping ::before ─── */
+    .bg-menu-theme .menu-inner > .menu-item.open .menu-item.open > .menu-toggle::before,
+    .bg-menu-theme .menu-inner > .menu-item.open .menu-item.active > .menu-link::before,
+    .bg-menu-theme .menu-sub > .menu-item > .menu-link::before,
+    .bg-menu-theme .menu-sub > .menu-item > .menu-toggle::before,
+    .menu-sub .menu-link::before,
+    .menu-sub .menu-toggle::before {
+        display: none !important;
+        content: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    .menu-sub {
+        border-left: 2px dashed rgba(251, 140, 0, 0.35) !important;
+        margin-left: 24px !important;
+        padding-left: 6px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+        background: rgba(251, 140, 0, 0.02) !important;
+        border-radius: 0 12px 12px 0 !important;
+    }
+    .menu-sub .menu-item .menu-link {
+        font-size: 0.84rem !important;
+        padding: 8px 12px !important;
+        margin: 2px 6px !important;
+        border-radius: 8px !important;
+        color: #5d6d7e !important;
+        position: relative;
+    }
+    .menu-sub .menu-item .menu-link:hover {
+        background-color: rgba(251, 140, 0, 0.1) !important;
+        color: #e65100 !important;
+        transform: translateX(3px);
+    }
+    .menu-sub .menu-item.active > .menu-link {
+        background: linear-gradient(135deg, rgba(251, 140, 0, 0.18) 0%, rgba(251, 140, 0, 0.08) 100%) !important;
+        color: #e65100 !important;
+        font-weight: 700 !important;
+        border-left: 3px solid #FB8C00 !important;
+        box-shadow: 0 2px 8px rgba(251, 140, 0, 0.12) !important;
+    }
+    .menu-sub .menu-item .menu-link i {
+        font-size: 1.05rem !important;
+        transition: transform 0.2s ease;
+    }
+    .menu-sub .menu-item .menu-link:hover i {
+        transform: scale(1.15);
+    }
+
     /* ─── Navbar ─── */
     .layout-navbar {
         background: rgba(255, 255, 255, 0.92) !important;
@@ -235,8 +285,48 @@
         background: rgba(251, 140, 0, 0.2);
         border-radius: 10px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(251, 140, 0, 0.4);
+    /* ─── Global Responsive Single Screen Table Fit (No Horizontal Scroll) ─── */
+    .table-fit-screen,
+    .table-responsive > .table:not(.table-scroll-explicit) {
+        width: 100% !important;
+        table-layout: auto;
+        white-space: normal !important;
+    }
+    .table-fit-screen th, .table-fit-screen td,
+    .table-responsive > .table:not(.table-scroll-explicit) th,
+    .table-responsive > .table:not(.table-scroll-explicit) td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        padding: 0.55rem 0.45rem !important;
+        vertical-align: middle !important;
+    }
+    .table-fit-screen th,
+    .table-responsive > .table:not(.table-scroll-explicit) th {
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px;
+    }
+    .table-fit-screen td,
+    .table-responsive > .table:not(.table-scroll-explicit) td {
+        font-size: 0.83rem !important;
+    }
+    .table-responsive {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(251, 140, 0, 0.2) transparent;
+        overflow-x: auto;
+    }
+    .table-responsive::-webkit-scrollbar {
+        height: 5px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: rgba(251, 140, 0, 0.2);
+        border-radius: 10px;
+    }
+
+    /* ─── SweetAlert2 Always on Top ─── */
+    .swal2-container {
+        z-index: 99999 !important;
     }
   </style>
 

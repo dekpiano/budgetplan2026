@@ -147,14 +147,14 @@
 
                                                 <!-- Level 3: Projects Table -->
                                                 <div class="table-responsive mt-2">
-                                                    <table class="table table-sm table-hover align-middle mb-0 text-nowrap" style="font-size: 0.85rem;">
+                                                    <table class="table table-sm table-hover align-middle mb-0 table-fit-screen" style="font-size: 0.83rem;">
                                                         <thead class="table-light">
                                                             <tr>
-                                                                <th style="width: 90px;" class="text-center">รหัสโครงการ</th>
-                                                                <th>ชื่อโครงการ / กิจกรรม</th>
-                                                                <th>แหล่งเงินงบประมาณ</th>
-                                                                <th class="text-end">งบประมาณตั้งต้น</th>
-                                                                <th class="text-center" style="width: 140px;">การจัดการ</th>
+                                                                <th style="width: 12%;" class="text-center">รหัสโครงการ</th>
+                                                                <th style="width: 40%;">ชื่อโครงการ / กิจกรรม</th>
+                                                                <th style="width: 20%;">แหล่งเงินงบประมาณ</th>
+                                                                <th class="text-end" style="width: 16%;">งบประมาณตั้งต้น</th>
+                                                                <th class="text-center" style="width: 12%;">การจัดการ</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>

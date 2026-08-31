@@ -115,3 +115,28 @@ $routes->get('Admin/WorkPerson/BudgetPlan', 'ConAdminWorkPerson::index');
 if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
     require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }
+
+// ทะเบียนคุมงบประมาณข้อบัญญัติ
+$routes->get('Admin/BudgetOrdinance', 'ConAdminBudgetOrdinance::index');
+
+// 1. เบิกค่าน้ำมันเชื้อเพลิง
+$routes->get('Admin/BudgetOrdinance/Oil', 'ConAdminBudgetOrdinance::oil');
+$routes->get('Admin/BudgetOrdinance/Oil/getOilData/(:num)', 'ConAdminBudgetOrdinance::getOilData/$1');
+$routes->get('Admin/BudgetOrdinance/Oil/print', 'ConAdminBudgetOrdinance::printOil');
+$routes->post('Admin/BudgetOrdinance/Oil/Save', 'ConAdminBudgetOrdinance::saveOil');
+$routes->post('Admin/BudgetOrdinance/Oil/Delete/(:num)', 'ConAdminBudgetOrdinance::deleteOil/$1');
+
+// 2. ค่าใช้จ่ายเดินทางไปราชการ
+$routes->get('Admin/BudgetOrdinance/Travel', 'ConAdminBudgetOrdinance::travel');
+$routes->get('Admin/BudgetOrdinance/Travel/getTravelData/(:num)', 'ConAdminBudgetOrdinance::getTravelData/$1');
+$routes->get('Admin/BudgetOrdinance/Travel/print', 'ConAdminBudgetOrdinance::printTravel');
+$routes->post('Admin/BudgetOrdinance/Travel/Save', 'ConAdminBudgetOrdinance::saveTravel');
+$routes->post('Admin/BudgetOrdinance/Travel/Delete/(:num)', 'ConAdminBudgetOrdinance::deleteTravel/$1');
+
+// 3. ค่าลงทะเบียนอบรม / สัมมนา
+$routes->get('Admin/BudgetOrdinance/Registration', 'ConAdminBudgetOrdinance::registration');
+$routes->get('Admin/BudgetOrdinance/Registration/getRegistrationData/(:num)', 'ConAdminBudgetOrdinance::getRegistrationData/$1');
+$routes->get('Admin/BudgetOrdinance/Registration/print', 'ConAdminBudgetOrdinance::printRegistration');
+$routes->post('Admin/BudgetOrdinance/Registration/Save', 'ConAdminBudgetOrdinance::saveRegistration');
+$routes->post('Admin/BudgetOrdinance/Registration/Delete/(:num)', 'ConAdminBudgetOrdinance::deleteRegistration/$1');
+

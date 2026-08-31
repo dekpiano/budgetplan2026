@@ -308,6 +308,50 @@ $uri         = $uri ?? service('uri');
             opacity: 0;
             visibility: hidden;
         }
+
+        /* ─── Global Responsive Single Screen Table Fit (No Horizontal Scroll) ─── */
+        .table-fit-screen,
+        .table-responsive > .table:not(.table-scroll-explicit) {
+            width: 100% !important;
+            table-layout: auto;
+            white-space: normal !important;
+        }
+        .table-fit-screen th, .table-fit-screen td,
+        .table-responsive > .table:not(.table-scroll-explicit) th,
+        .table-responsive > .table:not(.table-scroll-explicit) td {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            padding: 0.55rem 0.45rem !important;
+            vertical-align: middle !important;
+        }
+        .table-fit-screen th,
+        .table-responsive > .table:not(.table-scroll-explicit) th {
+            font-size: 0.82rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.2px;
+        }
+        .table-fit-screen td,
+        .table-responsive > .table:not(.table-scroll-explicit) td {
+            font-size: 0.83rem !important;
+        }
+        .table-responsive {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 140, 0, 0.2) transparent;
+            overflow-x: auto;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 5px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(251, 140, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        /* ─── SweetAlert2 Always on Top ─── */
+        .swal2-container {
+            z-index: 9999999 !important;
+        }
     </style>
 </head>
 

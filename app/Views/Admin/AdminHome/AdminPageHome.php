@@ -281,11 +281,9 @@
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
-                                            <tr>
-                                                <td colspan="8" class="text-center py-5 text-muted">
-                                                    <i class="bx bx-folder-open fs-1 mb-2 d-block opacity-50"></i>
-                                                    ยังไม่มีข้อมูลโครงการในปีงบประมาณนี้
-                                                </td>
+                                            <tr class="no-project-data">
+                                                <td class="text-center py-5 text-muted"><i class="bx bx-folder-open fs-1 mb-2 d-block opacity-50"></i>ยังไม่มีข้อมูลโครงการในปีงบประมาณนี้</td>
+                                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
@@ -298,83 +296,6 @@
 
             <!-- 4. Recent Ledger Transactions & Recent Orders -->
             <div class="row mb-5 animate-fade-in-up" style="animation-delay: 0.2s;">
-                <!-- Recent 8 Ledger Transactions -->
-                <div class="col-lg-7 mb-4">
-                    <div class="card border-0 shadow-sm h-100 rounded-4">
-                        <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center justify-content-between">
-                            <div>
-                                <h5 class="mb-1 fw-bold text-dark"><i class="bx bx-time-five text-primary me-2"></i>รายการล่าสุดในทะเบียนคุม</h5>
-                                <p class="text-muted fs-8 mb-0">แสดงประวัติการทำรายการเบิกจ่าย/ยืมเงินล่าสุด</p>
-                            </div>
-                            <a href="<?= base_url('Admin/BudgetLedger'); ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">ดูทะเบียนคุม</a>
-                        </div>
-                        <div class="card-body px-4 pb-4">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr class="text-secondary fs-8">
-                                            <th style="width: 85px;" class="text-center">วันที่</th>
-                                            <th>โครงการ / รายการ</th>
-                                            <th class="text-end" style="width: 110px;">จำนวนเงิน</th>
-                                            <th class="text-end" style="width: 110px;">คงเหลือ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="fs-8">
-                                        <?php if (!empty($recent_ledgers)): ?>
-                                            <?php foreach ($recent_ledgers as $lg): ?>
-                                                <tr>
-                                                    <td class="text-center text-nowrap">
-                                                        <?php
-                                                            if (!empty($lg->doc_date) && $lg->doc_date !== '0000-00-00') {
-                                                                $d = explode('-', $lg->doc_date);
-                                                                echo count($d) === 3 ? "{$d[2]}/{$d[1]}/" . ($d[0] + 543) : $lg->doc_date;
-                                                            } else {
-                                                                echo '-';
-                                                            }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <div class="fw-bold text-dark text-truncate" style="max-width: 220px;" title="<?= esc($lg->project_name) ?>">
-                                                            <span class="badge bg-label-secondary font-monospace fs-8 me-1"><?= esc($lg->project_code ?: '-') ?></span>
-                                                            <?= esc($lg->project_name) ?>
-                                                        </div>
-                                                        <small class="text-muted text-truncate d-block" style="max-width: 220px;" title="<?= esc($lg->description) ?>">
-                                                            <?= esc($lg->description ?: '-') ?>
-                                                        </small>
-                                                    </td>
-                                                    <td class="text-end font-monospace">
-                                                        <?php
-                                                            $pay = (float)($lg->amount_return_receipt ?? 0) + (float)($lg->amount_direct_withdraw ?? 0);
-                                                            $bor = (float)($lg->amount_borrow ?? 0);
-                                                            $adj = (float)($lg->amount_budget_adjust ?? 0);
-                                                            if ($pay > 0) {
-                                                                echo '<span class="text-danger fw-bold">- ' . number_format($pay, 2) . '</span>';
-                                                            } elseif ($bor > 0) {
-                                                                echo '<span class="text-warning fw-bold">ยืม ' . number_format($bor, 2) . '</span>';
-                                                            } elseif ($adj > 0) {
-                                                                echo '<span class="text-primary fw-bold">+ ' . number_format($adj, 2) . '</span>';
-                                                            } else {
-                                                                echo '-';
-                                                            }
-                                                        ?>
-                                                    </td>
-                                                    <td class="text-end fw-bold font-monospace <?= ($lg->balance ?? 0) > 0 ? 'text-success' : 'text-muted' ?>">
-                                                        <?= number_format($lg->balance ?? 0, 2) ?>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="4" class="text-center text-muted py-4">ไม่มีรายการบันทึกในระบบขณะนี้</td>
-                                            </tr>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Recent Orders Summary -->
                 <div class="col-lg-5 mb-4">
                     <div class="card border-0 shadow-sm h-100 rounded-4">

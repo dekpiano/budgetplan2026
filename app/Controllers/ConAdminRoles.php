@@ -27,7 +27,7 @@ class ConAdminRoles extends BaseController
         $systems = $DB_Budget->table('tb_admin_systems')
             ->where('admin_system_active', 1)
             ->whereIn('admin_system_code', [
-                'budget_ledger', 'registry_purchase', 'registry_hire',
+                'budget_ledger', 'budget_ordinance', 'registry_purchase', 'registry_hire',
                 'procurement', 'money_receipt', 'budget_structure'
             ])
             ->orderBy('admin_system_level', 'ASC')
@@ -125,7 +125,7 @@ class ConAdminRoles extends BaseController
             ->select('admin_system_code')
             ->where('admin_system_active', 1)
             ->whereIn('admin_system_code', [
-                'budget_ledger', 'registry_purchase', 'registry_hire',
+                'budget_ledger', 'budget_ordinance', 'registry_purchase', 'registry_hire',
                 'procurement', 'money_receipt', 'budget_structure'
             ])
             ->get()->getResultArray();

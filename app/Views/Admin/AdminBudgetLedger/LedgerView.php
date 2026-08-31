@@ -285,23 +285,23 @@
                         <?= count($ledger) ?> รายการบันทึก
                     </span>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle mb-0 text-nowrap" style="font-size: 0.88rem;">
+                <div class="table-responsive p-1 p-md-2">
+                    <table class="table table-bordered table-hover align-middle mb-0 table-fit-screen" style="font-size: 0.82rem;">
                         <thead class="table-light text-center">
                             <tr>
-                                <th rowspan="2" style="vertical-align: middle; width: 110px;">วัน/เดือน/ปี</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 110px;">ที่เอกสาร</th>
-                                <th rowspan="2" style="vertical-align: middle; min-width: 260px;">รายการ</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 110px;">เพิ่ม/ลด</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 110px;">ยืมเงิน</th>
-                                <th colspan="2">เงินงบประมาณรายจ่าย</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 110px;">เบิก</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 120px;">คงเหลือ</th>
-                                <th rowspan="2" style="vertical-align: middle; width: 80px;">จัดการ</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 9%;">วัน/เดือน/ปี</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 10%;">ที่เอกสาร</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 23%;">รายการ</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 9%;">เพิ่ม/ลด</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 9%;">ยืมเงิน</th>
+                                <th colspan="2" style="width: 17%;">เงินงบประมาณรายจ่าย</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 9%;">เบิก</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 9%;">คงเหลือ</th>
+                                <th rowspan="2" style="vertical-align: middle; width: 5%;">จัดการ</th>
                             </tr>
                             <tr>
-                                <th style="width: 105px;">ส่งใช้เงินสด</th>
-                                <th style="width: 105px;">ส่งใช้ใบสำคัญ</th>
+                                <th style="width: 8.5%;">ส่งใช้เงินสด</th>
+                                <th style="width: 8.5%;">ส่งใช้ใบสำคัญ</th>
                             </tr>
                         </thead>
                         <tbody id="ledgerTableBody">

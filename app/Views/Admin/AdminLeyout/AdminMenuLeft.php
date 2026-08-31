@@ -44,6 +44,34 @@
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (auth_is_superadmin() || auth_can_access_system('budget_ordinance')) : ?>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetOrdinance" ? "active open" : "")?>">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-book-bookmark text-warning"></i>
+                        <div data-i18n="Layouts" class="fw-semibold">ทะเบียนคุมงบประมาณเงินข้อบัญญัติ</div>
+                    </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetOrdinance" && $uri->getSegment(3) == "Oil" ? "active" : "")?>">
+                            <a href="<?=base_url('Admin/BudgetOrdinance/Oil');?>" class="menu-link">
+                                <i class="bx bx-gas-pump fs-6 me-2 text-warning"></i>
+                                <div data-i18n="Layouts">เบิกค่าน้ำมันเชื้อเพลิง</div>
+                            </a>
+                        </li>
+                        <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetOrdinance" && $uri->getSegment(3) == "Travel" ? "active" : "")?>">
+                            <a href="<?=base_url('Admin/BudgetOrdinance/Travel');?>" class="menu-link">
+                                <i class="bx bx-briefcase fs-6 me-2 text-warning"></i>
+                                <div data-i18n="Layouts">ค่าใช้จ่ายเดินทางไปราชการ</div>
+                            </a>
+                        </li>
+                        <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetOrdinance" && $uri->getSegment(3) == "Registration" ? "active" : "")?>">
+                            <a href="<?=base_url('Admin/BudgetOrdinance/Registration');?>" class="menu-link">
+                                <i class="bx bx-award fs-6 me-2 text-warning"></i>
+                                <div data-i18n="Layouts">ค่าลงทะเบียนอบรม/สัมมนา</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <?php endif; ?>
                 <?php if (auth_can_manage_plan() || auth_is_superadmin()) : ?>
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "BudgetLedger" && $uri->getSegment(3) == "Structure" ? "active" : "")?>">
                     <a href="<?=base_url('Admin/BudgetLedger/Structure');?>" class="menu-link">

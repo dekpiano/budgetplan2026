@@ -97,7 +97,6 @@ if (!function_exists('auth_is_director')) {
     }
 }
 
-if (!function_exists('auth_can_manage_plan')) {
 if (!function_exists('auth_can_access_system')) {
     /**
      * Check whether the current user is allowed to access a system from the dynamic system catalog.
@@ -128,6 +127,7 @@ if (!function_exists('auth_can_access_system')) {
     }
 }
 
+if (!function_exists('auth_can_manage_plan')) {
     /**
      * Check if current user can manage strategic structure, tactics, and projects.
      * Allowed: superadmin, admin, planner.

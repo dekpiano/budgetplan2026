@@ -84,6 +84,26 @@ class Database extends Config
         'port'     => 3306,
     ];
 
+    public $general = [
+        'DSN'      => '',
+        'hostname' => 'skj2025_db',
+        'username' => 'root',
+        'password' => 'rootpassword',
+        'database' => 'skjacth_general',
+        'DBDriver' => 'MySQLi',
+        'DBPrefix' => '',
+        'pConnect' => false,
+        'DBDebug'  => true,
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'port'     => 3306,
+    ];
+
     /**
      * This database connection is used when
      * running PHPUnit database tests.

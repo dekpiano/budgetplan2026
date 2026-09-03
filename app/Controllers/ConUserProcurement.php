@@ -19,8 +19,10 @@ class ConUserProcurement extends BaseController
 
     public function ProcurementProcess()
     {
+        helper('auth');
         if (!auth_can_access_system('procurement')) {
-            return redirect()->to(base_url('Admin/Home'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงระบบจัดซื้อจัดจ้าง');
+            $target = auth_is_admin() ? base_url('Admin/Home') : base_url();
+            return redirect()->to($target)->with('error', 'คุณไม่มีสิทธิ์เข้าถึงระบบจัดซื้อจัดจ้าง');
         }
         $session = session();
         $database = \Config\Database::connect('personnel');
@@ -40,8 +42,10 @@ class ConUserProcurement extends BaseController
 
     public function registry($type = 'purchase')
     {
+        helper('auth');
         if (!auth_can_access_system('procurement')) {
-            return redirect()->to(base_url('Admin/Home'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงทะเบียนจัดซื้อจัดจ้าง');
+            $target = auth_is_admin() ? base_url('Admin/Home') : base_url();
+            return redirect()->to($target)->with('error', 'คุณไม่มีสิทธิ์เข้าถึงทะเบียนจัดซื้อจัดจ้าง');
         }
         $session = session();
         $data = $this->DataMain();
@@ -93,8 +97,10 @@ class ConUserProcurement extends BaseController
 
     public function printOrder($id)
     {
+        helper('auth');
         if (!auth_can_access_system('procurement')) {
-            return redirect()->to(base_url('Admin/Home'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงเอกสารจัดซื้อจัดจ้าง');
+            $target = auth_is_admin() ? base_url('Admin/Home') : base_url();
+            return redirect()->to($target)->with('error', 'คุณไม่มีสิทธิ์เข้าถึงเอกสารจัดซื้อจัดจ้าง');
         }
         $db = \Config\Database::connect();
         $order = $db->table('tb_purchase_hire_orders')->where('id', $id)->get()->getRow();

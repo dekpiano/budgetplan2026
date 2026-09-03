@@ -36,11 +36,13 @@ class ConLogin extends BaseController
 
         $session = session();
 
-        // ถ้า login แล้ว redirect ไปหน้า admin เลย
+        helper('auth');
+        // ถ้า login แล้ว redirect ไปหน้า admin หรือหน้าแรก
         if ($session->get('logged_in')) {
-            if (in_array($session->get('status'), ['admin', 'manager', 'superadmin'])) {
+            if (in_array($session->get('status'), ['admin', 'manager', 'superadmin']) || auth_is_admin()) {
                 return redirect()->to(base_url('Admin/Home'));
             }
+            return redirect()->to(base_url());
         }
 
         if($this->request->getVar("return_to") == ""){

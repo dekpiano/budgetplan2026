@@ -13,8 +13,9 @@ class ConAdminHome extends BaseController
 
     public function index()
     {
-        if (!auth_can_access_system('budget_home')) {
-            return redirect()->to(base_url('User/Procurement/Process'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงหน้าหลักระบบงบประมาณ');
+        helper('auth');
+        if (!auth_is_admin()) {
+            return redirect()->to(base_url())->with('error', 'คุณไม่มีสิทธิ์เข้าถึงระบบผู้ดูแล');
         }
         $session = session();
         $data = $this->DataMain();
@@ -159,11 +160,17 @@ class ConAdminHome extends BaseController
 
     public function registry($type = 'purchase')
     {
+        helper('auth');
+        $type = strtolower($type);
+        $typeName = ($type === 'hire') ? 'สั่งจ้าง' : 'สั่งซื้อ';
+        $systemCode = ($type === 'hire') ? 'registry_hire' : 'registry_purchase';
+        if (!auth_can_access_system($systemCode)) {
+            return redirect()->to(base_url('Admin/Home'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงทะเบียนคุมใบ' . $typeName);
+        }
+
         $session = session();
         $data = $this->DataMain();
         
-        $type = strtolower($type);
-        $typeName = ($type === 'hire') ? 'สั่งจ้าง' : 'สั่งซื้อ';
         $data['order_type'] = $typeName;
         $data['type_slug'] = $type;
         $data['title'] = "ทะเบียนคุมใบ" . $typeName;

@@ -29,12 +29,26 @@
                                         แดชบอร์ดติดตามทะเบียนคุมเงินงบประมาณรายจ่าย โครงการ และการจัดซื้อจัดจ้าง โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์
                                     </p>
                                     <div class="d-flex align-items-center gap-2 flex-wrap mt-3">
+                                        <?php if (auth_can_access_system('budget_ledger')) : ?>
                                         <a href="<?= base_url('Admin/BudgetLedger?year=' . ($selected_year ?? '2569')); ?>" class="btn btn-warning rounded-pill px-3 text-dark fw-bold shadow-sm">
                                             <i class="bx bx-book-content me-1"></i> ทะเบียนคุมงบประมาณ
                                         </a>
+                                        <?php endif; ?>
+                                        <?php if (auth_can_manage_plan()) : ?>
                                         <a href="<?= base_url('Admin/BudgetLedger/Structure?year=' . ($selected_year ?? '2569')); ?>" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
                                             <i class="bx bx-sitemap me-1"></i> ตั้งค่ายุทธศาสตร์/โครงการ
                                         </a>
+                                        <?php endif; ?>
+                                        <?php if (auth_can_access_system('budget_ordinance')) : ?>
+                                        <a href="<?= base_url('Admin/BudgetOrdinance/Oil?year=' . ($selected_year ?? '2569')); ?>" class="btn btn-outline-warning rounded-pill px-3 fw-semibold">
+                                            <i class="bx bx-book-bookmark me-1"></i> ทะเบียนคุมเงินข้อบัญญัติ
+                                        </a>
+                                        <?php endif; ?>
+                                        <?php if (auth_can_access_system('procurement')) : ?>
+                                        <a href="<?= base_url('User/Procurement/Process'); ?>" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                                            <i class="bx bx-cart me-1"></i> จัดซื้อจัดจ้าง
+                                        </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">

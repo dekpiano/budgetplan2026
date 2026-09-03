@@ -22,7 +22,7 @@
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
-                <?php if (auth_is_superadmin() || auth_can_access_system('budget_ledger')) : ?>
+                <?php if (auth_is_admin()) : ?>
                 <li class="menu-item <?php echo ($uri->getSegment(2) == "Home"?"active":"")?>">
                     <a href="<?=base_url('Admin/Home');?>" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-home-circle"></i>

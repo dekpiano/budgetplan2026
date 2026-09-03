@@ -85,6 +85,11 @@ class ConAdminBudgetLedger extends BaseController
      */
     public function structure()
     {
+        helper('auth');
+        if (!auth_can_manage_plan()) {
+            return redirect()->to(base_url('Admin/Home'))->with('error', 'คุณไม่มีสิทธิ์เข้าถึงการตั้งค่าโครงสร้างยุทธศาสตร์และโครงการ');
+        }
+
         $data = $this->DataMain();
         $data['title'] = "ตั้งค่าโครงสร้างยุทธศาสตร์ กลยุทธ์ และโครงการ";
 

@@ -100,13 +100,13 @@ if (!function_exists('auth_is_director')) {
 if (!function_exists('auth_can_access_system')) {
     /**
      * Check whether the current user is allowed to access a system from the dynamic system catalog.
-     * Super Admin always has access.
+     * Super Admin and Admin always have access.
      */
     function auth_can_access_system(string $systemCode): bool
     {
         static $cache = [];
         $roles = auth_user_roles();
-        if (in_array('superadmin', $roles, true)) return true;
+        if (in_array('superadmin', $roles, true) || in_array('admin', $roles, true)) return true;
         if (array_key_exists($systemCode, $cache)) return $cache[$systemCode];
 
         $persId = session()->get('pers_id');
@@ -134,7 +134,7 @@ if (!function_exists('auth_can_manage_plan')) {
      */
     function auth_can_manage_plan(): bool
     {
-        return auth_can_access_system('budget_plan');
+        return auth_can_access_system('budget_structure') || auth_can_access_system('budget_plan');
     }
 }
 

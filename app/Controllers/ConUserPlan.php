@@ -40,6 +40,7 @@ class ConUserPlan extends BaseController
             ->orderBy('strategy_no', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($strategies, 'strategy_no');
 
         // ดึงโครงการทั้งหมด พร้อมรายการย่อย
         $projects = $this->db->table('tb_budget_projects')
@@ -47,13 +48,16 @@ class ConUserPlan extends BaseController
             ->orderBy('project_code', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($projects, 'project_code');
 
         foreach ($projects as &$pr) {
-            $pr->sub_items = $this->db->table('tb_budget_project_sub_items')
+            $subItems = $this->db->table('tb_budget_project_sub_items')
                 ->where('project_id', $pr->id)
                 ->orderBy('id', 'ASC')
                 ->get()
                 ->getResult();
+            sort_projects_naturally($subItems, 'item_no');
+            $pr->sub_items = $subItems;
         }
 
         $totalAllocated = 0.0;
@@ -66,6 +70,7 @@ class ConUserPlan extends BaseController
                 ->orderBy('tactic_no', 'ASC')
                 ->get()
                 ->getResult();
+            sort_projects_naturally($tactics, 'tactic_no');
 
             $stTotalBudget = 0.0;
             $stProjectCount = 0;
@@ -74,13 +79,15 @@ class ConUserPlan extends BaseController
                 $tcProjects = array_filter($projects, function ($pr) use ($tc, $st) {
                     return $pr->tactic_id == $tc->id || (empty($pr->tactic_id) && $pr->strategy_name == $st->strategy_name && strpos($pr->strategy_sub, $tc->tactic_no) !== false);
                 });
+                $tcProjects = array_values($tcProjects);
+                sort_projects_naturally($tcProjects, 'project_code');
 
                 $tcBudget = 0.0;
                 foreach ($tcProjects as $p) {
                     $tcBudget += (float)$p->allocated_budget;
                 }
 
-                $tc->projects = array_values($tcProjects);
+                $tc->projects = $tcProjects;
                 $tc->total_budget = $tcBudget;
                 $tc->project_count = count($tcProjects);
 

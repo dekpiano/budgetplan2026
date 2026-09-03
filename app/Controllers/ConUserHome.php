@@ -58,6 +58,7 @@ class ConUserHome extends BaseController
             ->orderBy('project_code', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($projects, 'project_code');
 
         $totalAllocated = 0;
         $totalBalance   = 0;

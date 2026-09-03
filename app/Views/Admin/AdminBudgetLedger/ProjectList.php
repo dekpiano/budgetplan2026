@@ -161,7 +161,7 @@
                             <?php else: ?>
                                 <?php foreach ($projects as $p): ?>
                                     <tr>
-                                        <td class="text-center">
+                                        <td class="text-center" data-order="<?= natural_code_sort_key($p->project_code) ?>">
                                             <span class="badge bg-label-secondary fw-bold rounded-pill px-2 py-1"><?= esc($p->project_code ?: '-') ?></span>
                                         </td>
                                         <td>

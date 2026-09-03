@@ -252,7 +252,7 @@
                                         <?php if (!empty($projects)): ?>
                                             <?php foreach ($projects as $p): ?>
                                                 <tr>
-                                                    <td>
+                                                    <td data-order="<?= natural_code_sort_key($p->project_code) ?>">
                                                         <span class="badge bg-label-primary font-monospace fs-8">
                                                             <?= esc($p->project_code ?: '-') ?>
                                                         </span>

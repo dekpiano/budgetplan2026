@@ -168,3 +168,48 @@ if (!function_exists('get_budget_year')) {
         return (string)$fiscalYear;
     }
 }
+
+if (!function_exists('natural_code_compare')) {
+    /**
+     * เปรียบเทียบรหัส (เช่น รหัสโครงการ 1.1.2 vs 1.1.10, ยุทธศาสตร์ 1 vs 10) แบบธรรมชาติ (Natural Order)
+     */
+    function natural_code_compare(?string $a, ?string $b): int
+    {
+        $aStr = trim((string)$a);
+        $bStr = trim((string)$b);
+        if ($aStr === $bStr) return 0;
+        if ($aStr === '' || $aStr === '-') return 1; // รหัสว่างให้อยู่ท้ายสุด
+        if ($bStr === '' || $bStr === '-') return -1;
+        return strnatcasecmp($aStr, $bStr);
+    }
+}
+
+if (!function_exists('natural_code_sort_key')) {
+    /**
+     * แปลงรหัสโครงการให้เป็น Sort Key สำหรับ data-order ในตาราง DataTables
+     * เช่น '1.1.2' => '00001.00001.00002', '1.1.10' => '00001.00001.00010'
+     */
+    function natural_code_sort_key(?string $code): string
+    {
+        $str = trim((string)$code);
+        if ($str === '' || $str === '-') return '99999';
+        return preg_replace_callback('/\d+/', function ($m) {
+            return str_pad($m[0], 5, '0', STR_PAD_LEFT);
+        }, $str);
+    }
+}
+
+if (!function_exists('sort_projects_naturally')) {
+    /**
+     * จัดเรียง array ของข้อมูลตามรหัส (เช่น project_code, strategy_no, tactic_no) แบบธรรมชาติ
+     */
+    function sort_projects_naturally(array &$items, string $field = 'project_code'): void
+    {
+        usort($items, function ($a, $b) use ($field) {
+            $codeA = is_object($a) ? ($a->$field ?? '') : ($a[$field] ?? '');
+            $codeB = is_object($b) ? ($b->$field ?? '') : ($b[$field] ?? '');
+            return natural_code_compare($codeA, $codeB);
+        });
+    }
+}
+

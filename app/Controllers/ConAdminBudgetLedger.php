@@ -45,6 +45,7 @@ class ConAdminBudgetLedger extends BaseController
             ->orderBy('project_code', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($projects, 'project_code');
 
         foreach ($projects as &$p) {
             $lastItem = $this->db->table('tb_budget_ledger')
@@ -106,6 +107,7 @@ class ConAdminBudgetLedger extends BaseController
             ->orderBy('strategy_no', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($strategies, 'strategy_no');
 
         // ดึงโครงการทั้งหมดในปีที่เลือก พร้อมรายการย่อย (Sub-items)
         $projects = $this->db->table('tb_budget_projects')
@@ -113,13 +115,16 @@ class ConAdminBudgetLedger extends BaseController
             ->orderBy('project_code', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($projects, 'project_code');
 
         foreach ($projects as &$pr) {
-            $pr->sub_items = $this->db->table('tb_budget_project_sub_items')
+            $subItems = $this->db->table('tb_budget_project_sub_items')
                 ->where('project_id', $pr->id)
                 ->orderBy('id', 'ASC')
                 ->get()
                 ->getResult();
+            sort_projects_naturally($subItems, 'item_no');
+            $pr->sub_items = $subItems;
         }
 
         // เชื่อมโยง Hierarchy Tree
@@ -129,11 +134,15 @@ class ConAdminBudgetLedger extends BaseController
                 ->orderBy('tactic_no', 'ASC')
                 ->get()
                 ->getResult();
+            sort_projects_naturally($tactics, 'tactic_no');
 
             foreach ($tactics as &$tc) {
-                $tc->projects = array_filter($projects, function ($pr) use ($tc, $st) {
+                $tcProjects = array_filter($projects, function ($pr) use ($tc, $st) {
                     return $pr->tactic_id == $tc->id || (empty($pr->tactic_id) && $pr->strategy_name == $st->strategy_name && strpos($pr->strategy_sub, $tc->tactic_no) !== false);
                 });
+                $tcProjects = array_values($tcProjects);
+                sort_projects_naturally($tcProjects, 'project_code');
+                $tc->projects = $tcProjects;
             }
             $st->tactics = $tactics;
         }
@@ -157,6 +166,7 @@ class ConAdminBudgetLedger extends BaseController
             ->orderBy('tactic_no', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($tactics, 'tactic_no');
 
         return $this->response->setJSON($tactics);
     }
@@ -488,6 +498,7 @@ class ConAdminBudgetLedger extends BaseController
             ->orderBy('id', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($subItems, 'item_no');
 
         // คำนวณยอดใช้จ่ายแยกตามข้อย่อย
         foreach ($subItems as &$sub) {

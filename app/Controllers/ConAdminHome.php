@@ -38,6 +38,7 @@ class ConAdminHome extends BaseController
             ->orderBy('project_code', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($projects, 'project_code');
 
         $totalAllocated = 0;
         $totalBalance   = 0;
@@ -123,6 +124,7 @@ class ConAdminHome extends BaseController
             ->orderBy('strategy_no', 'ASC')
             ->get()
             ->getResult();
+        sort_projects_naturally($strategies, 'strategy_no');
         
         foreach ($strategies as &$st) {
             $stAllocated = 0;

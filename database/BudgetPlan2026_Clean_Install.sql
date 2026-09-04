@@ -69,12 +69,14 @@ CREATE TABLE tb_budget_projects (
 CREATE TABLE tb_budget_project_sub_items (
  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  project_id INT UNSIGNED NOT NULL,
+ parent_id INT UNSIGNED NULL DEFAULT NULL COMMENT 'รหัสกิจกรรมหลัก (แม่) สำหรับกิจกรรมย่อย',
  item_no VARCHAR(50) NULL,
  item_name VARCHAR(255) NOT NULL,
  allocated_budget DECIMAL(15,2) NOT NULL DEFAULT 0.00,
  created_at DATETIME NULL, updated_at DATETIME NULL,
- PRIMARY KEY (id), KEY idx_subitem_project (project_id),
- CONSTRAINT fk_subitem_project FOREIGN KEY (project_id) REFERENCES tb_budget_projects(id) ON DELETE CASCADE ON UPDATE CASCADE
+ PRIMARY KEY (id), KEY idx_subitem_project (project_id), KEY idx_subitem_parent (parent_id),
+ CONSTRAINT fk_subitem_project FOREIGN KEY (project_id) REFERENCES tb_budget_projects(id) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT fk_subitem_parent FOREIGN KEY (parent_id) REFERENCES tb_budget_project_sub_items(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tb_budget_ledger (

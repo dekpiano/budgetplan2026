@@ -56,8 +56,7 @@ class ConUserPlan extends BaseController
                 ->orderBy('id', 'ASC')
                 ->get()
                 ->getResult();
-            sort_projects_naturally($subItems, 'item_no');
-            $pr->sub_items = $subItems;
+            $pr->sub_items = build_sub_items_tree($subItems);
         }
 
         $totalAllocated = 0.0;

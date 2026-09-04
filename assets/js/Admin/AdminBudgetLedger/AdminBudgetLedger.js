@@ -156,7 +156,13 @@ window.openAddProjectModal = function(strategyId, tacticId, tacticNo) {
     $('#formProject')[0].reset();
     $('#projectId').val('');
     $('#projectStrategySelect').val(strategyId);
-    $('#allocatedBudget').val('0.00');
+    $('#allocatedBudget').val('0.00').prop('readonly', false);
+    $('#mainActivitiesContainer').empty();
+    mainActivityIndex = 0;
+    $('#emptyActivityAlert').show();
+    $('#subItemsTotalRow').addClass('d-none');
+    $('#allocatedBudgetAutoBadge').addClass('d-none');
+    $('#subItemsTotalDisplay').text('0.00 บาท');
     
     window.loadTacticsForProject(strategyId, tacticId);
     $('#modalProjectTitle').html('<i class="bx bx-folder-plus text-warning me-2"></i>1.1.1 เพิ่มโครงการ (กลยุทธ์ ' + tacticNo + ')');
@@ -235,14 +241,22 @@ window.deleteStrategy = function(id) {
     });
 };
 
+window.formatItemLines = function(text) {
+    if (!text) return '';
+    var t = String(text).replace(/\r\n|\r/g, '\n');
+    t = t.replace(/([^\n\r])\s+(?=(\d{1,2}|[๑-๙]{1,2})[\.\)](\s|[^\d\.\s]))/gu, '$1\n');
+    t = t.replace(/([^\n\r])\s+(?=[-•*]\s+)/gu, '$1\n');
+    return t.trim();
+};
+
 window.editTactic = function(data) {
     $('#modalTacticTitle').html('<i class="bx bx-edit text-success me-2"></i>แก้ไขกลยุทธ์');
     $('#tacticId').val(data.id);
     $('#tacticStrategyId').val(data.strategy_id);
     $('#tacticNo').val(data.tactic_no);
     $('#tacticName').val(data.tactic_name);
-    $('#tacticObjective').val(data.objective || '');
-    $('#tacticActions').val(data.actions || '');
+    $('#tacticObjective').val(window.formatItemLines(data.objective || ''));
+    $('#tacticActions').val(window.formatItemLines(data.actions || ''));
     $('#tacticResponsibleAgency').val(data.responsible_agency || '');
     $('#modalAddTactic').modal('show');
 };
@@ -771,11 +785,25 @@ $(document).ready(function () {
         });
     });
 
+    // Format actions & objective on blur
+    $('#tacticActions, #tacticObjective').on('blur', function() {
+        var val = $(this).val();
+        if (val && window.formatItemLines) {
+            $(this).val(window.formatItemLines(val));
+        }
+    });
+
     // ----------------------------------------------------
     // 6. Form Tactic Submit (ระดับ 2)
     // ----------------------------------------------------
     $('#formTactic').on('submit', function (e) {
         e.preventDefault();
+
+        if (window.formatItemLines) {
+            $('#tacticActions').val(window.formatItemLines($('#tacticActions').val()));
+            $('#tacticObjective').val(window.formatItemLines($('#tacticObjective').val()));
+        }
+
         var $btn = $('#btnSubmitTactic');
         setBtnLoading($btn, true, 'บันทึกกลยุทธ์');
 
@@ -844,79 +872,246 @@ $(document).ready(function () {
     });
 
     // ----------------------------------------------------
-    // Sub-items Helper Functions in Modal Project
+    // Hierarchical Activities (Level 4 & 5) in Modal Project
     // ----------------------------------------------------
-    var subItemIndex = 0;
+    var mainActivityIndex = 0;
 
-    function renderSubItemRow(itemNo, itemName, allocatedBudget) {
-        var idx = subItemIndex++;
-        var budgetVal = allocatedBudget !== undefined ? formatMoneyDisplay(allocatedBudget) : '0.00';
-        var html = '<tr class="sub-item-row" data-index="' + idx + '">' +
-            '<td><input type="text" class="form-control form-control-sm sub-item-no" name="sub_items[' + idx + '][item_no]" value="' + (itemNo || '') + '" placeholder="เช่น ๘.๑"></td>' +
-            '<td><input type="text" class="form-control form-control-sm sub-item-name" name="sub_items[' + idx + '][item_name]" value="' + (itemName || '') + '" placeholder="ชื่อรายการ เช่น ค่าอุปกรณ์การเรียน"></td>' +
-            '<td><input type="text" class="form-control form-control-sm text-end input-money sub-item-budget" name="sub_items[' + idx + '][allocated_budget]" value="' + budgetVal + '"></td>' +
-            '<td class="text-center"><button type="button" class="btn btn-xs btn-icon btn-outline-danger rounded-circle btn-remove-sub-item"><i class="bx bx-trash"></i></button></td>' +
-            '</tr>';
-        
-        var $row = $(html);
-        $('#subItemsContainer').append($row);
-
-        // Apply Inputmask
+    function applyInputMask($el) {
         if ($.fn.inputmask) {
-            $row.find('.input-money').inputmask({
-                alias: 'numeric',
+            $el.inputmask({
+                alias: 'decimal',
                 groupSeparator: ',',
                 autoGroup: true,
                 digits: 2,
                 digitsOptional: false,
-                placeholder: '0.00',
+                placeholder: '0',
+                radixPoint: '.',
                 rightAlign: true,
                 allowMinus: false,
                 clearMaskOnLostFocus: false
             });
         }
-
-        updateSubItemsTotal();
     }
 
-    function updateSubItemsTotal() {
-        var rowCount = $('#subItemsContainer tr.sub-item-row').length;
-        if (rowCount > 0) {
-            $('#subItemsTotalRow').show();
-            var total = 0.0;
-            $('#subItemsContainer .sub-item-budget').each(function () {
-                total += parseMoneyValue($(this).val());
+    function renderMainActivity(mainData) {
+        mainData = mainData || {};
+        var mIdx = mainActivityIndex++;
+        var mId = mainData.id || '';
+        var mNo = mainData.item_no || '';
+        var mName = mainData.item_name || '';
+        var mBudget = mainData.allocated_budget !== undefined ? formatMoneyDisplay(mainData.allocated_budget) : '0.00';
+        var hasChildren = mainData.children && mainData.children.length > 0;
+
+        var html = '<div class="main-activity-card p-3 rounded-3 border bg-white shadow-xs mb-2" data-main-index="' + mIdx + '" style="border-color: #e2e8f0;">' +
+            '<input type="hidden" name="sub_items[' + mIdx + '][id]" value="' + mId + '" class="main-id">' +
+            '<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">' +
+                '<div class="d-flex align-items-center gap-2">' +
+                    '<span class="badge bg-primary px-2 py-1 rounded-pill fs-8 fw-bold">' +
+                        '<i class="bx bx-layer me-1"></i>กิจกรรมหลัก' +
+                    '</span>' +
+                    '<span class="badge bg-label-info rounded-pill fs-8 child-counter-badge ' + (hasChildren ? '' : 'd-none') + '">' +
+                        'รวมจาก <span class="child-count">' + (hasChildren ? mainData.children.length : 0) + '</span> กิจกรรมย่อย' +
+                    '</span>' +
+                '</div>' +
+                '<div class="d-flex align-items-center gap-1">' +
+                    '<button type="button" class="btn btn-xs btn-outline-success rounded-pill px-2 btn-add-child-activity">' +
+                        '<i class="bx bx-plus me-1"></i> เพิ่มกิจกรรมย่อย (10.1.2)' +
+                    '</button>' +
+                    '<button type="button" class="btn btn-xs btn-icon btn-outline-danger rounded-circle btn-remove-main-activity" title="ลบกิจกรรมหลักนี้">' +
+                        '<i class="bx bx-trash"></i>' +
+                    '</button>' +
+                '</div>' +
+            '</div>' +
+
+            '<div class="d-flex align-items-center gap-2 flex-nowrap">' +
+                '<div style="width: 120px; flex-shrink: 0;">' +
+                    '<div class="input-group input-group-sm">' +
+                        '<span class="input-group-text bg-light text-muted fw-semibold py-0 px-1.5" style="font-size: 0.76rem;">รหัส</span>' +
+                        '<input type="text" class="form-control form-control-sm main-item-no fw-bold" style="font-size: 0.82rem;" name="sub_items[' + mIdx + '][item_no]" value="' + (mNo || '') + '" placeholder="เช่น 10.1">' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex-grow-1" style="min-width: 0;">' +
+                    '<input type="text" class="form-control form-control-sm main-item-name fw-semibold text-dark" style="font-size: 0.84rem;" name="sub_items[' + mIdx + '][item_name]" value="' + (mName || '') + '" placeholder="ชื่อกิจกรรมหลัก เช่น กิจกรรมวันสำคัญแห่งชาติ">' +
+                '</div>' +
+                '<div style="width: 160px; flex-shrink: 0;">' +
+                    '<div class="input-group input-group-sm">' +
+                        '<span class="input-group-text bg-light text-muted py-0 px-1.5" style="font-size: 0.76rem;">งบ (฿)</span>' +
+                        '<input type="text" class="form-control form-control-sm text-end input-money main-item-budget fw-bold ' + (hasChildren ? 'bg-light text-muted' : 'text-success') + '" style="font-size: 0.82rem;" name="sub_items[' + mIdx + '][allocated_budget]" value="' + mBudget + '" ' + (hasChildren ? 'readonly' : '') + ' placeholder="0.00">' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<div class="child-activities-wrapper mt-3 ps-3 border-start border-3 border-info ' + (hasChildren ? '' : 'd-none') + '">' +
+                '<div class="d-flex align-items-center justify-content-between mb-2">' +
+                    '<small class="text-muted fw-semibold" style="font-size: 0.78rem;"><i class="bx bx-subdirectory-right text-info me-1"></i>รายการกิจกรรมย่อยภายใต้กิจกรรมหลักนี้:</small>' +
+                '</div>' +
+                '<div class="child-activities-container d-flex flex-column gap-2">' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+        var $card = $(html);
+        $('#mainActivitiesContainer').append($card);
+        applyInputMask($card.find('.input-money'));
+
+        if (hasChildren) {
+            $.each(mainData.children, function(cIdx, child) {
+                renderChildActivity($card, child);
             });
-            $('#subItemsTotalDisplay').text(formatMoneyDisplay(total) + ' บาท');
-            
-            // Auto update allocated budget of main project
-            if (total > 0) {
-                $('#allocatedBudget').val(formatMoneyDisplay(total));
-            }
-        } else {
-            $('#subItemsTotalRow').hide();
         }
+
+        updateOverallSubItemsCalculation();
+        return $card;
     }
 
-    $('#btnAddSubItemRow').on('click', function () {
-        renderSubItemRow('', '', 0);
+    function renderChildActivity($mainCard, childData) {
+        childData = childData || {};
+        var mIdx = $mainCard.data('main-index');
+        var cIdx = $mainCard.find('.child-activity-row').length;
+        var cId = childData.id || '';
+        var cNo = childData.item_no || '';
+        var cName = childData.item_name || '';
+        var cBudget = childData.allocated_budget !== undefined ? formatMoneyDisplay(childData.allocated_budget) : '0.00';
+
+        if (!cNo) {
+            var parentNo = $.trim($mainCard.find('.main-item-no').val());
+            if (parentNo) {
+                cNo = parentNo + '.' + (cIdx + 1);
+            }
+        }
+
+        var html = '<div class="child-activity-row p-1.5 px-2 rounded-2 border bg-light d-flex align-items-center gap-2 flex-nowrap" data-child-index="' + cIdx + '">' +
+            '<input type="hidden" name="sub_items[' + mIdx + '][children][' + cIdx + '][id]" value="' + cId + '" class="child-id">' +
+            '<div style="width: 110px; flex-shrink: 0;">' +
+                '<div class="input-group input-group-sm">' +
+                    '<span class="input-group-text bg-white text-info py-0 px-1.5"><i class="bx bx-subdirectory-right"></i></span>' +
+                    '<input type="text" class="form-control form-control-sm child-item-no fw-semibold" style="font-size: 0.80rem;" name="sub_items[' + mIdx + '][children][' + cIdx + '][item_no]" value="' + (cNo || '') + '" placeholder="เช่น 10.1.2">' +
+                '</div>' +
+            '</div>' +
+            '<div class="flex-grow-1" style="min-width: 0;">' +
+                '<input type="text" class="form-control form-control-sm child-item-name" style="font-size: 0.82rem;" name="sub_items[' + mIdx + '][children][' + cIdx + '][item_name]" value="' + (cName || '') + '" placeholder="ชื่อกิจกรรมย่อย เช่น กิจกรรมวันเฉลิมพระชนมพรรษา...">' +
+            '</div>' +
+            '<div style="width: 150px; flex-shrink: 0;">' +
+                '<div class="input-group input-group-sm">' +
+                    '<span class="input-group-text bg-white text-muted py-0 px-1.5" style="font-size: 0.74rem;">งบ (฿)</span>' +
+                    '<input type="text" class="form-control form-control-sm text-end input-money child-item-budget fw-bold text-success" style="font-size: 0.82rem;" name="sub_items[' + mIdx + '][children][' + cIdx + '][allocated_budget]" value="' + cBudget + '" placeholder="0.00">' +
+                '</div>' +
+            '</div>' +
+            '<div style="flex-shrink: 0;">' +
+                '<button type="button" class="btn btn-xs btn-icon btn-outline-danger rounded-circle btn-remove-child-activity" title="ลบกิจกรรมย่อยนี้">' +
+                    '<i class="bx bx-trash"></i>' +
+                '</button>' +
+            '</div>' +
+        '</div>';
+
+        var $row = $(html);
+        var $wrapper = $mainCard.find('.child-activities-wrapper');
+        var $container = $mainCard.find('.child-activities-container');
+        $wrapper.removeClass('d-none');
+        $container.append($row);
+        applyInputMask($row.find('.input-money'));
+
+        recalculateMainCard($mainCard);
+    }
+
+    function recalculateMainCard($mainCard) {
+        var $childRows = $mainCard.find('.child-activity-row');
+        var count = $childRows.length;
+        var $counterBadge = $mainCard.find('.child-counter-badge');
+        var $wrapper = $mainCard.find('.child-activities-wrapper');
+        var $mainBudgetInput = $mainCard.find('.main-item-budget');
+
+        if (count > 0) {
+            $wrapper.removeClass('d-none');
+            $counterBadge.removeClass('d-none').find('.child-count').text(count);
+            
+            var sumChildren = 0.0;
+            $childRows.find('.child-item-budget').each(function () {
+                sumChildren += parseMoneyValue($(this).val());
+            });
+
+            $mainBudgetInput.val(formatMoneyDisplay(sumChildren))
+                .prop('readonly', true)
+                .addClass('bg-light text-muted')
+                .removeClass('text-success');
+        } else {
+            $wrapper.addClass('d-none');
+            $counterBadge.addClass('d-none');
+            $mainBudgetInput.prop('readonly', false)
+                .removeClass('bg-light text-muted')
+                .addClass('text-success');
+        }
+
+        updateOverallSubItemsCalculation();
+    }
+
+    function updateOverallSubItemsCalculation() {
+        var totalCards = $('#mainActivitiesContainer .main-activity-card').length;
+        if (totalCards === 0) {
+            $('#emptyActivityAlert').show();
+            $('#subItemsTotalRow').addClass('d-none');
+            $('#allocatedBudgetAutoBadge').addClass('d-none');
+            $('#allocatedBudget').prop('readonly', false);
+            return;
+        }
+
+        $('#emptyActivityAlert').hide();
+        $('#subItemsTotalRow').removeClass('d-none');
+        $('#allocatedBudgetAutoBadge').removeClass('d-none');
+
+        var grandTotal = 0.0;
+        $('#mainActivitiesContainer .main-activity-card').each(function () {
+            var $card = $(this);
+            var $children = $card.find('.child-activity-row');
+            if ($children.length > 0) {
+                var sumChildren = 0.0;
+                $children.find('.child-item-budget').each(function () {
+                    sumChildren += parseMoneyValue($(this).val());
+                });
+                $card.find('.main-item-budget').val(formatMoneyDisplay(sumChildren));
+                grandTotal += sumChildren;
+            } else {
+                grandTotal += parseMoneyValue($card.find('.main-item-budget').val());
+            }
+        });
+
+        $('#subItemsTotalDisplay').text(formatMoneyDisplay(grandTotal) + ' บาท');
+        $('#allocatedBudget').val(formatMoneyDisplay(grandTotal)).prop('readonly', true);
+    }
+
+    $('#btnAddMainActivity').on('click', function () {
+        renderMainActivity();
     });
 
-    $(document).on('click', '.btn-remove-sub-item', function () {
-        $(this).closest('tr.sub-item-row').remove();
-        updateSubItemsTotal();
+    $(document).on('click', '.btn-add-child-activity', function () {
+        var $card = $(this).closest('.main-activity-card');
+        renderChildActivity($card);
     });
 
-    $(document).on('input keyup change', '.sub-item-budget', function () {
-        updateSubItemsTotal();
+    $(document).on('click', '.btn-remove-main-activity', function () {
+        $(this).closest('.main-activity-card').remove();
+        updateOverallSubItemsCalculation();
+    });
+
+    $(document).on('click', '.btn-remove-child-activity', function () {
+        var $card = $(this).closest('.main-activity-card');
+        $(this).closest('.child-activity-row').remove();
+        recalculateMainCard($card);
+    });
+
+    $(document).on('input keyup change blur', '.child-item-budget', function () {
+        var $card = $(this).closest('.main-activity-card');
+        recalculateMainCard($card);
+    });
+
+    $(document).on('input keyup change blur', '.main-item-budget', function () {
+        updateOverallSubItemsCalculation();
     });
 
     // Edit Project Click
-    $(document).on('click', '.btn-edit-project', function () {
-        var data = $(this).data('project');
-        if (typeof data === 'string') {
-            try { data = JSON.parse(data); } catch (e) {}
-        }
+    var pendingProjectData = null;
+
+    function populateProjectModal(data) {
         $('#modalProjectTitle').html('<i class="bx bx-edit text-warning me-2"></i>แก้ไขโครงการ');
         $('#projectId').val(data.id);
         $('#projectYear').val(data.budget_year);
@@ -925,19 +1120,50 @@ $(document).ready(function () {
         $('#projectCode').val(data.project_code || '');
         $('#projectName').val(data.project_name);
         $('#budgetSource').val(data.budget_source || '');
-        $('#allocatedBudget').val(formatMoneyDisplay(data.allocated_budget));
         
-        // Populate sub-items
-        $('#subItemsContainer').empty();
+        // Always fully reset activities before populating
+        $('#mainActivitiesContainer').empty();
+        mainActivityIndex = 0;
+        $('#subItemsTotalRow').addClass('d-none');
+        $('#allocatedBudgetAutoBadge').addClass('d-none');
+        $('#subItemsTotalDisplay').text('0.00 บาท');
+
         if (data.sub_items && data.sub_items.length > 0) {
             $.each(data.sub_items, function (i, sub) {
-                renderSubItemRow(sub.item_no, sub.item_name, sub.allocated_budget);
+                renderMainActivity(sub);
             });
         }
-        updateSubItemsTotal();
+        
+        updateOverallSubItemsCalculation();
 
-        $('#modalAddProject').modal('show');
+        // If no activities, set allocated budget directly from project data and allow manual editing
+        if (!data.sub_items || data.sub_items.length === 0) {
+            $('#allocatedBudget').val(formatMoneyDisplay(data.allocated_budget)).prop('readonly', false);
+            $('#subItemsTotalRow').addClass('d-none');
+            $('#allocatedBudgetAutoBadge').addClass('d-none');
+            $('#emptyActivityAlert').show();
+        }
+    }
+
+    $(document).on('click', '.btn-edit-project', function () {
+        var data = $(this).data('project');
+        if (typeof data === 'string') {
+            try { data = JSON.parse(data); } catch (e) {}
+        }
+
+        var $modal = $('#modalAddProject');
+        // If modal is currently open or in closing animation, store data and close first
+        // to avoid race condition where hidden.bs.modal wipes the new data
+        if ($modal.hasClass('show') || $modal.hasClass('showing') || $('body').hasClass('modal-open')) {
+            pendingProjectData = data;
+            $modal.modal('hide');
+            return;
+        }
+
+        populateProjectModal(data);
+        $modal.modal('show');
     });
+
 
     // ----------------------------------------------------
     // 8. Form Ledger Item Submit
@@ -1128,11 +1354,26 @@ $(document).ready(function () {
     });
 
     $('#modalAddProject').on('hidden.bs.modal', function () {
+        // If there's pending data from clicking edit while modal was closing, 
+        // populate with new data and reopen immediately (prevents race condition)
+        if (pendingProjectData) {
+            var data = pendingProjectData;
+            pendingProjectData = null;
+            populateProjectModal(data);
+            $('#modalAddProject').modal('show');
+            return;
+        }
+
+        // Normal reset when modal is closed without pending data
         $('#formProject')[0].reset();
         $('#projectId').val('');
-        $('#allocatedBudget').val('0.00');
-        $('#subItemsContainer').empty();
-        $('#subItemsTotalRow').hide();
+        $('#allocatedBudget').val('0.00').prop('readonly', false);
+        $('#mainActivitiesContainer').empty();
+        mainActivityIndex = 0;
+        $('#emptyActivityAlert').show();
+        $('#subItemsTotalRow').addClass('d-none');
+        $('#allocatedBudgetAutoBadge').addClass('d-none');
+        $('#subItemsTotalDisplay').text('0.00 บาท');
         $('#modalProjectTitle').html('<i class="bx bx-folder-plus text-warning me-2"></i>1.1.1 เพิ่มโครงการและงบประมาณ (ระดับที่ 3)');
     });
 

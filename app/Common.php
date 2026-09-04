@@ -213,3 +213,153 @@ if (!function_exists('sort_projects_naturally')) {
     }
 }
 
+if (!function_exists('build_sub_items_tree')) {
+    /**
+     * จัดโครงสร้างรายการกิจกรรมย่อย (sub_items) ให้เป็นลำดับชั้น (แม่-ลูก: กิจกรรมหลัก -> กิจกรรมย่อย)
+     * รองรับทั้งข้อมูลที่มี parent_id และข้อมูลเก่าที่อิงตาม item_no เช่น 10.1 และ 10.1.2
+     */
+    function build_sub_items_tree(array $subItems): array
+    {
+        if (empty($subItems)) {
+            return [];
+        }
+
+        $itemsById = [];
+        $isObject = is_object(reset($subItems));
+
+        foreach ($subItems as $item) {
+            $id = $isObject ? (int)($item->id ?? 0) : (int)($item['id'] ?? 0);
+            if ($isObject) {
+                $item->children = [];
+                $item->is_parent = false;
+            } else {
+                $item['children'] = [];
+                $item['is_parent'] = false;
+            }
+            if ($id > 0) {
+                $itemsById[$id] = $item;
+            }
+        }
+
+        $parents = [];
+        $children = [];
+
+        // ตรวจสอบว่ามีรายการที่ระบุ parent_id หรือไม่
+        $hasExplicitParent = false;
+        foreach ($subItems as $item) {
+            $parentId = $isObject ? ($item->parent_id ?? null) : ($item['parent_id'] ?? null);
+            if (!empty($parentId)) {
+                $hasExplicitParent = true;
+                break;
+            }
+        }
+
+        if ($hasExplicitParent) {
+            foreach ($subItems as $item) {
+                $parentId = $isObject ? ($item->parent_id ?? null) : ($item['parent_id'] ?? null);
+                $parentId = !empty($parentId) ? (int)$parentId : null;
+
+                if ($parentId && isset($itemsById[$parentId])) {
+                    $children[$parentId][] = $item;
+                } else {
+                    $id = $isObject ? (int)($item->id ?? 0) : (int)($item['id'] ?? 0);
+                    $parents[$id] = $item;
+                }
+            }
+        } else {
+            // โครงสร้างเดิม: จับคู่ตาม item_no เช่น 10.1 เป็นแม่ของ 10.1.1, 10.1.2
+            $sorted = $subItems;
+            sort_projects_naturally($sorted, 'item_no');
+
+            foreach ($sorted as $item) {
+                $itemNo = trim($isObject ? ($item->item_no ?? '') : ($item['item_no'] ?? ''));
+                $matchedParentId = null;
+
+                if (!empty($itemNo)) {
+                    foreach ($parents as $pId => $pItem) {
+                        $pNo = trim($isObject ? ($pItem->item_no ?? '') : ($pItem['item_no'] ?? ''));
+                        if (!empty($pNo) && strpos($itemNo, $pNo . '.') === 0) {
+                            $matchedParentId = $pId;
+                            break;
+                        }
+                    }
+                }
+
+                if ($matchedParentId !== null) {
+                    $children[$matchedParentId][] = $item;
+                } else {
+                    $id = $isObject ? (int)($item->id ?? 0) : (int)($item['id'] ?? 0);
+                    $parents[$id] = $item;
+                }
+            }
+        }
+
+        // เชื่อมโยงลูกเข้าหากิจกรรมหลัก และคำนวณงบประมาณรวม
+        foreach ($children as $pId => $childList) {
+            sort_projects_naturally($childList, 'item_no');
+            if (isset($parents[$pId])) {
+                $childSum = 0.0;
+                $childSpent = 0.0;
+                foreach ($childList as $ch) {
+                    $b = (float)($isObject ? ($ch->allocated_budget ?? 0) : ($ch['allocated_budget'] ?? 0));
+                    $s = (float)($isObject ? ($ch->total_spent ?? 0) : ($ch['total_spent'] ?? 0));
+                    $childSum += $b;
+                    $childSpent += $s;
+                }
+
+                if ($isObject) {
+                    $parents[$pId]->children = $childList;
+                    $parents[$pId]->is_parent = true;
+                    if ($childSum > 0 || count($childList) > 0) {
+                        $parents[$pId]->allocated_budget = $childSum;
+                        if (isset($parents[$pId]->total_spent)) {
+                            $parents[$pId]->total_spent = $childSpent;
+                            $parents[$pId]->remaining = $childSum - $childSpent;
+                            $parents[$pId]->percent = $childSum > 0 ? min(100, round(($childSpent / $childSum) * 100, 1)) : 0;
+                        }
+                    }
+                } else {
+                    $parents[$pId]['children'] = $childList;
+                    $parents[$pId]['is_parent'] = true;
+                    if ($childSum > 0 || count($childList) > 0) {
+                        $parents[$pId]['allocated_budget'] = $childSum;
+                    }
+                }
+            }
+        }
+
+        $result = array_values($parents);
+        sort_projects_naturally($result, 'item_no');
+        return $result;
+    }
+}
+
+if (!function_exists('format_item_lines')) {
+    /**
+     * จัดรูปแบบข้อความที่มีหัวข้อย่อยหรือรายการ (เช่น 1. ... 2. ... หรือ ๑. ... ๒. ... หรือ - ... • ...)
+     * ให้แต่ละข้อขึ้นบรรทัดใหม่อย่างเป็นระเบียบสวยงาม
+     *
+     * @param string|null $text
+     * @return string
+     */
+    function format_item_lines(?string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // แปลง \r\n หรือ \r ให้เป็น \n มาตรฐาน
+        $t = str_replace(["\r\n", "\r"], "\n", $text);
+
+        // ขึ้นบรรทัดใหม่ก่อนข้อเลข เช่น ' 2. ', ' 2) ', ' ๒. ', ' ๒) '
+        // โดยไม่ตัดเลขทศนิยม เช่น ' 2.5 ล้านบาท' หรือ 'เกรด 3.75'
+        $t = preg_replace('/([^\n\r])\s+(?=(\d{1,2}|[๑-๙]{1,2})[\.\)](\s|[^\d\.\s]))/u', "$1\n", $t);
+
+        // ดักจับเครื่องหมาย bullet เช่น ' - ' หรือ ' • ' หรือ ' * '
+        $t = preg_replace('/([^\n\r])\s+(?=[-•*]\s+)/u', "$1\n", $t);
+
+        return trim($t);
+    }
+}
+
+

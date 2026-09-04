@@ -148,41 +148,81 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.86rem;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.82rem;">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 120px;" class="text-center">ข้อย่อย</th>
-                                    <th>ชื่อรายการ / กิจกรรม</th>
-                                    <th class="text-end" style="width: 140px;">งบจัดสรร</th>
-                                    <th class="text-end" style="width: 140px;">จ่ายจริง</th>
-                                    <th class="text-end" style="width: 150px;">คงเหลือ</th>
-                                    <th style="width: 160px;" class="text-center">สัดส่วนการใช้</th>
+                                    <th style="width: 90px;" class="text-center text-nowrap">ข้อย่อย</th>
+                                    <th style="width: auto;">ชื่อรายการ / กิจกรรม</th>
+                                    <th class="text-end text-nowrap" style="width: 130px;">งบจัดสรร</th>
+                                    <th class="text-end text-nowrap" style="width: 130px;">จ่ายจริง</th>
+                                    <th class="text-end text-nowrap" style="width: 130px;">คงเหลือ</th>
+                                    <th style="width: 140px;" class="text-center text-nowrap">สัดส่วนการใช้</th>
                                 </tr>
                             </thead>
                             <tbody id="subItemsSummaryBody">
                                 <?php foreach ($sub_items as $sub): ?>
-                                <tr>
-                                    <td class="text-center">
-                                        <span class="badge bg-label-dark fw-bold"><?= esc($sub->item_no ?: '-') ?></span>
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold text-dark"><?= esc($sub->item_name) ?></span>
-                                    </td>
-                                    <td class="text-end fw-semibold text-primary"><?= number_format($sub->allocated_budget, 2) ?> ฿</td>
-                                    <td class="text-end fw-semibold text-danger"><?= number_format($sub->total_spent, 2) ?> ฿</td>
-                                    <td class="text-end fw-bold <?= $sub->remaining < 0 ? 'text-danger' : 'text-success' ?>">
-                                        <?= number_format($sub->remaining, 2) ?> ฿
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height: 6px;">
-                                                <div class="progress-bar <?= $sub->percent >= 90 ? 'bg-danger' : ($sub->percent >= 50 ? 'bg-warning' : 'bg-success') ?>" 
-                                                     role="progressbar" style="width: <?= $sub->percent ?>%"></div>
+                                    <?php $hasChildren = !empty($sub->children); ?>
+                                    <tr class="<?= $hasChildren ? 'table-light fw-bold' : '' ?>">
+                                        <td class="text-center text-nowrap">
+                                            <span class="badge <?= $hasChildren ? 'bg-primary text-white' : 'bg-label-dark' ?> fw-bold font-monospace">
+                                                <?= esc($sub->item_no ?: '-') ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark <?= $hasChildren ? 'fw-bold' : 'fw-semibold' ?>" style="font-size: 0.85rem;">
+                                                <?= esc($sub->item_name) ?>
+                                            </span>
+                                            <?php if ($hasChildren): ?>
+                                                <span class="badge bg-label-info rounded-pill py-0 px-1.5 ms-1 fs-9 text-nowrap">
+                                                    <?= count($sub->children) ?> กิจกรรมย่อย
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-end fw-bold text-primary text-nowrap"><?= number_format($sub->allocated_budget, 2) ?> ฿</td>
+                                        <td class="text-end fw-bold text-danger text-nowrap"><?= number_format($sub->total_spent, 2) ?> ฿</td>
+                                        <td class="text-end fw-bold text-nowrap <?= $sub->remaining < 0 ? 'text-danger' : 'text-success' ?>">
+                                            <?= number_format($sub->remaining, 2) ?> ฿
+                                        </td>
+                                        <td class="text-center text-nowrap">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress-bar <?= $sub->percent >= 90 ? 'bg-danger' : ($sub->percent >= 50 ? 'bg-warning' : 'bg-success') ?>" 
+                                                         role="progressbar" style="width: <?= $sub->percent ?>%"></div>
+                                                </div>
+                                                <span class="fs-8 fw-semibold text-muted text-nowrap"><?= $sub->percent ?>%</span>
                                             </div>
-                                            <span class="fs-8 fw-semibold text-muted"><?= $sub->percent ?>%</span>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                    <?php if ($hasChildren): ?>
+                                        <?php foreach ($sub->children as $child): ?>
+                                            <tr>
+                                                <td class="text-center text-nowrap">
+                                                    <span class="badge bg-label-info py-0.5 px-2 fw-semibold fs-8 font-monospace">
+                                                        <i class="bx bx-subdirectory-right me-0.5"></i><?= esc($child->item_no ?: '-') ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-dark ps-2" style="font-size: 0.81rem;">
+                                                        <?= esc($child->item_name) ?>
+                                                    </span>
+                                                </td>
+                                                <td class="text-end text-muted small text-nowrap"><?= number_format($child->allocated_budget, 2) ?> ฿</td>
+                                                <td class="text-end text-danger small text-nowrap"><?= number_format($child->total_spent, 2) ?> ฿</td>
+                                                <td class="text-end small text-nowrap <?= $child->remaining < 0 ? 'text-danger fw-bold' : 'text-success' ?>">
+                                                    <?= number_format($child->remaining, 2) ?> ฿
+                                                </td>
+                                                <td class="text-center text-nowrap">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="progress flex-grow-1" style="height: 5px;">
+                                                            <div class="progress-bar <?= $child->percent >= 90 ? 'bg-danger' : ($child->percent >= 50 ? 'bg-warning' : 'bg-info') ?>" 
+                                                                 role="progressbar" style="width: <?= $child->percent ?>%"></div>
+                                                        </div>
+                                                        <span class="fs-9 text-muted text-nowrap"><?= $child->percent ?>%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
@@ -516,9 +556,19 @@
                             <select class="form-select border-warning bg-light" name="sub_item_id" id="ledgerSubItemId">
                                 <option value="">-- ภาพรวมโครงการ (ไม่ระบุข้อย่อย) --</option>
                                 <?php foreach ($sub_items as $sub): ?>
-                                    <option value="<?= $sub->id ?>" data-no="<?= esc($sub->item_no) ?>" data-name="<?= esc($sub->item_name) ?>" data-budget="<?= $sub->allocated_budget ?>">
-                                        [ <?= esc($sub->item_no ?: '-') ?> ] <?= esc($sub->item_name) ?> (งบ <?= number_format($sub->allocated_budget, 2) ?> ฿)
-                                    </option>
+                                    <?php if (!empty($sub->children)): ?>
+                                        <optgroup label="[ <?= esc($sub->item_no ?: '-') ?> ] <?= esc($sub->item_name) ?> (รวม <?= number_format($sub->allocated_budget, 2) ?> ฿)">
+                                            <?php foreach ($sub->children as $child): ?>
+                                                <option value="<?= $child->id ?>" data-no="<?= esc($child->item_no) ?>" data-name="<?= esc($child->item_name) ?>" data-budget="<?= $child->allocated_budget ?>">
+                                                    &nbsp;&nbsp;↳ [ <?= esc($child->item_no ?: '-') ?> ] <?= esc($child->item_name) ?> (งบ <?= number_format($child->allocated_budget, 2) ?> ฿ | เหลือ <?= number_format($child->remaining, 2) ?> ฿)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php else: ?>
+                                        <option value="<?= $sub->id ?>" data-no="<?= esc($sub->item_no) ?>" data-name="<?= esc($sub->item_name) ?>" data-budget="<?= $sub->allocated_budget ?>">
+                                            [ <?= esc($sub->item_no ?: '-') ?> ] <?= esc($sub->item_name) ?> (งบ <?= number_format($sub->allocated_budget, 2) ?> ฿ | เหลือ <?= number_format($sub->remaining, 2) ?> ฿)
+                                        </option>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
                             <small class="text-muted fs-8">หากเลือกรายการย่อย ระบบจะช่วยใส่ชื่อข้อย่อยในช่องวัตถุประสงค์ให้อัตโนมัติ</small>

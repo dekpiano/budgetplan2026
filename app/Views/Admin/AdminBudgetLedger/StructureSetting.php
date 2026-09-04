@@ -15,7 +15,7 @@
                             <h4 class="fw-bold mb-1" style="font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;">
                                 <i class="bx bx-sitemap text-primary me-2"></i>ตั้งค่าโครงสร้างยุทธศาสตร์ กลยุทธ์ และโครงการ
                             </h4>
-                            <p class="text-muted fs-7 mb-0">กำหนดและเรียงลำดับ: <b>1. ยุทธศาสตร์</b> &rarr; <b>1.1 กลยุทธ์</b> &rarr; <b>1.1.1 โครงการ/งบประมาณ</b></p>
+                            <p class="text-muted fs-7 mb-0">กำหนดและเรียงลำดับ: <b>1. ยุทธศาสตร์</b> &rarr; <b>1.1 กลยุทธ์</b> &rarr; <b>1.1.1 โครงการ</b> &rarr; <b>10.1 กิจกรรมหลัก</b> &rarr; <b>10.1.2 กิจกรรมย่อย</b></p>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
                             <!-- Year Filter -->
@@ -131,87 +131,106 @@
                                                 <?php if (!empty($tc->objective) || !empty($tc->actions)): ?>
                                                     <div class="row g-2 mt-2 mb-2 p-2 rounded bg-light text-muted fs-8">
                                                         <?php if (!empty($tc->objective)): ?>
-                                                            <div class="col-md-6">
-                                                                <b class="text-dark d-block"><i class="bx bx-target-lock text-primary me-1"></i>วัตถุประสงค์:</b>
-                                                                <div class="ps-3" style="white-space: pre-line; line-height: 1.5;"><?= esc($tc->objective) ?></div>
+                                                            <div class="<?= !empty($tc->actions) ? 'col-12 col-md-6' : 'col-12' ?>">
+                                                                <b class="text-dark d-block mb-1"><i class="bx bx-target-lock text-primary me-1"></i>วัตถุประสงค์:</b>
+                                                                <div class="ps-3 text-secondary" style="white-space: pre-line; line-height: 1.6;"><?= esc(format_item_lines($tc->objective)) ?></div>
                                                             </div>
                                                         <?php endif; ?>
                                                         <?php if (!empty($tc->actions)): ?>
-                                                            <div class="col-md-6">
-                                                                <b class="text-dark d-block"><i class="bx bx-task text-success me-1"></i>งานที่ทำ / แนวทางการดำเนินงาน:</b>
-                                                                <div class="ps-3" style="white-space: pre-line; line-height: 1.5;"><?= esc($tc->actions) ?></div>
+                                                            <div class="<?= !empty($tc->objective) ? 'col-12 col-md-6' : 'col-12' ?>">
+                                                                <b class="text-dark d-block mb-1"><i class="bx bx-task text-success me-1"></i>งานที่ทำ / แนวทางการดำเนินงาน:</b>
+                                                                <div class="ps-3 text-secondary" style="white-space: pre-line; line-height: 1.6;"><?= esc(format_item_lines($tc->actions)) ?></div>
                                                             </div>
                                                         <?php endif; ?>
                                                     </div>
                                                 <?php endif; ?>
 
-                                                <!-- Level 3: Projects Table -->
-                                                <div class="table-responsive mt-2">
-                                                    <table class="table table-sm table-hover align-middle mb-0 table-fit-screen" style="font-size: 0.83rem;">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th style="width: 12%;" class="text-center">รหัสโครงการ</th>
-                                                                <th style="width: 40%;">ชื่อโครงการ / กิจกรรม</th>
-                                                                <th style="width: 20%;">แหล่งเงินงบประมาณ</th>
-                                                                <th class="text-end" style="width: 16%;">งบประมาณตั้งต้น</th>
-                                                                <th class="text-center" style="width: 12%;">การจัดการ</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <?php if (empty($tc->projects)): ?>
-                                                                <tr>
-                                                                    <td colspan="5" class="text-center py-3 text-muted">
-                                                                        ยังไม่มีโครงการภายใต้กลยุทธ์นี้ — คลิก <b>"+ เพิ่มโครงการ (1.1.1)"</b>
-                                                                    </td>
-                                                                </tr>
-                                                            <?php else: ?>
-                                                                <?php foreach ($tc->projects as $p): ?>
-                                                                    <tr>
-                                                                        <td class="text-center" data-order="<?= natural_code_sort_key($p->project_code) ?>">
-                                                                            <span class="badge bg-label-dark fw-bold"><?= esc($p->project_code ?: '-') ?></span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <span class="fw-bold text-dark"><?= esc($p->project_name) ?></span>
-                                                                            <?php if (!empty($p->sub_items)): ?>
-                                                                                <div class="mt-1 ps-2 border-start border-2 border-warning">
-                                                                                    <?php foreach ($p->sub_items as $sub): ?>
-                                                                                        <div class="small text-muted d-flex justify-content-between gap-3 py-0.5">
-                                                                                            <span><i class="bx bx-subdirectory-right text-warning me-1"></i><b><?= esc($sub->item_no ?: '-') ?></b> <?= esc($sub->item_name) ?></span>
-                                                                                            <span class="fw-semibold text-secondary"><?= number_format($sub->allocated_budget, 2) ?> ฿</span>
-                                                                                        </div>
-                                                                                    <?php endforeach; ?>
-                                                                                </div>
-                                                                            <?php endif; ?>
-                                                                        </td>
-                                                                        <td>
-                                                                            <span class="small text-muted d-inline-block text-truncate" style="max-width: 280px;" title="<?= esc($p->budget_source) ?>">
-                                                                                <?= esc($p->budget_source ?: '-') ?>
-                                                                            </span>
-                                                                        </td>
-                                                                        <td class="text-end fw-bold text-success align-top">
-                                                                            <?= number_format($p->allocated_budget, 2) ?> บาท
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <div class="d-inline-flex gap-1">
-                                                                                <a href="<?= base_url('Admin/BudgetLedger/view/' . $p->id) ?>" class="btn btn-xs btn-outline-primary rounded-pill px-2" title="เปิดดูทะเบียนคุม">
-                                                                                    <i class="bx bx-book-open me-1"></i>ทะเบียนคุม
-                                                                                </a>
-                                                                                <button type="button" class="btn btn-xs btn-icon btn-outline-secondary rounded-circle btn-edit-project" 
-                                                                                    data-project='<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>' 
-                                                                                    title="แก้ไขข้อมูลโครงการ">
-                                                                                    <i class="bx bx-edit-alt"></i>
-                                                                                </button>
-                                                                                <button type="button" class="btn btn-xs btn-icon btn-outline-danger rounded-circle" onclick="deleteProject(<?= $p->id ?>, '<?= esc($p->project_name) ?>')" title="ลบโครงการ">
-                                                                                    <i class="bx bx-trash"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                <?php endforeach; ?>
-                                                            <?php endif; ?>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                 <!-- Level 3: Projects Table -->
+                                                 <div class="table-responsive mt-2">
+                                                     <table class="table table-sm table-hover align-middle mb-0 table-fit-screen" style="font-size: 0.81rem;">
+                                                         <thead class="table-light">
+                                                             <tr>
+                                                                 <th style="width: 80px;" class="text-center text-nowrap">รหัส</th>
+                                                                 <th style="width: auto;">ชื่อโครงการ / กิจกรรม</th>
+                                                                 <th style="width: 220px;" class="text-nowrap">แหล่งเงินงบประมาณ</th>
+                                                                 <th class="text-end text-nowrap" style="width: 140px;">งบประมาณตั้งต้น</th>
+                                                                 <th class="text-center text-nowrap" style="width: 130px;">การจัดการ</th>
+                                                             </tr>
+                                                         </thead>
+                                                         <tbody>
+                                                             <?php if (empty($tc->projects)): ?>
+                                                                 <tr>
+                                                                     <td colspan="5" class="text-center py-3 text-muted">
+                                                                         ยังไม่มีโครงการภายใต้กลยุทธ์นี้ — คลิก <b>"+ เพิ่มโครงการ (1.1.1)"</b>
+                                                                     </td>
+                                                                 </tr>
+                                                             <?php else: ?>
+                                                                 <?php foreach ($tc->projects as $p): ?>
+                                                                     <tr>
+                                                                         <td class="text-center text-nowrap align-top pt-2" data-order="<?= natural_code_sort_key($p->project_code) ?>">
+                                                                             <span class="badge bg-label-dark fw-bold font-monospace px-2 py-1"><?= esc($p->project_code ?: '-') ?></span>
+                                                                         </td>
+                                                                         <td class="align-top pt-2">
+                                                                             <span class="fw-bold text-dark d-block mb-1" style="font-size: 0.86rem; line-height: 1.4;"><?= esc($p->project_name) ?></span>
+                                                                             <?php if (!empty($p->sub_items)): ?>
+                                                                                 <div class="mt-1 ps-2 border-start border-2 border-warning">
+                                                                                     <?php foreach ($p->sub_items as $sub): ?>
+                                                                                         <div class="small text-muted d-flex justify-content-between align-items-center gap-2 py-0.5" style="font-size: 0.80rem;">
+                                                                                             <span class="d-inline-flex align-items-center flex-wrap gap-1">
+                                                                                                 <i class="bx bx-layer text-warning me-0.5"></i>
+                                                                                                 <b class="text-dark"><?= esc($sub->item_no ?: '-') ?></b>
+                                                                                                 <span><?= esc($sub->item_name) ?></span>
+                                                                                                 <?php if (!empty($sub->children)): ?>
+                                                                                                     <span class="badge bg-label-info rounded-pill py-0 px-1.5 ms-1 fs-9 text-nowrap"><?= count($sub->children) ?> กิจกรรมย่อย</span>
+                                                                                                 <?php endif; ?>
+                                                                                             </span>
+                                                                                             <span class="fw-semibold text-secondary text-nowrap flex-shrink-0 ms-auto ps-2"><?= number_format($sub->allocated_budget, 2) ?> ฿</span>
+                                                                                         </div>
+                                                                                         <?php if (!empty($sub->children)): ?>
+                                                                                             <div class="ps-3 border-start border-2 border-info ms-2 my-1">
+                                                                                                 <?php foreach ($sub->children as $child): ?>
+                                                                                                     <div class="small text-muted d-flex justify-content-between align-items-center gap-2 py-0.5" style="font-size: 0.77rem;">
+                                                                                                         <span class="d-inline-flex align-items-center flex-wrap gap-1">
+                                                                                                             <i class="bx bx-subdirectory-right text-info me-0.5"></i>
+                                                                                                             <span class="badge bg-label-info py-0 px-1 text-nowrap"><?= esc($child->item_no ?: '-') ?></span>
+                                                                                                             <span><?= esc($child->item_name) ?></span>
+                                                                                                         </span>
+                                                                                                         <span class="text-muted text-nowrap flex-shrink-0 ms-auto ps-2" style="font-size: 0.76rem;"><?= number_format($child->allocated_budget, 2) ?> ฿</span>
+                                                                                                     </div>
+                                                                                                 <?php endforeach; ?>
+                                                                                             </div>
+                                                                                         <?php endif; ?>
+                                                                                     <?php endforeach; ?>
+                                                                                 </div>
+                                                                             <?php endif; ?>
+                                                                         </td>
+                                                                         <td class="small text-muted align-top pt-2" style="font-size: 0.78rem; line-height: 1.4;">
+                                                                             <?= esc($p->budget_source ?: '-') ?>
+                                                                         </td>
+                                                                         <td class="text-end fw-bold text-success align-top text-nowrap pt-2" style="font-size: 0.85rem;">
+                                                                             <?= number_format($p->allocated_budget, 2) ?> บาท
+                                                                         </td>
+                                                                         <td class="text-center text-nowrap align-top pt-2">
+                                                                             <div class="d-inline-flex gap-1">
+                                                                                 <a href="<?= base_url('Admin/BudgetLedger/view/' . $p->id) ?>" class="btn btn-xs btn-outline-primary rounded-pill px-2 text-nowrap" title="เปิดดูทะเบียนคุม">
+                                                                                     <i class="bx bx-book-open me-1"></i>ทะเบียนคุม
+                                                                                 </a>
+                                                                                 <button type="button" class="btn btn-xs btn-icon btn-outline-secondary rounded-circle btn-edit-project" 
+                                                                                     data-project='<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>' 
+                                                                                     title="แก้ไขข้อมูลโครงการ">
+                                                                                     <i class="bx bx-edit-alt"></i>
+                                                                                 </button>
+                                                                                 <button type="button" class="btn btn-xs btn-icon btn-outline-danger rounded-circle" onclick="deleteProject(<?= $p->id ?>, '<?= esc($p->project_name) ?>')" title="ลบโครงการ">
+                                                                                     <i class="bx bx-trash"></i>
+                                                                                 </button>
+                                                                             </div>
+                                                                         </td>
+                                                                     </tr>
+                                                                 <?php endforeach; ?>
+                                                             <?php endif; ?>
+                                                         </tbody>
+                                                     </table>
+                                                 </div>
                                             </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -324,7 +343,7 @@
 
 <!-- Modal 3: Add / Edit Project (ระดับ 3) -->
 <div class="modal fade" id="modalAddProject" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
             <div class="modal-header border-bottom py-3">
                 <h5 class="modal-title fw-bold" id="modalProjectTitle">
@@ -362,7 +381,12 @@
                             <input type="text" class="form-control" name="project_code" id="projectCode" placeholder="เช่น 3.1.7">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label required fw-semibold">งบประมาณตั้งต้น (บาท)</label>
+                            <label class="form-label required fw-semibold d-flex justify-content-between align-items-center">
+                                <span>งบประมาณตั้งต้น (บาท)</span>
+                                <span class="badge bg-label-info py-0 px-1.5 fs-9 fw-normal d-none" id="allocatedBudgetAutoBadge">
+                                    <i class="bx bx-sync me-0.5"></i>รวมจากกิจกรรม
+                                </span>
+                            </label>
                             <input type="text" class="form-control text-end fw-bold input-money" name="allocated_budget" id="allocatedBudget" required placeholder="0.00" value="0.00">
                         </div>
 
@@ -376,40 +400,29 @@
                             <textarea class="form-control" name="budget_source" id="budgetSource" rows="2" placeholder="เช่น เงินงบประมาณรายจ่ายประจำปีงบประมาณ พ.ศ. 2569 (เงินพัฒนาการจัดการศึกษา - กิจกรรมพัฒนาผู้เรียน)"></textarea>
                         </div>
 
-                        <!-- Sub-Items Section (รายการข้อย่อย เช่น ๘.๑, ๘.๒, ๘.๓) -->
+                        <!-- Sub-Items Section (รายการกิจกรรมหลักและกิจกรรมย่อย ระดับ 4 & 5) -->
                         <div class="col-12 mt-4">
                             <div class="card border bg-light shadow-none" style="border-radius: 12px;">
-                                <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                                <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-2.5 px-3 border-bottom flex-wrap gap-2">
                                     <div>
-                                        <b class="text-dark"><i class="bx bx-list-plus text-warning me-1"></i>รายการกิจกรรม / ข้อย่อย (ถ้ามี)</b>
-                                        <small class="text-muted d-block fs-8">ระบุรายการย่อย เช่น ๘.๑ ค่าอุปกรณ์การเรียน, ๘.๒ ค่าเครื่องแบบนักเรียน (ระบบจะคำนวณงบประมาณรวมให้อัตโนมัติ)</small>
+                                        <b class="text-dark"><i class="bx bx-list-check text-warning me-1"></i>รายการกิจกรรมและกิจกรรมย่อย (ระดับ 4 และระดับ 5)</b>
+                                        <small class="text-muted d-block fs-8">กำหนดกิจกรรมหลัก (เช่น 10.1) และสามารถแตกกิจกรรมย่อย (เช่น 10.1.2) ได้ตามต้องการ</small>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3" id="btnAddSubItemRow">
-                                        <i class="bx bx-plus me-1"></i> เพิ่มรายการย่อย
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs fw-semibold" id="btnAddMainActivity">
+                                        <i class="bx bx-plus me-1"></i> เพิ่มกิจกรรมหลัก (เช่น 10.1)
                                     </button>
                                 </div>
-                                <div class="card-body p-2">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-borderless align-middle mb-0" id="tableSubItems">
-                                            <thead>
-                                                <tr class="text-muted fs-8 border-bottom">
-                                                    <th style="width: 120px;">ลำดับ (เช่น ๘.๑)</th>
-                                                    <th>ชื่อรายการ / กิจกรรมย่อย</th>
-                                                    <th style="width: 170px;" class="text-end">งบประมาณ (บาท)</th>
-                                                    <th style="width: 50px;" class="text-center">ลบ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="subItemsContainer">
-                                                <!-- Dynamic sub-item rows will be added here -->
-                                            </tbody>
-                                            <tfoot>
-                                                <tr class="border-top" id="subItemsTotalRow" style="display: none;">
-                                                    <td colspan="2" class="text-end fw-bold text-dark fs-7">รวมงบประมาณจากรายการย่อย:</td>
-                                                    <td class="text-end fw-bold text-success fs-7" id="subItemsTotalDisplay">0.00 บาท</td>
-                                                    <td></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                <div class="card-body p-3">
+                                    <div id="mainActivitiesContainer" class="d-flex flex-column gap-3">
+                                        <!-- Dynamic main activities with nested sub-activities will be added here -->
+                                    </div>
+                                    <div id="emptyActivityAlert" class="text-center py-4 text-muted">
+                                        <i class="bx bx-folder-open fs-3 mb-1 d-block opacity-50"></i>
+                                        <small>ยังไม่มีรายการกิจกรรม — คลิก <b>"+ เพิ่มกิจกรรมหลัก"</b> เพื่อเริ่มต้น</small>
+                                    </div>
+                                    <div class="border-top mt-3 pt-2 d-flex justify-content-between align-items-center d-none" id="subItemsTotalRow">
+                                        <span class="fw-bold text-dark fs-7">รวมงบประมาณจากกิจกรรมทั้งหมด:</span>
+                                        <span class="fw-bolder text-success fs-6" id="subItemsTotalDisplay">0.00 บาท</span>
                                     </div>
                                 </div>
                             </div>

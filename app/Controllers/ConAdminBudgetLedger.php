@@ -117,14 +117,15 @@ class ConAdminBudgetLedger extends BaseController
             ->getResult();
         sort_projects_naturally($projects, 'project_code');
 
+        $this->ensureSubItemParentColumn();
+
         foreach ($projects as &$pr) {
             $subItems = $this->db->table('tb_budget_project_sub_items')
                 ->where('project_id', $pr->id)
                 ->orderBy('id', 'ASC')
                 ->get()
                 ->getResult();
-            sort_projects_naturally($subItems, 'item_no');
-            $pr->sub_items = $subItems;
+            $pr->sub_items = build_sub_items_tree($subItems);
         }
 
         // เชื่อมโยง Hierarchy Tree
@@ -225,8 +226,8 @@ class ConAdminBudgetLedger extends BaseController
             'strategy_id'        => $this->request->getPost('strategy_id'),
             'tactic_no'          => trim($this->request->getPost('tactic_no') ?? ''),
             'tactic_name'        => trim($this->request->getPost('tactic_name') ?? ''),
-            'objective'          => trim($this->request->getPost('objective') ?? ''),
-            'actions'            => trim($this->request->getPost('actions') ?? ''),
+            'objective'          => format_item_lines(trim($this->request->getPost('objective') ?? '')),
+            'actions'            => format_item_lines(trim($this->request->getPost('actions') ?? '')),
             'responsible_agency' => trim($this->request->getPost('responsible_agency') ?? ''),
             'updated_at'         => date('Y-m-d H:i:s'),
         ];
@@ -344,40 +345,144 @@ class ConAdminBudgetLedger extends BaseController
             'updated_at'       => date('Y-m-d H:i:s'),
         ];
 
-        $subItems = $this->request->getPost('sub_items'); // array of ['item_no', 'item_name', 'allocated_budget']
-        
-        // If sub-items exist, calculate total allocated budget from sub items
+        $this->ensureSubItemParentColumn();
+        $subItems = $this->request->getPost('sub_items'); // array of items with optional children
+
+        // คำนวณงบประมาณรวมจากกิจกรรมหลักและกิจกรรมย่อย โดยไม่เกิดการนับซ้ำ
+        $totalFromSub = 0.0;
+        $hasAnySub = false;
+
         if (!empty($subItems) && is_array($subItems)) {
-            $totalFromSub = 0.0;
             foreach ($subItems as $item) {
-                if (!empty($item['item_name']) || !empty($item['item_no'])) {
-                    $totalFromSub += $this->parseMoney($item['allocated_budget'] ?? 0);
+                $hasChildren = !empty($item['children']) && is_array($item['children']);
+                if ($hasChildren) {
+                    $childSum = 0.0;
+                    foreach ($item['children'] as $ch) {
+                        if (!empty($ch['item_name']) || !empty($ch['item_no'])) {
+                            $hasAnySub = true;
+                            $childSum += $this->parseMoney($ch['allocated_budget'] ?? 0);
+                        }
+                    }
+                    $totalFromSub += $childSum;
+                } else {
+                    if (!empty($item['item_name']) || !empty($item['item_no'])) {
+                        $hasAnySub = true;
+                        $totalFromSub += $this->parseMoney($item['allocated_budget'] ?? 0);
+                    }
                 }
             }
-            if ($totalFromSub > 0) {
+            if ($hasAnySub) {
                 $data['allocated_budget'] = $totalFromSub;
             }
         }
+
+        // ฟังก์ชันช่วยบันทึกกิจกรรมหลักและกิจกรรมย่อยแบบลำดับชั้น
+        $saveSubItemsHierarchy = function ($targetProjectId, $itemsList) {
+            $keepIds = [];
+            if (!empty($itemsList) && is_array($itemsList)) {
+                foreach ($itemsList as $mainItem) {
+                    $mNo = trim($mainItem['item_no'] ?? '');
+                    $mName = trim($mainItem['item_name'] ?? '');
+                    $mId = !empty($mainItem['id']) ? (int)$mainItem['id'] : null;
+                    $children = !empty($mainItem['children']) && is_array($mainItem['children']) ? $mainItem['children'] : [];
+
+                    if (empty($mNo) && empty($mName) && empty($children)) {
+                        continue;
+                    }
+
+                    // คำนวณงบประมาณของกิจกรรมหลัก (ถ้ารวมจากกิจกรรมย่อย หรือกรอกเอง)
+                    if (!empty($children)) {
+                        $mBudget = 0.0;
+                        foreach ($children as $ch) {
+                            $mBudget += $this->parseMoney($ch['allocated_budget'] ?? 0);
+                        }
+                    } else {
+                        $mBudget = $this->parseMoney($mainItem['allocated_budget'] ?? 0);
+                    }
+
+                    $mainData = [
+                        'project_id'       => $targetProjectId,
+                        'parent_id'        => null,
+                        'item_no'          => $mNo,
+                        'item_name'        => $mName,
+                        'allocated_budget' => $mBudget,
+                        'updated_at'       => date('Y-m-d H:i:s'),
+                    ];
+
+                    $existingMain = null;
+                    if ($mId) {
+                        $existingMain = $this->db->table('tb_budget_project_sub_items')
+                            ->where('id', $mId)
+                            ->where('project_id', $targetProjectId)
+                            ->get()
+                            ->getRow();
+                    }
+
+                    if ($existingMain) {
+                        $this->db->table('tb_budget_project_sub_items')->where('id', $mId)->update($mainData);
+                        $parentId = $mId;
+                    } else {
+                        $mainData['created_at'] = date('Y-m-d H:i:s');
+                        $this->db->table('tb_budget_project_sub_items')->insert($mainData);
+                        $parentId = $this->db->insertID();
+                    }
+                    $keepIds[] = $parentId;
+
+                    // บันทึกกิจกรรมย่อย (ลูก)
+                    foreach ($children as $child) {
+                        $cNo = trim($child['item_no'] ?? '');
+                        $cName = trim($child['item_name'] ?? '');
+                        $cId = !empty($child['id']) ? (int)$child['id'] : null;
+
+                        if (empty($cNo) && empty($cName)) {
+                            continue;
+                        }
+
+                        $childData = [
+                            'project_id'       => $targetProjectId,
+                            'parent_id'        => $parentId,
+                            'item_no'          => $cNo,
+                            'item_name'        => $cName,
+                            'allocated_budget' => $this->parseMoney($child['allocated_budget'] ?? 0),
+                            'updated_at'       => date('Y-m-d H:i:s'),
+                        ];
+
+                        $existingChild = null;
+                        if ($cId) {
+                            $existingChild = $this->db->table('tb_budget_project_sub_items')
+                                ->where('id', $cId)
+                                ->where('project_id', $targetProjectId)
+                                ->get()
+                                ->getRow();
+                        }
+
+                        if ($existingChild) {
+                            $this->db->table('tb_budget_project_sub_items')->where('id', $cId)->update($childData);
+                            $keepIds[] = $cId;
+                        } else {
+                            $childData['created_at'] = date('Y-m-d H:i:s');
+                            $this->db->table('tb_budget_project_sub_items')->insert($childData);
+                            $keepIds[] = $this->db->insertID();
+                        }
+                    }
+                }
+            }
+
+            // ลบรายการที่ถูกลบออกจากฟอร์ม
+            $builder = $this->db->table('tb_budget_project_sub_items')->where('project_id', $targetProjectId);
+            if (!empty($keepIds)) {
+                $builder->whereNotIn('id', $keepIds);
+            }
+            $builder->delete();
+        };
 
         if (empty($id)) {
             $data['created_at'] = date('Y-m-d H:i:s');
             $this->db->table('tb_budget_projects')->insert($data);
             $newId = $this->db->insertID();
 
-            // Insert sub items
-            if (!empty($subItems) && is_array($subItems)) {
-                foreach ($subItems as $item) {
-                    if (!empty($item['item_name']) || !empty($item['item_no'])) {
-                        $this->db->table('tb_budget_project_sub_items')->insert([
-                            'project_id'       => $newId,
-                            'item_no'          => trim($item['item_no'] ?? ''),
-                            'item_name'        => trim($item['item_name'] ?? ''),
-                            'allocated_budget' => $this->parseMoney($item['allocated_budget'] ?? 0),
-                            'created_at'       => date('Y-m-d H:i:s'),
-                        ]);
-                    }
-                }
-            }
+            // Insert sub items hierarchy
+            $saveSubItemsHierarchy($newId, $subItems);
 
             // สร้างแถวตั้งต้นใน ledger อัตโนมัติ
             $this->db->table('tb_budget_ledger')->insert([
@@ -396,21 +501,8 @@ class ConAdminBudgetLedger extends BaseController
         } else {
             $this->db->table('tb_budget_projects')->where('id', $id)->update($data);
 
-            // Sync sub items: delete existing and re-insert
-            $this->db->table('tb_budget_project_sub_items')->where('project_id', $id)->delete();
-            if (!empty($subItems) && is_array($subItems)) {
-                foreach ($subItems as $item) {
-                    if (!empty($item['item_name']) || !empty($item['item_no'])) {
-                        $this->db->table('tb_budget_project_sub_items')->insert([
-                            'project_id'       => $id,
-                            'item_no'          => trim($item['item_no'] ?? ''),
-                            'item_name'        => trim($item['item_name'] ?? ''),
-                            'allocated_budget' => $this->parseMoney($item['allocated_budget'] ?? 0),
-                            'created_at'       => date('Y-m-d H:i:s'),
-                        ]);
-                    }
-                }
-            }
+            // Sync sub items hierarchy
+            $saveSubItemsHierarchy($id, $subItems);
 
             // Update the initial ledger entry adjust amount if it exists
             $firstLedger = $this->db->table('tb_budget_ledger')
@@ -516,7 +608,8 @@ class ConAdminBudgetLedger extends BaseController
             $sub->percent = (float)$sub->allocated_budget > 0 ? min(100, round(($spent / (float)$sub->allocated_budget) * 100, 1)) : 0;
         }
 
-        $data['sub_items'] = $subItems;
+        $data['sub_items'] = build_sub_items_tree($subItems);
+        $data['all_sub_items_raw'] = $subItems;
 
         // สรุปสัญญายืมเงินทั้งหมดในโครงการนี้และสถานะการเคลียร์
         $borrowsList = [];
@@ -673,6 +766,8 @@ class ConAdminBudgetLedger extends BaseController
             $sub->remaining = (float)$sub->allocated_budget - $spent;
             $sub->percent = (float)$sub->allocated_budget > 0 ? min(100, round(($spent / (float)$sub->allocated_budget) * 100, 1)) : 0;
         }
+
+        $subItems = build_sub_items_tree($subItems);
 
         $ledger = $this->db->table('tb_budget_ledger l')
             ->select('l.*, s.item_no as sub_item_no, s.item_name as sub_item_name')
@@ -975,6 +1070,22 @@ class ConAdminBudgetLedger extends BaseController
             $this->db->table('tb_budget_ledger')->where('id', $row->id)->update([
                 'balance' => $currentBalance
             ]);
+        }
+    }
+
+    /**
+     * ตรวจสอบและสร้างฟิลด์ parent_id ในตาราง tb_budget_project_sub_items ให้อัตโนมัติหากยังไม่มี
+     */
+    private function ensureSubItemParentColumn()
+    {
+        try {
+            $fields = $this->db->getFieldNames('tb_budget_project_sub_items');
+            if (!in_array('parent_id', $fields)) {
+                $this->db->query("ALTER TABLE tb_budget_project_sub_items ADD COLUMN parent_id INT UNSIGNED NULL DEFAULT NULL AFTER project_id");
+                $this->db->query("ALTER TABLE tb_budget_project_sub_items ADD INDEX idx_parent_id (parent_id)");
+            }
+        } catch (\Throwable $e) {
+            // ไม่ต้องแจ้ง error หากฟิลด์มีอยู่แล้ว
         }
     }
 }

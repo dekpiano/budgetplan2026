@@ -211,6 +211,11 @@
                                                             if (!empty($p->sub_items)) {
                                                                 foreach ($p->sub_items as $sub) {
                                                                     $searchKeywords .= ' ' . $sub->item_no . ' ' . $sub->item_name;
+                                                                    if (!empty($sub->children)) {
+                                                                        foreach ($sub->children as $ch) {
+                                                                            $searchKeywords .= ' ' . $ch->item_no . ' ' . $ch->item_name;
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -421,6 +426,14 @@ function formatMoney(num) {
     return parseFloat(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function formatItemLines(text) {
+    if (!text) return '';
+    var t = String(text).replace(/\r\n|\r/g, '\n');
+    t = t.replace(/([^\n\r])\s+(?=(\d{1,2}|[๑-๙]{1,2})[\.\)](\s|[^\d\.\s]))/gu, '$1\n');
+    t = t.replace(/([^\n\r])\s+(?=[-•*]\s+)/gu, '$1\n');
+    return t.trim();
+}
+
 window.openStrategicDetailModal = function(tacticData, strategyName) {
     if (typeof tacticData === 'string') {
         try { tacticData = JSON.parse(tacticData); } catch (e) {}
@@ -434,7 +447,7 @@ window.openStrategicDetailModal = function(tacticData, strategyName) {
     // Objective
     if (tacticData.objective && tacticData.objective.trim() !== '') {
         $('#modalObjectiveContainer').removeClass('d-none');
-        $('#modalObjectiveText').text(tacticData.objective);
+        $('#modalObjectiveText').text(formatItemLines(tacticData.objective));
     } else {
         $('#modalObjectiveContainer').addClass('d-none');
     }
@@ -442,7 +455,7 @@ window.openStrategicDetailModal = function(tacticData, strategyName) {
     // Actions
     if (tacticData.actions && tacticData.actions.trim() !== '') {
         $('#modalActionsContainer').removeClass('d-none');
-        $('#modalActionsText').text(tacticData.actions);
+        $('#modalActionsText').text(formatItemLines(tacticData.actions));
     } else {
         $('#modalActionsContainer').addClass('d-none');
     }
@@ -460,10 +473,24 @@ window.openStrategicDetailModal = function(tacticData, strategyName) {
             if (p.sub_items && p.sub_items.length > 0) {
                 subItemsHtml = '<div class="mt-2 ps-2 border-start border-3 border-warning">';
                 p.sub_items.forEach(function(sub) {
-                    subItemsHtml += '<div class="small text-dark d-flex justify-content-between gap-3 py-1" style="font-weight: 500;">' +
-                        '<span><i class="bx bx-subdirectory-right text-warning me-1"></i><b class="text-dark">' + (sub.item_no || '-') + '</b> ' + sub.item_name + '</span>' +
+                    var hasChildren = sub.children && sub.children.length > 0;
+                    subItemsHtml += '<div class="small text-dark d-flex justify-content-between align-items-center gap-3 py-1" style="font-weight: 500;">' +
+                        '<span><i class="bx bx-layer text-warning me-1"></i><b class="text-dark">' + (sub.item_no || '-') + '</b> ' + sub.item_name +
+                        (hasChildren ? ' <span class="badge bg-label-info rounded-pill py-0 px-1.5 ms-1 fs-9">' + sub.children.length + ' กิจกรรมย่อย</span>' : '') +
+                        '</span>' +
                         '<span class="fw-bold text-dark">' + formatMoney(sub.allocated_budget) + ' ฿</span>' +
                         '</div>';
+
+                    if (hasChildren) {
+                        subItemsHtml += '<div class="ps-3 border-start border-2 border-info ms-2 my-1">';
+                        sub.children.forEach(function(ch) {
+                            subItemsHtml += '<div class="small text-muted d-flex justify-content-between align-items-center gap-2 py-0.5" style="font-size: 0.8rem;">' +
+                                '<span><i class="bx bx-subdirectory-right text-info me-1"></i><span class="badge bg-label-info py-0 px-1 me-1">' + (ch.item_no || '-') + '</span> ' + ch.item_name + '</span>' +
+                                '<span class="text-muted fw-semibold">' + formatMoney(ch.allocated_budget) + ' ฿</span>' +
+                                '</div>';
+                        });
+                        subItemsHtml += '</div>';
+                    }
                 });
                 subItemsHtml += '</div>';
             }

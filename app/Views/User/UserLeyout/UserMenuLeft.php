@@ -77,6 +77,12 @@ $UrlMenuSub  = $UrlMenuSub ?? '';
                     </a>
                 </li>
                 
+                <!-- ประชาสัมพันธ์ -->
+                <li class="menu-header small text-uppercase"><span class="menu-header-text">ข้อมูลเผยแพร่</span></li>
+                <li class="menu-item <?php echo ($UrlMenuSub == "News") ? "active" : "" ?>">
+                    <a href="<?= base_url('News'); ?>" class="menu-link"><i class="menu-icon tf-icons bx bx-news text-primary"></i><div>ประชาสัมพันธ์ / เอกสารเผยแพร่</div></a>
+                </li>
+
                 <!-- หมวดหมู่แผนงาน -->
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">งานนโยบายและแผน</span>

@@ -306,9 +306,10 @@
                     <!-- System Checkbox Cards Grouped by Category -->
                     <?php
                     $systemCategories = [
-                        'budget' => ['title' => 'ระบบงบประมาณ', 'icon' => 'bx-bar-chart-alt-2', 'codes' => ['budget_ledger', 'budget_structure']],
+                        'budget' => ['title' => 'ระบบงบประมาณ', 'icon' => 'bx-bar-chart-alt-2', 'codes' => ['budget_ledger', 'budget_ordinance', 'budget_structure']],
                         'procurement' => ['title' => 'ระบบจัดซื้อจัดจ้าง', 'icon' => 'bx-cart', 'codes' => ['procurement', 'registry_purchase', 'registry_hire']],
                         'finance' => ['title' => 'ระบบการเงิน', 'icon' => 'bx-money', 'codes' => ['money_receipt']],
+                        'news' => ['title' => 'ระบบประชาสัมพันธ์', 'icon' => 'bx-news', 'codes' => ['admin_news']],
                     ];
                     $systemsByCode = [];
                     foreach ($SystemDefs as $system) $systemsByCode[$system->admin_system_code] = $system;

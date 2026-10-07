@@ -24,11 +24,90 @@ class ConAdminRoles extends BaseController
         $DB_Budget = \Config\Database::connect();
         $DB_Skj = \Config\Database::connect('skj');
 
+        // ตรวจสอบและเพิ่มระบบเริ่มต้นหากยังไม่มีใน tb_admin_systems
+        $defaultSystems = [
+            [
+                'admin_system_code' => 'budget_ledger',
+                'admin_system_name' => 'ทะเบียนคุมเงินงบประมาณ',
+                'admin_system_description' => 'ทะเบียนคุมเงินงบประมาณ',
+                'admin_system_icon' => 'bx-book-content',
+                'admin_system_url' => 'Admin/BudgetLedger',
+                'admin_system_level' => 1,
+            ],
+            [
+                'admin_system_code' => 'budget_ordinance',
+                'admin_system_name' => 'ทะเบียนคุมงบประมาณเงินข้อบัญญัติ',
+                'admin_system_description' => 'ทะเบียนคุมงบประมาณเงินข้อบัญญัติ (ค่าน้ำมัน, เบี้ยเลี้ยงเดินทาง, ค่าลงทะเบียน)',
+                'admin_system_icon' => 'bx-book-bookmark',
+                'admin_system_url' => 'Admin/BudgetOrdinance/Oil',
+                'admin_system_level' => 2,
+            ],
+            [
+                'admin_system_code' => 'registry_purchase',
+                'admin_system_name' => 'ทะเบียนคุมใบสั่งซื้อ',
+                'admin_system_description' => 'ทะเบียนคุมใบสั่งซื้อ',
+                'admin_system_icon' => 'bx-cart-alt',
+                'admin_system_url' => 'Admin/Registry/Purchase',
+                'admin_system_level' => 3,
+            ],
+            [
+                'admin_system_code' => 'registry_hire',
+                'admin_system_name' => 'ทะเบียนคุมใบสั่งจ้าง',
+                'admin_system_description' => 'ทะเบียนคุมใบสั่งจ้าง',
+                'admin_system_icon' => 'bx-spreadsheet',
+                'admin_system_url' => 'Admin/Registry/Hire',
+                'admin_system_level' => 4,
+            ],
+            [
+                'admin_system_code' => 'procurement',
+                'admin_system_name' => 'ขั้นตอนจัดซื้อ / จัดจ้าง',
+                'admin_system_description' => 'ขั้นตอนจัดซื้อและจัดจ้าง',
+                'admin_system_icon' => 'bx-cart',
+                'admin_system_url' => 'User/Procurement/Process',
+                'admin_system_level' => 5,
+            ],
+            [
+                'admin_system_code' => 'money_receipt',
+                'admin_system_name' => 'ใบสำคัญรับเงินตอบแทน',
+                'admin_system_description' => 'ใบสำคัญรับเงินตอบแทน',
+                'admin_system_icon' => 'bx-file',
+                'admin_system_url' => 'User/Procurement/MoneyReceipt',
+                'admin_system_level' => 6,
+            ],
+            [
+                'admin_system_code' => 'budget_structure',
+                'admin_system_name' => 'ตั้งค่ายุทธศาสตร์และโครงการ',
+                'admin_system_description' => 'ตั้งค่ายุทธศาสตร์และโครงการ',
+                'admin_system_icon' => 'bx-sitemap',
+                'admin_system_url' => 'Admin/BudgetLedger/Structure',
+                'admin_system_level' => 7,
+            ],
+            [
+                'admin_system_code' => 'admin_news',
+                'admin_system_name' => 'ระบบจัดการประชาสัมพันธ์',
+                'admin_system_description' => 'เพิ่มลบแก้ไขข่าวสารและเอกสารเผยแพร่',
+                'admin_system_icon' => 'bx-news',
+                'admin_system_url' => 'Admin/News',
+                'admin_system_level' => 8,
+            ],
+        ];
+
+        foreach ($defaultSystems as $ds) {
+            $exist = $DB_Budget->table('tb_admin_systems')->where('admin_system_code', $ds['admin_system_code'])->get()->getRow();
+            if (!$exist) {
+                $DB_Budget->table('tb_admin_systems')->insert(array_merge($ds, [
+                    'admin_system_active' => 1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]));
+            }
+        }
+
         $systems = $DB_Budget->table('tb_admin_systems')
             ->where('admin_system_active', 1)
             ->whereIn('admin_system_code', [
                 'budget_ledger', 'budget_ordinance', 'registry_purchase', 'registry_hire',
-                'procurement', 'money_receipt', 'budget_structure'
+                'procurement', 'money_receipt', 'budget_structure', 'admin_news'
             ])
             ->orderBy('admin_system_level', 'ASC')
             ->orderBy('admin_system_id', 'ASC')
@@ -126,7 +205,7 @@ class ConAdminRoles extends BaseController
             ->where('admin_system_active', 1)
             ->whereIn('admin_system_code', [
                 'budget_ledger', 'budget_ordinance', 'registry_purchase', 'registry_hire',
-                'procurement', 'money_receipt', 'budget_structure'
+                'procurement', 'money_receipt', 'budget_structure', 'admin_news'
             ])
             ->get()->getResultArray();
         $validCodes = array_column($validSystems, 'admin_system_code');

@@ -362,4 +362,100 @@ if (!function_exists('format_item_lines')) {
     }
 }
 
+if (!function_exists('remote_upload_url')) {
+    /**
+     * ดึง URL ไฟล์ที่จัดเก็บบน Remote Upload Server อย่างถูกต้อง
+     * ป้องกันปัญหา Path ซ้ำซ้อน และรองรับทั้ง Local และ Remote URL
+     *
+     * @param string|null $filePath เช่น 'budgetplan/news/1/doc-123.pdf'
+     * @return string
+     */
+    function remote_upload_url(?string $filePath): string
+    {
+        if (empty($filePath)) {
+            return '';
+        }
+        $filePath = trim($filePath);
+        if (str_starts_with($filePath, 'http://') || str_starts_with($filePath, 'https://')) {
+            return $filePath;
+        }
+        if (str_starts_with($filePath, 'uploads/')) {
+            return base_url($filePath);
+        }
+        $baseUrl = rtrim((string)(env('upload.server.baseurl') ?: getenv('upload.server.baseurl') ?: 'https://skj.nsnpao.go.th/uploads/'), '/');
+        $cleanPath = ltrim($filePath, '/');
+
+        // หาก Base URL ลงท้ายด้วย /budgetplan และ Path ขึ้นต้นด้วย budgetplan/ ให้ตัดส่วนซ้ำออก
+        if (str_ends_with($baseUrl, '/budgetplan') && str_starts_with($cleanPath, 'budgetplan/')) {
+            $cleanPath = substr($cleanPath, strlen('budgetplan/'));
+        }
+
+        return $baseUrl . '/' . $cleanPath;
+    }
+}
+
+if (!function_exists('get_file_type_info')) {
+    /**
+     * ดึงข้อมูลประเภทไฟล์ สี และ Icon (Boxicons) ตามนามสกุลไฟล์
+     *
+     * @param string|null $filename ชื่อไฟล์ หรือ Path ไฟล์
+     * @return array{ext: string, icon: string, color: string, badge_class: string, label: string}
+     */
+    function get_file_type_info(?string $filename): array
+    {
+        $ext = strtolower(pathinfo((string)$filename, PATHINFO_EXTENSION));
+        return match ($ext) {
+            'pdf' => [
+                'ext' => 'PDF',
+                'icon' => 'bx bxs-file-pdf',
+                'color' => 'danger',
+                'badge_class' => 'bg-label-danger text-danger',
+                'label' => 'เอกสาร PDF'
+            ],
+            'doc', 'docx' => [
+                'ext' => strtoupper($ext),
+                'icon' => 'bx bxs-file-doc',
+                'color' => 'primary',
+                'badge_class' => 'bg-label-primary text-primary',
+                'label' => 'เอกสาร Word'
+            ],
+            'xls', 'xlsx', 'csv' => [
+                'ext' => strtoupper($ext),
+                'icon' => 'bx bx-spreadsheet',
+                'color' => 'success',
+                'badge_class' => 'bg-label-success text-success',
+                'label' => 'เอกสาร Excel'
+            ],
+            'ppt', 'pptx' => [
+                'ext' => strtoupper($ext),
+                'icon' => 'bx bxs-file-presentation',
+                'color' => 'warning',
+                'badge_class' => 'bg-label-warning text-warning',
+                'label' => 'เอกสาร PowerPoint'
+            ],
+            'zip', 'rar', '7z' => [
+                'ext' => strtoupper($ext),
+                'icon' => 'bx bxs-archive',
+                'color' => 'secondary',
+                'badge_class' => 'bg-label-secondary text-secondary',
+                'label' => 'ไฟล์บีบอัด ZIP'
+            ],
+            'jpg', 'jpeg', 'png', 'gif', 'webp' => [
+                'ext' => strtoupper($ext),
+                'icon' => 'bx bx-image',
+                'color' => 'info',
+                'badge_class' => 'bg-label-info text-info',
+                'label' => 'ไฟล์รูปภาพ'
+            ],
+            default => [
+                'ext' => $ext ? strtoupper($ext) : 'FILE',
+                'icon' => 'bx bx-file',
+                'color' => 'dark',
+                'badge_class' => 'bg-label-secondary text-muted',
+                'label' => 'ไฟล์เอกสาร'
+            ],
+        };
+    }
+}
+
 

@@ -126,6 +126,12 @@
                 </li>
                 <?php endif; ?>
 
+                <!-- ข้อมูลเผยแพร่ -->
+                <li class="menu-header small text-uppercase"><span class="menu-header-text">ข้อมูลเผยแพร่</span></li>
+                <li class="menu-item <?php echo ($uri->getSegment(2) == "News" ? "active" : "")?>">
+                    <a href="<?=base_url('Admin/News');?>" class="menu-link"><i class="menu-icon tf-icons bx bx-news text-primary"></i><div>จัดการประชาสัมพันธ์</div></a>
+                </li>
+
                 <!-- ตั้งค่าระบบ -->
                 <?php if (auth_can_manage_plan() || auth_is_superadmin()) : ?>
                 <li class="menu-header small text-uppercase">

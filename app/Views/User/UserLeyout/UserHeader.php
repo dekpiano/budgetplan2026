@@ -64,6 +64,7 @@ $uri         = $uri ?? service('uri');
 
 
     <!-- Page CSS -->
+    <link rel="stylesheet" href="<?=base_url()?>/css/public-news.css?v=1" />
 
     <!-- Helpers -->
     <script src="<?=base_url()?>/assets/vendor/js/helpers.js"></script>
@@ -359,4 +360,4 @@ $uri         = $uri ?? service('uri');
     <!-- Global Preloader -->
     <div id="skj-preloader">
         <div class="skj-loader-spinner"></div>
-    </div>
+    </div>

@@ -76,6 +76,17 @@ $routes->post('Admin/BudgetLedger/saveLedgerItem', 'ConAdminBudgetLedger::saveLe
 $routes->post('Admin/BudgetLedger/deleteLedgerItem/(:num)', 'ConAdminBudgetLedger::deleteLedgerItem/$1');
 $routes->get('Admin/BudgetLedger/print/(:num)', 'ConAdminBudgetLedger::printLedger/$1');
 
+// ประชาสัมพันธ์และเอกสารเผยแพร่
+$routes->get('News', 'ConPublicNews::index');
+$routes->get('News/View/(:num)', 'ConPublicNews::view/$1');
+$routes->get('News/Download/(:num)', 'ConPublicNews::download/$1');
+$routes->get('Admin/News', 'ConAdminNews::index');
+$routes->post('Admin/News/Save', 'ConAdminNews::save');
+$routes->post('Admin/News/UploadChunk', 'ConAdminNews::uploadChunk');
+$routes->get('Admin/News/Delete/(:num)', 'ConAdminNews::delete/$1');
+$routes->get('Admin/News/GetFiles/(:num)', 'ConAdminNews::getFiles/$1');
+$routes->post('Admin/News/DeleteFile/(:num)', 'ConAdminNews::deleteFile/$1');
+
 //Admin
 $routes->get('Admin/Home', 'ConAdminHome::index');
 $routes->get('Admin/Registry/Purchase', 'ConAdminHome::registry/purchase');

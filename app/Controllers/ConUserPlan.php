@@ -21,91 +21,47 @@ class ConUserPlan extends BaseController
     public function index()
     {
         $data = $this->DataMain();
-        $data['title'] = "โครงสร้างแผนยุทธศาสตร์และโครงการ";
-        $data['description'] = "เรียนรู้และศึกษาโครงสร้างยุทธศาสตร์ กลยุทธ์ โครงการ และงบประมาณ โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์";
+        $data['title'] = "แผนและโครงการ";
+        $data['description'] = "เอกสารแผนปฏิบัติการและประกาศแผนงาน โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์";
         
         $data['UrlMenuMain'] = 'Plan';
         $data['UrlMenuSub'] = 'Plan';
 
-        $selectedYear = $this->request->getGet('year') ?? '2569';
-        $data['selected_year'] = $selectedYear;
-
-        // ปีงบประมาณทั้งหมด
-        $yearsQuery = $this->db->query("SELECT DISTINCT budget_year FROM tb_budget_projects UNION SELECT DISTINCT budget_year FROM tb_budget_strategies ORDER BY budget_year DESC")->getResult();
-        $data['years'] = !empty($yearsQuery) ? $yearsQuery : [(object)['budget_year' => '2569']];
-
-        // ดึงยุทธศาสตร์ (ระดับ 1)
-        $strategies = $this->db->table('tb_budget_strategies')
-            ->where('budget_year', $selectedYear)
-            ->orderBy('strategy_no', 'ASC')
+        // ดึงเอกสารแผนและโครงการจากระบบประชาสัมพันธ์ (Public News) หมวด "แผนงานและโครงการ"
+        $now = date('Y-m-d H:i:s');
+        $planNews = $this->db->table('tb_public_news')
+            ->where('status', 'published')
+            ->where('category', 'แผนงานและโครงการ')
+            ->groupStart()
+                ->where('published_at <=', $now)
+                ->orWhere('published_at IS NULL', null, false)
+            ->groupEnd()
+            ->groupStart()
+                ->where('expires_at >=', $now)
+                ->orWhere('expires_at IS NULL', null, false)
+            ->groupEnd()
+            ->orderBy('published_at', 'DESC')
+            ->orderBy('id', 'DESC')
             ->get()
             ->getResult();
-        sort_projects_naturally($strategies, 'strategy_no');
 
-        // ดึงโครงการทั้งหมด พร้อมรายการย่อย
-        $projects = $this->db->table('tb_budget_projects')
-            ->where('budget_year', $selectedYear)
-            ->orderBy('project_code', 'ASC')
-            ->get()
-            ->getResult();
-        sort_projects_naturally($projects, 'project_code');
-
-        foreach ($projects as &$pr) {
-            $subItems = $this->db->table('tb_budget_project_sub_items')
-                ->where('project_id', $pr->id)
+        $planNewsIds = array_map(function($item) { return (int)$item->id; }, $planNews);
+        $filesByNews = [];
+        if (!empty($planNewsIds)) {
+            $planFilesQuery = $this->db->table('tb_public_news_files')
+                ->whereIn('news_id', $planNewsIds)
                 ->orderBy('id', 'ASC')
                 ->get()
                 ->getResult();
-            $pr->sub_items = build_sub_items_tree($subItems);
-        }
-
-        $totalAllocated = 0.0;
-        $totalProjectsCount = count($projects);
-
-        // เชื่อมโยง Hierarchy Tree: ยุทธศาสตร์ -> กลยุทธ์ -> โครงการ
-        foreach ($strategies as &$st) {
-            $tactics = $this->db->table('tb_budget_tactics')
-                ->where('strategy_id', $st->id)
-                ->orderBy('tactic_no', 'ASC')
-                ->get()
-                ->getResult();
-            sort_projects_naturally($tactics, 'tactic_no');
-
-            $stTotalBudget = 0.0;
-            $stProjectCount = 0;
-
-            foreach ($tactics as &$tc) {
-                $tcProjects = array_filter($projects, function ($pr) use ($tc, $st) {
-                    return $pr->tactic_id == $tc->id || (empty($pr->tactic_id) && $pr->strategy_name == $st->strategy_name && strpos($pr->strategy_sub, $tc->tactic_no) !== false);
-                });
-                $tcProjects = array_values($tcProjects);
-                sort_projects_naturally($tcProjects, 'project_code');
-
-                $tcBudget = 0.0;
-                foreach ($tcProjects as $p) {
-                    $tcBudget += (float)$p->allocated_budget;
-                }
-
-                $tc->projects = $tcProjects;
-                $tc->total_budget = $tcBudget;
-                $tc->project_count = count($tcProjects);
-
-                $stTotalBudget += $tcBudget;
-                $stProjectCount += count($tcProjects);
+            foreach ($planFilesQuery as $f) {
+                $f->type_info = get_file_type_info($f->original_name);
+                $filesByNews[(int)$f->news_id][] = $f;
             }
-
-            $st->tactics = $tactics;
-            $st->total_budget = $stTotalBudget;
-            $st->project_count = $stProjectCount;
-            $totalAllocated += $stTotalBudget;
         }
+        $data['plan_news'] = $planNews;
+        $data['plan_news_files'] = $filesByNews;
 
-        $data['strategies'] = $strategies;
-        $data['total_allocated'] = $totalAllocated;
-        $data['total_strategies'] = count($strategies);
-        $data['total_projects'] = $totalProjectsCount;
-
-        // ดึงไฟล์เอกสารแผนปฏิบัติการ
+        // ดึงไฟล์เอกสารแผนปฏิบัติการ (Local folder fallback)
         $planDir = ROOTPATH . 'uploads/plan';
         $planFiles = [];
         if (is_dir($planDir)) {

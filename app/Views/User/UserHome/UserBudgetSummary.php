@@ -204,7 +204,9 @@
 </style>
 
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    var $ = window.jQuery;
+    if (!$) return;
     var dtTable = null;
 
     if ($.fn.DataTable && $('#userProjectsTable').length) {
@@ -216,6 +218,11 @@ $(document).ready(function() {
             order: [[0, 'asc']],
             responsive: true,
             dom: '<"row mb-3"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+        });
+
+        dtTable.on('draw', function() {
+            var info = dtTable.page.info();
+            $('#recordCountBadge').text('ทั้งหมด ' + info.recordsDisplay + ' โครงการ');
         });
 
         // Custom Search Input Filter

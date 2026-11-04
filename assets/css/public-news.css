@@ -1,0 +1,19 @@
+/* Public News — follows existing Sneat/Bootstrap proportions */
+.public-news-page{max-width:1320px}
+.public-news-toolbar{border:1px solid var(--bs-border-color);border-radius:.75rem;background:var(--bs-body-bg)}
+.public-news-card{border:1px solid var(--bs-border-color);border-radius:.75rem;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease}
+.public-news-card:hover{transform:translateY(-2px);box-shadow:0 .35rem 1rem rgba(0,0,0,.08)}
+.public-news-cover{height:170px;display:flex;align-items:center;justify-content:center;background:rgba(var(--bs-primary-rgb),.08)}
+.public-news-cover i{font-size:3rem}
+.public-news-title{line-height:1.45;min-height:3.0rem}
+.public-news-excerpt{line-height:1.65;min-height:3.2rem}
+.public-news-detail{max-width:1040px;margin-inline:auto}
+.public-news-detail .news-content{font-size:1rem;line-height:1.95;overflow-wrap:anywhere}
+.public-news-file{border:1px solid var(--bs-border-color);border-radius:.65rem}
+.public-news-file:hover{background:rgba(var(--bs-primary-rgb),.04)}
+@media(max-width:767.98px){
+ .public-news-cover{height:145px}
+ .public-news-title{min-height:auto}
+ .public-news-excerpt{min-height:auto}
+ .public-news-detail .card-body{padding:1.25rem!important}
+}

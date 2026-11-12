@@ -332,6 +332,9 @@ class ConAdminBudgetLedger extends BaseController
         $strategyName = $strategy ? "ยุทธศาสตร์ที่ {$strategy->strategy_no} {$strategy->strategy_name}" : trim($this->request->getPost('strategy_name') ?? '');
         $strategySub = $tactic ? "กลยุทธ์ {$tactic->tactic_no} {$tactic->tactic_name}" : trim($this->request->getPost('strategy_sub') ?? '');
 
+        $startDate = trim($this->request->getPost('start_date') ?? '');
+        $endDate   = trim($this->request->getPost('end_date') ?? '');
+
         $data = [
             'budget_year'      => trim($this->request->getPost('budget_year') ?? ''),
             'strategy_id'      => !empty($strategyId) ? $strategyId : null,
@@ -341,6 +344,8 @@ class ConAdminBudgetLedger extends BaseController
             'project_code'     => trim($this->request->getPost('project_code') ?? ''),
             'project_name'     => trim($this->request->getPost('project_name') ?? ''),
             'budget_source'    => trim($this->request->getPost('budget_source') ?? ''),
+            'start_date'       => !empty($startDate) ? $startDate : null,
+            'end_date'         => !empty($endDate) ? $endDate : null,
             'allocated_budget' => $this->parseMoney($this->request->getPost('allocated_budget')),
             'updated_at'       => date('Y-m-d H:i:s'),
         ];

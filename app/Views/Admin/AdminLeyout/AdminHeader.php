@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="<?=base_url()?>/assets/vendor/css/theme-blue.css?v=1" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="<?=base_url()?>/assets/css/select2.css?v=3" />
     <link rel="stylesheet" href="<?=base_url()?>/assets/css/demo.css?v=1" />
+    <link rel="stylesheet" href="<?=base_url()?>/assets/css/mobile-first-custom.css?v=1.0" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- Vendors CSS -->
@@ -324,6 +325,39 @@
         border-radius: 10px;
     }
 
+    /* ─── Global Preloader (Page Loading) ─── */
+    #skj-preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        z-index: 9999999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
+    }
+    .skj-loader-spinner {
+        width: 48px;
+        height: 48px;
+        border: 3.5px solid rgba(251, 140, 0, 0.15);
+        border-top-color: #fb8c00;
+        border-radius: 50%;
+        animation: skjSpin 0.85s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+    @keyframes skjSpin {
+        to { transform: rotate(360deg); }
+    }
+    body.page-loaded #skj-preloader {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
     /* ─── SweetAlert2 Always on Top ─── */
     .swal2-container {
         z-index: 99999 !important;
@@ -331,3 +365,8 @@
   </style>
 
   <body style="font-family:'K2D', sans-serif">
+    <!-- Global Preloader -->
+    <div id="skj-preloader">
+        <div class="skj-loader-spinner"></div>
+        <div class="text-muted fw-semibold" style="font-size: 0.86rem; letter-spacing: 0.5px;">กำลังโหลดข้อมูล...</div>
+    </div>

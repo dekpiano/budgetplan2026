@@ -37,12 +37,9 @@ class ConLogin extends BaseController
         $session = session();
 
         helper('auth');
-        // ถ้า login แล้ว redirect ไปหน้า admin หรือหน้าแรก
+        // ถ้า login แล้ว redirect ไปหน้า admin ทันที
         if ($session->get('logged_in')) {
-            if (in_array($session->get('status'), ['admin', 'manager', 'superadmin']) || auth_is_admin()) {
-                return redirect()->to(base_url('Admin/Home'));
-            }
-            return redirect()->to(base_url());
+            return redirect()->to(base_url('Admin/Home'));
         }
 
         if($this->request->getVar("return_to") == ""){
@@ -233,7 +230,8 @@ class ConLogin extends BaseController
                         // Legacy role-based login remains available until the migration is applied.
                     }
 
-                    if ($loginType === 'admin' && $hasAdminAccess) {
+                    // ถ้าไม่ใช่ inspector login (เช่น เจ้าหน้าที่/ผู้ดูแล) → ให้เด้งเข้าหน้า Admin/Home ทันที
+                    if ($loginType !== 'inspector') {
                         log_message('info', '[GoogleLogin] Redirecting to Admin/Home');
                         return redirect()->to(base_url('Admin/Home'));
                     }
@@ -241,16 +239,14 @@ class ConLogin extends BaseController
                     // ถ้า login จาก inspector login → เซ็ต flag เปิด modal อัปโหลดอัตโนมัติ
                     if ($loginType === 'inspector') {
                         $session->set('auto_open_upload', true);
-                    }
-
-                    // ถ้า login จาก inspector login หรือไม่ใช่ admin → redirect ตาม return_to หรือ หน้าหลัก
-                    if ($returnUrl) {
-                        if (filter_var($returnUrl, FILTER_VALIDATE_URL)) {
-                            return redirect()->to($returnUrl);
+                        if ($returnUrl) {
+                            if (filter_var($returnUrl, FILTER_VALIDATE_URL)) {
+                                return redirect()->to($returnUrl);
+                            }
+                            return redirect()->to(base_url($returnUrl));
                         }
-                        return redirect()->to(base_url($returnUrl));
                     }
-                    return redirect()->to(base_url());
+                    return redirect()->to(base_url('Admin/Home'));
 
                 } else {
                     log_message('warning', '[GoogleLogin] Email not found in system: ' . $email);

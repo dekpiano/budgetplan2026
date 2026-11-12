@@ -1,0 +1,327 @@
+/**
+ * ==============================================================================
+ * SKJ BudgetPlan 2026 - Mobile-First Responsive UX/UI System
+ * Designed to provide exceptional touch ergonomics, fluid scaling, 
+ * responsive typography, mobile-first card grids, and seamless thumb reach.
+ * ==============================================================================
+ */
+
+/* ─── 1. Base Ergonomics & Anti-Horizontal Jitter ─── */
+html, body {
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* ─── 2. iOS Safari Form Zoom Prevention & Touch Targets ─── */
+@media (max-width: 767.98px) {
+    /* Prevent iOS auto-zoom when font-size < 16px */
+    input.form-control,
+    select.form-select,
+    textarea.form-control,
+    .form-control,
+    .form-select,
+    .input-group > .form-control,
+    .input-group > .form-select {
+        font-size: 16px !important;
+        min-height: 44px;
+    }
+
+    .input-group-text {
+        min-height: 44px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Primary Touch Buttons */
+    .btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+    }
+
+    .btn-sm, .btn-xs {
+        min-height: 34px;
+    }
+}
+
+/* ─── 3. Fluid Container Padding & Spacing ─── */
+@media (max-width: 767.98px) {
+    .container-xxl,
+    .container-fluid,
+    .container-p-y {
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .content-wrapper {
+        padding-bottom: 2rem;
+    }
+
+    /* Cards on small screens */
+    .card {
+        border-radius: 16px !important;
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1.15rem 0.95rem !important;
+    }
+
+    .card-header {
+        padding: 1rem 0.95rem 0.5rem 0.95rem !important;
+    }
+
+    .card-footer {
+        padding: 0.75rem 0.95rem !important;
+    }
+}
+
+/* ─── 4. Responsive Typography ─── */
+@media (max-width: 767.98px) {
+    h3, .h3 { font-size: 1.35rem !important; line-height: 1.3; }
+    h4, .h4 { font-size: 1.20rem !important; line-height: 1.35; }
+    h5, .h5 { font-size: 1.05rem !important; line-height: 1.4; }
+    h6, .h6 { font-size: 0.92rem !important; line-height: 1.45; }
+
+    .hero-title {
+        font-size: 1.30rem !important;
+    }
+
+    .stat-card-number {
+        font-size: 1.45rem !important;
+    }
+}
+
+/* ─── 5. Mobile Modals (Bottom-Sheet Feel & Thumb Accessibility) ─── */
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: 0.5rem auto !important;
+        max-width: calc(100% - 1rem) !important;
+    }
+
+    .modal-dialog-centered {
+        min-height: calc(100% - 1rem) !important;
+    }
+
+    .modal-content {
+        border-radius: 20px !important;
+        border: none !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .modal-header {
+        padding: 1rem 1.25rem 0.75rem 1.25rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .modal-body {
+        padding: 1.15rem 1.15rem !important;
+        max-height: 72vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-footer {
+        padding: 0.85rem 1.15rem !important;
+        flex-direction: column-reverse !important;
+        gap: 0.5rem !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .modal-footer > * {
+        width: 100% !important;
+        margin: 0 !important;
+        min-height: 44px;
+    }
+}
+
+/* ─── 6. Mobile Tables: Smooth Native Momentum Swipe ─── */
+@media (max-width: 991.98px) {
+    .table-responsive {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-x: auto !important;
+        border-radius: 14px;
+        position: relative;
+        scrollbar-width: thin;
+    }
+
+    .table-responsive table {
+        margin-bottom: 0 !important;
+    }
+
+    /* Keep badges and dates from wrapping abruptly */
+    .table-responsive td span.badge,
+    .table-responsive th,
+    .table-responsive td.font-monospace,
+    .table-responsive td.text-end {
+        white-space: nowrap !important;
+    }
+}
+
+/* ─── 7. Mobile-First Card Grids & Strategy Banners ─── */
+@media (max-width: 767.98px) {
+    .strategy-banner {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .strategy-banner .ms-auto {
+        margin-left: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
+        gap: 0.4rem !important;
+    }
+
+    .project-card-box {
+        border-radius: 16px !important;
+    }
+
+    .project-card-box .row.g-1 > div {
+        padding: 4px 2px !important;
+    }
+
+    /* Filter rows on mobile */
+    .filter-box-card .row.g-3 > div {
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* ─── 8. Flatpickr Calendar Mobile Centering ─── */
+@media (max-width: 575.98px) {
+    .flatpickr-calendar {
+        max-width: 92vw !important;
+        left: 4vw !important;
+        right: 4vw !important;
+        margin: 0 auto !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .flatpickr-days {
+        width: 100% !important;
+    }
+
+    .dayContainer {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .flatpickr-day {
+        max-width: calc(100% / 7) !important;
+        height: 38px !important;
+        line-height: 38px !important;
+    }
+}
+
+/* ─── 9. Mobile Navbar Toggler & Header Ergonomics ─── */
+@media (max-width: 1199.98px) {
+    .layout-menu-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(251, 140, 0, 0.1);
+        color: #fb8c00;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+
+    .layout-navbar {
+        margin-top: 6px !important;
+        border-radius: 14px !important;
+    }
+}
+
+/* ─── 10. Floating Quick-Back / Scroll-To-Top Button (Mobile Friendly) ─── */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fb8c00;
+    color: #ffffff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(251, 140, 0, 0.35);
+    z-index: 9999;
+    border: none;
+    transition: all 0.25s ease;
+}
+.scroll-to-top-btn:hover {
+    background: #f57c00;
+    transform: translateY(-3px);
+    color: #ffffff;
+}
+
+
+
+/* ─── 11. Modern Glassmorphism Navbar (Mobile-First UX) ─── */
+.modern-glass-navbar {
+    background: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(251, 140, 0, 0.14) !important;
+    box-shadow: 0 8px 30px rgba(251, 140, 0, 0.05) !important;
+    border-radius: 18px !important;
+    transition: all 0.3s ease;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.modern-menu-toggler {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(251, 140, 0, 0.1);
+    color: #fb8c00 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.modern-menu-toggler:hover {
+    background: #fb8c00;
+    color: #ffffff !important;
+    transform: scale(1.05);
+}
+
+.avatar-ring {
+    padding: 2px;
+    border: 2px solid rgba(251, 140, 0, 0.3);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+.avatar-ring:hover {
+    border-color: #fb8c00;
+    transform: scale(1.05);
+}
+
+@media (max-width: 575.98px) {
+    .modern-glass-navbar {
+        border-radius: 14px !important;
+        margin-left: 0.5rem !important;
+        margin-right: 0.5rem !important;
+        width: calc(100% - 1rem) !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    .navbar-page-title {
+        max-width: 170px !important;
+        font-size: 0.85rem !important;
+    }
+}

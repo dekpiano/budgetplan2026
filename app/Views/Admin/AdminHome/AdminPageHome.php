@@ -118,21 +118,32 @@
 
                 <!-- 3. Active Borrow Amount -->
                 <div class="col-xl-3 col-sm-6">
-                    <div class="card luxury-stat-card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
+                    <div class="card luxury-stat-card border-0 shadow-sm h-100 cursor-pointer stat-card-clickable" 
+                         role="button" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#modalActiveBorrowDetails" 
+                         title="คลิกเพื่อดูรายละเอียดโครงการที่มียอดเงินยืมค้างชำระ">
+                        <div class="card-body p-4 position-relative">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="stat-icon-container warning">
                                     <i class="bx bx-time-five"></i>
                                 </div>
-                                <span class="badge bg-warning-soft text-warning px-3 py-1 rounded-pill fs-8">เงินยืม</span>
+                                <span class="badge bg-warning-soft text-warning px-3 py-1 rounded-pill fs-8">
+                                    <i class="bx bx-search-alt-2 me-1"></i>ดูรายละเอียด
+                                </span>
                             </div>
                             <span class="stat-card-title text-muted">เงินยืมค้างชำระ / รอส่งใช้</span>
                             <h3 class="stat-card-number mt-1 mb-2 text-warning font-monospace">
                                 ฿<?= number_format($active_borrow ?? 0, 2); ?>
                             </h3>
-                            <p class="stat-card-footer mb-0 text-warning fs-8">
-                                <i class="bx bx-info-circle me-1"></i> รอส่งใช้ใบเสร็จหรือคืนเงินสด
-                            </p>
+                            <div class="d-flex align-items-center justify-content-between mt-1">
+                                <p class="stat-card-footer mb-0 text-warning fs-8">
+                                    <i class="bx bx-info-circle me-1"></i> รอส่งใช้ใบเสร็จหรือคืนเงินสด
+                                </p>
+                                <span class="badge bg-label-warning rounded-pill fs-8 px-2 py-1">
+                                    <?= count($active_borrow_projects ?? []); ?> โครงการ
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -364,7 +375,137 @@
     </div>
 </div>
 
+<!-- Modal แสดงรายละเอียดเงินยืมค้างชำระ / รอส่งใช้ -->
+<div class="modal fade" id="modalActiveBorrowDetails" tabindex="-1" aria-labelledby="modalActiveBorrowDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-container warning shadow-xs">
+                        <i class="bx bx-time-five fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-1" id="modalActiveBorrowDetailsLabel">
+                            <i class="bx bx-list-check text-warning me-1"></i>รายละเอียดเงินยืมค้างชำระ / รอส่งใช้
+                        </h5>
+                        <p class="text-muted fs-8 mb-0">
+                            ปีงบประมาณ พ.ศ. <?= esc($selected_year); ?> &bull; รวมยอดค้างส่งใช้ทั้งหมด 
+                            <span class="fw-bold text-warning font-monospace fs-7">฿<?= number_format($active_borrow ?? 0, 2); ?></span>
+                            (<?= count($active_borrow_projects ?? []); ?> โครงการ)
+                        </p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <?php if (!empty($active_borrow_projects)): ?>
+                    <div class="table-responsive rounded-3 border">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light fs-8">
+                                <tr>
+                                    <th style="width: 100px;">รหัส</th>
+                                    <th>ชื่อโครงการ / กิจกรรม</th>
+                                    <th>สัญญาเงินยืม (เลขที่ / วันที่ / รายการ)</th>
+                                    <th class="text-end" style="width: 130px;">ยืมรวม (บาท)</th>
+                                    <th class="text-end" style="width: 130px;">ส่งใช้แล้ว (บาท)</th>
+                                    <th class="text-end" style="width: 140px;">ค้างส่งใช้ (บาท)</th>
+                                    <th class="text-center" style="width: 130px;">ดำเนินการ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fs-7">
+                                <?php foreach ($active_borrow_projects as $p): ?>
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-label-primary font-monospace fs-8">
+                                                <?= esc($p->project_code ?: '-'); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark mb-1"><?= esc($p->project_name); ?></div>
+                                            <?php if (!empty($p->budget_source)): ?>
+                                                <small class="text-muted fs-8"><i class="bx bx-wallet me-1 text-warning"></i><?= esc($p->budget_source); ?></small>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($p->borrow_items)): ?>
+                                                <div class="d-flex flex-column gap-2 py-1">
+                                                    <?php foreach ($p->borrow_items as $bItem): ?>
+                                                        <div class="fs-8 border-start border-warning border-3 ps-2 py-1 bg-light rounded-end">
+                                                            <div class="fw-semibold text-dark">
+                                                                <span class="badge bg-warning-soft text-warning font-monospace"><?= esc($bItem->doc_no ?: '-'); ?></span>
+                                                                <span class="text-muted ms-1"><?= !empty($bItem->doc_date) ? date('d/m/Y', strtotime($bItem->doc_date)) : '-'; ?></span>
+                                                            </div>
+                                                            <div class="text-muted text-truncate mt-1" style="max-width: 280px;" title="<?= esc($bItem->description); ?>">
+                                                                <?= esc($bItem->description); ?>
+                                                            </div>
+                                                            <div class="font-monospace text-warning fw-bold mt-1">
+                                                                ฿<?= number_format($bItem->amount_borrow, 2); ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="text-muted fs-8">-</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-end font-monospace">
+                                            <?= number_format($p->total_borrow ?? 0, 2); ?>
+                                        </td>
+                                        <td class="text-end font-monospace text-muted">
+                                            <div><?= number_format($p->total_returned ?? 0, 2); ?></div>
+                                            <?php if (($p->return_receipt ?? 0) > 0 || ($p->return_cash ?? 0) > 0): ?>
+                                                <div class="fs-8 text-muted opacity-75">
+                                                    (ใบเสร็จ <?= number_format($p->return_receipt ?? 0, 2); ?><?= ($p->return_cash ?? 0) > 0 ? ' + คืนสด ' . number_format($p->return_cash, 2) : ''; ?>)
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-end font-monospace fw-bold text-warning fs-6">
+                                            ฿<?= number_format($p->active_borrow ?? 0, 2); ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="<?= base_url('Admin/BudgetLedger/view/' . $p->id); ?>" 
+                                               class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs text-nowrap"
+                                               target="_blank"
+                                               title="เปิดดูทะเบียนคุมโครงการนี้">
+                                                <i class="bx bx-folder-open me-1"></i>ดูทะเบียนคุม
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center py-5 text-muted">
+                        <div class="stat-icon-container bg-success-soft text-success mx-auto mb-3" style="width: 60px; height: 60px;">
+                            <i class="bx bx-check-circle fs-2"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">ไม่พบรายการเงินยืมค้างชำระ</h6>
+                        <p class="fs-8 text-muted mb-0">รายการเงินยืมทั้งหมดในปีงบประมาณนี้ได้รับการส่งใช้ครบถ้วนแล้ว</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+    .cursor-pointer {
+        cursor: pointer !important;
+    }
+    .stat-card-clickable {
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    }
+    .stat-card-clickable:hover {
+        border: 1px solid rgba(255, 171, 0, 0.4) !important;
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 25px rgba(255, 171, 0, 0.15) !important;
+    }
     /* Luxury Admin Dashboard Styling */
     .luxury-admin-hero-card {
         background: linear-gradient(135deg, #1e1e24 0%, #2b2b36 100%);

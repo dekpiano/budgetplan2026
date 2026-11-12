@@ -16,6 +16,8 @@ var thaiMonthsShort = [
 ];
 
 var ledgerFlatpickr = null;
+var fpProjectStartDate = null;
+var fpProjectEndDate = null;
 var cachedBorrows = [];
 var isAutoCalculatingClearing = false;
 
@@ -157,6 +159,8 @@ window.openAddProjectModal = function(strategyId, tacticId, tacticNo) {
     $('#projectId').val('');
     $('#projectStrategySelect').val(strategyId);
     $('#allocatedBudget').val('0.00').prop('readonly', false);
+    if (fpProjectStartDate) fpProjectStartDate.clear(); else $('#projectStartDate').val('');
+    if (fpProjectEndDate) fpProjectEndDate.clear(); else $('#projectEndDate').val('');
     $('#mainActivitiesContainer').empty();
     mainActivityIndex = 0;
     $('#emptyActivityAlert').show();
@@ -706,7 +710,8 @@ $(document).ready(function () {
     // 4. Initialize Thai Buddhist Calendar (Flatpickr)
     // ----------------------------------------------------
     function formatThaiBuddhistAlt(selectedDates, instance) {
-        if (selectedDates && selectedDates.length > 0 && instance && instance.altInput) {
+        if (!instance || !instance.altInput) return;
+        if (selectedDates && selectedDates.length > 0) {
             var d = selectedDates[0];
             var day = d.getDate();
             var m = thaiMonths[d.getMonth()];
@@ -715,17 +720,63 @@ $(document).ready(function () {
                 y += 543;
             }
             instance.altInput.value = day + ' ' + m + ' ' + y;
+        } else {
+            instance.altInput.value = '';
         }
     }
 
-    if (typeof flatpickr !== 'undefined' && $('#ledgerDocDate').length) {
-        flatpickr.localize(flatpickr.l10ns.th);
-        ledgerFlatpickr = $('#ledgerDocDate').flatpickr({
+    function initBuddhistDatePicker(inputSelector) {
+        if (!$(inputSelector).length || typeof flatpickr === 'undefined') return null;
+        return $(inputSelector).flatpickr({
             locale: "th",
             dateFormat: "Y-m-d",
             altInput: true,
-            altFormat: "Y-m-d",
-            altInputClass: "form-control selector-date bg-white",
+            altFormat: "d F Y",
+            altInputClass: "form-control selector-date bg-white border-start-0",
+            allowInput: false,
+            parseDate: function(dateStr, format) {
+                if (!dateStr) return null;
+                if (dateStr instanceof Date) return dateStr;
+                if (typeof dateStr === 'string' && dateStr.indexOf('-') > -1) {
+                    var parts = dateStr.split('-');
+                    var yr = parseInt(parts[0], 10);
+                    if (yr > 2400) yr -= 543;
+                    return new Date(yr, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                }
+                if (typeof dateStr === 'string') {
+                    var tokens = dateStr.trim().split(/\s+/);
+                    if (tokens.length === 3) {
+                        var d = parseInt(tokens[0], 10);
+                        var m = thaiMonths.indexOf(tokens[1]);
+                        if (m === -1) m = thaiMonthsShort.indexOf(tokens[1]);
+                        var y = parseInt(tokens[2], 10);
+                        if (y > 2400) y -= 543;
+                        if (!isNaN(d) && m !== -1 && !isNaN(y)) {
+                            return new Date(y, m, d);
+                        }
+                    }
+                    var slashParts = dateStr.split('/');
+                    if (slashParts.length === 3) {
+                        var sy = parseInt(slashParts[2], 10);
+                        if (sy > 2400) sy -= 543;
+                        return new Date(sy, parseInt(slashParts[1], 10) - 1, parseInt(slashParts[0], 10));
+                    }
+                }
+                var parsed = new Date(dateStr);
+                return isNaN(parsed.getTime()) ? null : parsed;
+            },
+            formatDate: function(date, format) {
+                var d = date.getDate();
+                var m = date.getMonth();
+                var y = date.getFullYear();
+                if (format === 'Y-m-d') {
+                    var mm = (m + 1 < 10 ? '0' : '') + (m + 1);
+                    var dd = (d < 10 ? '0' : '') + d;
+                    return y + '-' + mm + '-' + dd;
+                }
+                var thaiYear = y < 2400 ? (y + 543) : y;
+                return d + ' ' + thaiMonths[m] + ' ' + thaiYear;
+            },
             onChange: function(selectedDates, dateStr, instance) {
                 formatThaiBuddhistAlt(selectedDates, instance);
             },
@@ -747,6 +798,19 @@ $(document).ready(function () {
                 formatThaiBuddhistAlt(selectedDates, instance);
             }
         });
+    }
+
+    if (typeof flatpickr !== 'undefined') {
+        flatpickr.localize(flatpickr.l10ns.th);
+        if ($('#ledgerDocDate').length) {
+            ledgerFlatpickr = initBuddhistDatePicker('#ledgerDocDate');
+        }
+        if ($('#projectStartDate').length) {
+            fpProjectStartDate = initBuddhistDatePicker('#projectStartDate');
+        }
+        if ($('#projectEndDate').length) {
+            fpProjectEndDate = initBuddhistDatePicker('#projectEndDate');
+        }
     }
 
     // ----------------------------------------------------
@@ -1120,6 +1184,19 @@ $(document).ready(function () {
         $('#projectCode').val(data.project_code || '');
         $('#projectName').val(data.project_name);
         $('#budgetSource').val(data.budget_source || '');
+        if (fpProjectStartDate) {
+            if (data.start_date && data.start_date !== '0000-00-00') fpProjectStartDate.setDate(data.start_date, true);
+            else fpProjectStartDate.clear();
+        } else {
+            $('#projectStartDate').val(data.start_date || '');
+        }
+
+        if (fpProjectEndDate) {
+            if (data.end_date && data.end_date !== '0000-00-00') fpProjectEndDate.setDate(data.end_date, true);
+            else fpProjectEndDate.clear();
+        } else {
+            $('#projectEndDate').val(data.end_date || '');
+        }
         
         // Always fully reset activities before populating
         $('#mainActivitiesContainer').empty();
@@ -1368,6 +1445,8 @@ $(document).ready(function () {
         $('#formProject')[0].reset();
         $('#projectId').val('');
         $('#allocatedBudget').val('0.00').prop('readonly', false);
+    if (fpProjectStartDate) fpProjectStartDate.clear(); else $('#projectStartDate').val('');
+    if (fpProjectEndDate) fpProjectEndDate.clear(); else $('#projectEndDate').val('');
         $('#mainActivitiesContainer').empty();
         mainActivityIndex = 0;
         $('#emptyActivityAlert').show();

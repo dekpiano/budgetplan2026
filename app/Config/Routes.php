@@ -38,12 +38,20 @@ $routes->get('User/Plan', 'ConUserPlan::index');
 
 $routes->match(['GET', 'POST'], '/LoginOfficerBudgetPlan', 'ConLogin::LoginOfficerPersonnel');
 $routes->match(['GET', 'POST'], '/LoginOfficerPersonnel', 'ConLogin::LoginOfficerPersonnel');
+$routes->match(['GET', 'POST'], 'LoginOfficerPersonnel', 'ConLogin::LoginOfficerPersonnel');
+$routes->match(['GET', 'POST'], '/login', 'ConLogin::LoginOfficerPersonnel');
+$routes->match(['GET', 'POST'], 'login', 'ConLogin::LoginOfficerPersonnel');
+$routes->match(['GET', 'POST'], '/Login', 'ConLogin::LoginOfficerPersonnel');
+$routes->match(['GET', 'POST'], 'Login', 'ConLogin::LoginOfficerPersonnel');
 $routes->match(['GET', 'POST'], 'Auth/googleLogin', 'ConLogin::LoginOfficerPersonnel');
 $routes->match(['GET', 'POST'], '/Auth/googleLogin', 'ConLogin::LoginOfficerPersonnel');
 $routes->get('/LogoutOfficerBudgetPlan', 'ConLogin::LogoutOfficerPersonnel');
 $routes->get('/LogoutOfficerGeneral', 'ConLogin::LogoutOfficerPersonnel');
 $routes->get('/LogoutOfficerPersonnel', 'ConLogin::LogoutOfficerPersonnel');
 $routes->get('/Logout', 'ConLogin::LogoutOfficerPersonnel');
+$routes->get('Logout', 'ConLogin::LogoutOfficerPersonnel');
+$routes->get('/logout', 'ConLogin::LogoutOfficerPersonnel');
+$routes->get('logout', 'ConLogin::LogoutOfficerPersonnel');
 
 //จัดซื้อจัดจ้าง
 $routes->get('User/Procurement/Process', 'ConUserProcurement::ProcurementProcess');

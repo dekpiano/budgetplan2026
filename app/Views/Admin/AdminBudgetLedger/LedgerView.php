@@ -33,12 +33,16 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3 border-bottom pb-3">
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                                 <span class="badge bg-label-primary fs-7 rounded-pill px-3 py-1 fw-bold">
                                     หมวด <?= esc($project->project_code ?: '-') ?>
                                 </span>
                                 <span class="badge bg-label-warning fs-7 rounded-pill px-3 py-1">
                                     ปีงบประมาณ พ.ศ. <?= esc($project->budget_year) ?>
+                                </span>
+                                <?php $timeStatus = get_project_time_status($project->start_date ?? null, $project->end_date ?? null); ?>
+                                <span class="badge <?= $timeStatus['badge_class'] ?> fs-7 rounded-pill px-3 py-1 fw-bold">
+                                    <i class="bx <?= $timeStatus['icon'] ?> me-1"></i><?= $timeStatus['label'] ?>
                                 </span>
                             </div>
                             <h4 class="fw-bold text-dark mb-1 mt-2"><?= esc($project->project_name) ?></h4>
@@ -74,6 +78,31 @@
                             <i class="bx bx-git-branch text-info me-1"></i><b>กลยุทธ์:</b> <?= esc($project->strategy_sub ?: '-') ?>
                         </div>
                     </div>
+
+                    <?php if ($timeStatus['status'] === 'expired'): ?>
+                        <div class="alert alert-danger d-flex align-items-center rounded-3 p-3 mt-3 mb-0" role="alert">
+                            <i class="bx bx-error-circle fs-3 me-3 text-danger flex-shrink-0"></i>
+                            <div>
+                                <div class="fw-bold text-danger">โครงการนี้เลยกำหนดห้วงเวลาการใช้เงินแล้ว</div>
+                                <div class="small text-danger opacity-85">
+                                    ห้วงเวลาดำเนินโครงการ: <?= esc($timeStatus['date_range']) ?> 
+                                    <?php if ($timeStatus['days_diff'] !== null): ?>
+                                        (เลยกำหนดมาแล้ว <?= abs($timeStatus['days_diff']) ?> วัน)
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php elseif ($timeStatus['status'] === 'active' && (!empty($project->start_date) || !empty($project->end_date))): ?>
+                        <div class="alert alert-success d-flex align-items-center rounded-3 p-2.5 mt-3 mb-0" role="alert">
+                            <i class="bx bx-check-circle fs-4 me-2 text-success flex-shrink-0"></i>
+                            <div class="small">
+                                <b>อยู่ในช่วงเวลาดำเนินโครงการ:</b> <?= esc($timeStatus['date_range']) ?>
+                                <?php if ($timeStatus['days_diff'] !== null): ?>
+                                    <span class="text-muted ms-1">(เหลืออีก <?= $timeStatus['days_diff'] ?> วัน)</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

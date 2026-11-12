@@ -80,7 +80,29 @@ class ConAdminHome extends BaseController
             $totalBorrow    += (float)$p->total_borrow;
             $totalReturnCash += (float)($stats->total_return_cash ?? 0);
             $totalReturnReceipt += (float)($stats->total_return_receipt ?? 0);
+
+            // ข้อมูลเงินยืมและการส่งใช้ระดับโครงการ
+            $p->return_cash = (float)($stats->total_return_cash ?? 0);
+            $p->return_receipt = (float)($stats->total_return_receipt ?? 0);
+            $p->total_returned = $p->return_cash + $p->return_receipt;
+            $p->active_borrow = max(0, (float)$p->total_borrow - $p->total_returned);
         }
+
+        // คัดกรองเฉพาะโครงการที่มีเงินยืมค้างชำระ / รอส่งใช้
+        $activeBorrowProjects = [];
+        foreach ($projects as $p) {
+            if (($p->active_borrow ?? 0) > 0) {
+                $p->borrow_items = $db->table('tb_budget_ledger')
+                    ->where('project_id', $p->id)
+                    ->where('amount_borrow >', 0)
+                    ->orderBy('doc_date', 'DESC')
+                    ->orderBy('id', 'DESC')
+                    ->get()
+                    ->getResult();
+                $activeBorrowProjects[] = $p;
+            }
+        }
+        $data['active_borrow_projects'] = $activeBorrowProjects;
 
         $data['projects']         = $projects;
         $data['total_projects']   = count($projects);

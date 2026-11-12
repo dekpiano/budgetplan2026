@@ -303,6 +303,8 @@ CREATE TABLE `tb_budget_projects` (
   `project_code` varchar(50) DEFAULT NULL,
   `project_name` varchar(255) NOT NULL,
   `budget_source` varchar(255) DEFAULT NULL,
+  `start_date` date DEFAULT NULL COMMENT 'วันที่เริ่มต้นห้วงเวลาโครงการ',
+  `end_date` date DEFAULT NULL COMMENT 'วันที่สิ้นสุดห้วงเวลาโครงการ',
   `allocated_budget` decimal(15,2) NOT NULL DEFAULT 0.00,
   `status` enum('active','closed') NOT NULL DEFAULT 'active',
   `created_at` datetime DEFAULT NULL,

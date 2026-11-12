@@ -139,20 +139,21 @@
                     <table class="table table-hover align-middle mb-0 table-fit-screen">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 7%;" class="text-center">รหัส</th>
-                                <th style="width: 28%;">ชื่อโครงการ / กิจกรรม</th>
-                                <th style="width: 17%;">แหล่งเงินงบประมาณ</th>
-                                <th class="text-end" style="width: 12%;">งบตั้งต้น</th>
-                                <th class="text-end" style="width: 12%;">จ่ายจริงแล้ว</th>
-                                <th class="text-end" style="width: 12%;">คงเหลือสุทธิ</th>
-                                <th class="text-center" style="width: 6%;">รายการ</th>
-                                <th class="text-center" style="width: 6%;">การจัดการ</th>
+                                <th style="width: 6%;" class="text-center">รหัส</th>
+                                <th style="width: 25%;">ชื่อโครงการ / กิจกรรม</th>
+                                <th style="width: 15%;">ห้วงเวลาโครงการ</th>
+                                <th style="width: 15%;">แหล่งเงินงบประมาณ</th>
+                                <th class="text-end" style="width: 10%;">งบตั้งต้น</th>
+                                <th class="text-end" style="width: 10%;">จ่ายจริงแล้ว</th>
+                                <th class="text-end" style="width: 10%;">คงเหลือสุทธิ</th>
+                                <th class="text-center" style="width: 4%;">รายการ</th>
+                                <th class="text-center" style="width: 5%;">การจัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($projects)): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-5 text-muted">
+                                    <td colspan="9" class="text-center py-5 text-muted">
                                         <i class="bx bx-folder-open display-4 opacity-50 mb-2 d-block"></i>
                                         <h6 class="fw-bold">ยังไม่มีข้อมูลโครงการในปีงบประมาณ <?= $selected_year ?></h6>
                                         <p class="small">ไปที่หน้า <a href="<?= base_url('Admin/BudgetLedger/Structure') ?>">ตั้งค่ายุทธศาสตร์และโครงการ</a> เพื่อเพิ่มข้อมูล</p>
@@ -165,12 +166,23 @@
                                             <span class="badge bg-label-secondary fw-bold rounded-pill px-2 py-1"><?= esc($p->project_code ?: '-') ?></span>
                                         </td>
                                         <td>
-                                            <a href="<?= base_url('Admin/BudgetLedger/view/' . $p->id) ?>" class="fw-bold text-dark text-hover-primary text-decoration-none d-block mb-1">
+                                            <a href="<?= base_url('Admin/BudgetLedger/view/' . $p->id) ?>" class="fw-bold text-dark text-hover-primary text-decoration-none d-block mb-1" style="line-height: 1.4;">
                                                 <i class="bx bx-right-arrow-alt text-primary me-1"></i><?= esc($p->project_name) ?>
                                             </a>
                                             <?php if (!empty($p->strategy_name)): ?>
                                                 <small class="text-muted d-block text-truncate" style="max-width: 380px;" title="<?= esc($p->strategy_name) ?>">
                                                     <i class="bx bx-target-lock text-secondary me-1"></i><?= esc($p->strategy_name) ?>
+                                                </small>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php $timeStatus = get_project_time_status($p->start_date ?? null, $p->end_date ?? null); ?>
+                                            <div class="mb-1">
+                                                <?= $timeStatus['badge_html'] ?>
+                                            </div>
+                                            <?php if ($timeStatus['status'] !== 'unspecified'): ?>
+                                                <small class="text-muted d-block fs-8" style="line-height: 1.35;">
+                                                    <i class="bx bx-calendar-event text-primary me-1"></i><?= esc($timeStatus['date_range']) ?>
                                                 </small>
                                             <?php endif; ?>
                                         </td>

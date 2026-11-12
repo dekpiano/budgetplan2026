@@ -62,6 +62,36 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- Global Preloader (Page Loading) Logic -->
+    <script>
+        function hidePageLoader() {
+            document.body.classList.add('page-loaded');
+            setTimeout(function() {
+                const preloader = document.getElementById('skj-preloader');
+                if (preloader) preloader.style.display = 'none';
+            }, 400);
+        }
+
+        window.addEventListener('load', hidePageLoader);
+        // Fallback: dismiss preloader after 2.5s if any resource hangs
+        setTimeout(hidePageLoader, 2500);
+
+        // Show preloader smoothly on link navigation
+        $(document).on('click', 'a[href]:not([href^="#"]):not([href^="javascript"]):not([target="_blank"]):not([download])', function(e) {
+            if (e.ctrlKey || e.metaKey || e.which === 2) return;
+            var href = $(this).attr('href');
+            if (href && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                var preloader = document.getElementById('skj-preloader');
+                if (preloader) {
+                    preloader.style.display = 'flex';
+                    document.body.classList.remove('page-loaded');
+                    preloader.style.opacity = '1';
+                    preloader.style.visibility = 'visible';
+                }
+            }
+        });
+    </script>
     </body>
 
     </html>

@@ -458,4 +458,110 @@ if (!function_exists('get_file_type_info')) {
     }
 }
 
+if (!function_exists('get_project_time_status')) {
+    /**
+     * คำนวณและประเมินสถานะห้วงเวลาการใช้เงินโครงการ
+     * @param string|null $startDate วันที่เริ่มต้น (YYYY-MM-DD)
+     * @param string|null $endDate วันที่สิ้นสุด (YYYY-MM-DD)
+     * @return array
+     */
+    function get_project_time_status(?string $startDate, ?string $endDate): array
+    {
+        $hasStart = !empty($startDate) && $startDate !== '0000-00-00';
+        $hasEnd   = !empty($endDate) && $endDate !== '0000-00-00';
+
+        if (!$hasStart && !$hasEnd) {
+            return [
+                'status'      => 'unspecified',
+                'label'       => 'ไม่ได้ระบุห้วงเวลา',
+                'badge_class' => 'bg-secondary-soft text-secondary',
+                'alert_class' => 'alert-secondary',
+                'icon'        => 'bx-calendar',
+                'date_range'  => 'ไม่ได้ระบุห้วงเวลา',
+                'days_diff'   => null,
+                'badge_html'  => '<span class="badge bg-secondary-soft text-secondary rounded-pill fs-8"><i class="bx bx-calendar me-1"></i>ไม่ได้ระบุช่วงเวลา</span>'
+            ];
+        }
+
+        $today = date('Y-m-d');
+        $todayTs = strtotime($today);
+
+        // จัดรูปแบบช่วงวันที่ภาษาไทย
+        $dateRangeText = thaidate_range_format($hasStart ? $startDate : $endDate, $hasEnd ? $endDate : $startDate, 'short');
+
+        // กรณีระบุเฉพาะวันสิ้นสุด
+        if (!$hasStart && $hasEnd) {
+            $endTs = strtotime($endDate);
+            if ($todayTs > $endTs) {
+                $daysOver = (int)round(($todayTs - $endTs) / 86400);
+                return [
+                    'status'      => 'expired',
+                    'label'       => 'เลยกำหนดเวลาแล้ว',
+                    'badge_class' => 'bg-danger-soft text-danger',
+                    'alert_class' => 'alert-danger',
+                    'icon'        => 'bx-error-circle',
+                    'date_range'  => 'สิ้นสุด ' . thaidate_format($endDate, 'short'),
+                    'days_diff'   => -$daysOver,
+                    'badge_html'  => '<span class="badge bg-danger-soft text-danger rounded-pill fs-8"><i class="bx bx-error-circle me-1"></i>เลยกำหนดเวลาแล้ว</span>'
+                ];
+            } else {
+                $daysRemaining = (int)round(($endTs - $todayTs) / 86400);
+                return [
+                    'status'      => 'active',
+                    'label'       => 'อยู่ในช่วงโครงการ',
+                    'badge_class' => 'bg-success-soft text-success',
+                    'alert_class' => 'alert-success',
+                    'icon'        => 'bx-check-circle',
+                    'date_range'  => 'สิ้นสุด ' . thaidate_format($endDate, 'short'),
+                    'days_diff'   => $daysRemaining,
+                    'badge_html'  => '<span class="badge bg-success-soft text-success rounded-pill fs-8"><i class="bx bx-check-circle me-1"></i>อยู่ในช่วงโครงการ</span>'
+                ];
+            }
+        }
+
+        // กรณีระบุทั้งวันเริ่มและวันสิ้นสุด
+        $startTs = strtotime($startDate);
+        $endTs = $hasEnd ? strtotime($endDate) : $startTs;
+
+        if ($todayTs < $startTs) {
+            $daysUntil = (int)round(($startTs - $todayTs) / 86400);
+            return [
+                'status'      => 'upcoming',
+                'label'       => 'ยังไม่ถึงกำหนดเวลา',
+                'badge_class' => 'bg-info-soft text-info',
+                'alert_class' => 'alert-info',
+                'icon'        => 'bx-time-five',
+                'date_range'  => $dateRangeText,
+                'days_diff'   => $daysUntil,
+                'badge_html'  => '<span class="badge bg-info-soft text-info rounded-pill fs-8" title="' . htmlspecialchars($dateRangeText) . '"><i class="bx bx-time-five me-1"></i>ยังไม่ถึงกำหนด</span>'
+            ];
+        } elseif ($todayTs > $endTs) {
+            $daysOver = (int)round(($todayTs - $endTs) / 86400);
+            return [
+                'status'      => 'expired',
+                'label'       => 'เลยกำหนดเวลาแล้ว',
+                'badge_class' => 'bg-danger-soft text-danger',
+                'alert_class' => 'alert-danger',
+                'icon'        => 'bx-error-circle',
+                'date_range'  => $dateRangeText,
+                'days_diff'   => -$daysOver,
+                'badge_html'  => '<span class="badge bg-danger-soft text-danger rounded-pill fs-8" title="' . htmlspecialchars($dateRangeText) . '"><i class="bx bx-error-circle me-1"></i>เลยกำหนดเวลา</span>'
+            ];
+        } else {
+            $daysRemaining = (int)round(($endTs - $todayTs) / 86400);
+            return [
+                'status'      => 'active',
+                'label'       => 'อยู่ในช่วงโครงการ',
+                'badge_class' => 'bg-success-soft text-success',
+                'alert_class' => 'alert-success',
+                'icon'        => 'bx-check-circle',
+                'date_range'  => $dateRangeText,
+                'days_diff'   => $daysRemaining,
+                'badge_html'  => '<span class="badge bg-success-soft text-success rounded-pill fs-8" title="' . htmlspecialchars($dateRangeText) . '"><i class="bx bx-check-circle me-1"></i>อยู่ในช่วงโครงการ</span>'
+            ];
+        }
+    }
+}
+
+
 

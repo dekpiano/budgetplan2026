@@ -149,18 +149,19 @@
                                                  <div class="table-responsive mt-2">
                                                      <table class="table table-sm table-hover align-middle mb-0 table-fit-screen" style="font-size: 0.81rem;">
                                                          <thead class="table-light">
-                                                             <tr>
-                                                                 <th style="width: 80px;" class="text-center text-nowrap">รหัส</th>
-                                                                 <th style="width: auto;">ชื่อโครงการ / กิจกรรม</th>
-                                                                 <th style="width: 220px;" class="text-nowrap">แหล่งเงินงบประมาณ</th>
-                                                                 <th class="text-end text-nowrap" style="width: 140px;">งบประมาณตั้งต้น</th>
-                                                                 <th class="text-center text-nowrap" style="width: 130px;">การจัดการ</th>
-                                                             </tr>
-                                                         </thead>
-                                                         <tbody>
-                                                             <?php if (empty($tc->projects)): ?>
-                                                                 <tr>
-                                                                     <td colspan="5" class="text-center py-3 text-muted">
+                                                              <tr>
+                                                                  <th style="width: 80px;" class="text-center text-nowrap">รหัส</th>
+                                                                  <th style="width: auto;">ชื่อโครงการ / กิจกรรม</th>
+                                                                  <th style="width: 175px;" class="text-nowrap">ห้วงเวลาโครงการ</th>
+                                                                  <th style="width: 200px;" class="text-nowrap">แหล่งเงินงบประมาณ</th>
+                                                                  <th class="text-end text-nowrap" style="width: 130px;">งบประมาณตั้งต้น</th>
+                                                                  <th class="text-center text-nowrap" style="width: 130px;">การจัดการ</th>
+                                                              </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                              <?php if (empty($tc->projects)): ?>
+                                                                  <tr>
+                                                                      <td colspan="6" class="text-center py-3 text-muted">
                                                                          ยังไม่มีโครงการภายใต้กลยุทธ์นี้ — คลิก <b>"+ เพิ่มโครงการ (1.1.1)"</b>
                                                                      </td>
                                                                  </tr>
@@ -204,7 +205,18 @@
                                                                                  </div>
                                                                              <?php endif; ?>
                                                                          </td>
-                                                                         <td class="small text-muted align-top pt-2" style="font-size: 0.78rem; line-height: 1.4;">
+                                                                         <td class="align-top pt-2" style="font-size: 0.78rem;">
+                                                                              <?php $timeStatus = get_project_time_status($p->start_date ?? null, $p->end_date ?? null); ?>
+                                                                              <div class="mb-1">
+                                                                                  <?= $timeStatus['badge_html'] ?>
+                                                                              </div>
+                                                                              <?php if ($timeStatus['status'] !== 'unspecified'): ?>
+                                                                                  <div class="small text-muted" style="font-size: 0.74rem; line-height: 1.35;">
+                                                                                      <i class="bx bx-calendar-event me-1 text-primary"></i><?= esc($timeStatus['date_range']) ?>
+                                                                                  </div>
+                                                                              <?php endif; ?>
+                                                                          </td>
+                                                                          <td class="small text-muted align-top pt-2" style="font-size: 0.78rem; line-height: 1.4;">
                                                                              <?= esc($p->budget_source ?: '-') ?>
                                                                          </td>
                                                                          <td class="text-end fw-bold text-success align-top text-nowrap pt-2" style="font-size: 0.85rem;">
@@ -400,6 +412,27 @@
                             <textarea class="form-control" name="budget_source" id="budgetSource" rows="2" placeholder="เช่น เงินงบประมาณรายจ่ายประจำปีงบประมาณ พ.ศ. 2569 (เงินพัฒนาการจัดการศึกษา - กิจกรรมพัฒนาผู้เรียน)"></textarea>
                         </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bx bx-calendar text-primary me-1"></i>วันที่เริ่มต้นห้วงเวลาโครงการ (พ.ศ.)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bx bx-calendar text-primary"></i></span>
+                                <input type="text" class="form-control border-start-0" name="start_date" id="projectStartDate" placeholder="เลือกวันเริ่มต้น (พ.ศ.)">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.76rem;">ระบุวันที่เริ่มต้นดำเนินโครงการ (เว้นว่างได้)</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bx bx-calendar-check text-warning me-1"></i>วันที่สิ้นสุดห้วงเวลา (ใช้เงินวันสุดท้าย พ.ศ.)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bx bx-calendar-check text-warning"></i></span>
+                                <input type="text" class="form-control border-start-0" name="end_date" id="projectEndDate" placeholder="เลือกวันสิ้นสุด (พ.ศ.)">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.76rem;">หากเลยวันนี้ ระบบจะแสดงสถานะ "เลยกำหนดเวลา" (เว้นว่างได้)</small>
+                        </div>
+
                         <!-- Sub-Items Section (รายการกิจกรรมหลักและกิจกรรมย่อย ระดับ 4 & 5) -->
                         <div class="col-12 mt-4">
                             <div class="card border bg-light shadow-none" style="border-radius: 12px;">
@@ -441,3 +474,9 @@
     </div>
 </div>
 
+
+<style>
+.flatpickr-calendar {
+    z-index: 999999 !important;
+}
+</style>

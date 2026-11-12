@@ -51,6 +51,7 @@ $uri         = $uri ?? service('uri');
     <link rel="stylesheet" href="<?=base_url()?>/assets/vendor/css/theme-blue.css?v=2"
         class="template-customizer-theme-css" />
     <link rel="stylesheet" href="<?=base_url()?>/assets/css/demo.css?v=1" />
+    <link rel="stylesheet" href="<?=base_url()?>/assets/css/mobile-first-custom.css?v=1.0" />
     <!-- <link rel="stylesheet" href="<?=base_url()?>/assets/css/flatpickr.css?v=2" /> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- Vendors CSS -->
